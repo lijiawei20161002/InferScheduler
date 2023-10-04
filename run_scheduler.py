@@ -1,0 +1,40 @@
+import os  
+import sys  
+import matplotlib.pyplot as plt  
+from scheduler import SchedulerSimulator  
+
+inference_delays = {1: 42.89945313, 2: 45.02945313, 4: 50.47695313, 8: 62.123125, 16: 84.1871875}  
+  
+def main(num_requests, min_tokens, max_tokens, inference_delays):  
+    # Initialize the scheduler simulator  
+    simulator = SchedulerSimulator([], inference_delays)  
+  
+    # Generate the requests  
+    requests = simulator.generate_requests(num_requests, min_tokens, max_tokens, inference_delays)  
+    simulator.requests = requests
+
+    # Run the simulation   
+    goodput = simulator.run_simulation()  
+  
+    # Return the goodput  
+    return goodput  
+  
+if __name__ == "__main__":  
+    min_tokens = 1  
+    max_tokens = 100  
+  
+    num_requests_values = list(range(100, 2100, 100))  
+    goodput_values = []  
+  
+    # Loop through num_requests from 100 to 2000 with a step of 100  
+    for num_requests in num_requests_values:  
+        goodput = main(num_requests, min_tokens, max_tokens, inference_delays)  
+        goodput_values.append(goodput)  
+  
+    # Plot the results  
+    plt.plot(num_requests_values, goodput_values, marker='o', linestyle='-', linewidth=2)  
+    plt.xlabel("Number of Requests")  
+    plt.ylabel("Goodput")  
+    plt.title("Scheduler Simulator Goodput vs. Number of Requests")  
+    plt.grid()  
+    plt.savefig("test.png")
