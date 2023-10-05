@@ -1,6 +1,7 @@
 import argparse  
 import random  
 import numpy as np
+import itertools
   
   
 class Request:  
@@ -52,7 +53,7 @@ class SchedulerSimulator:
         self.current_time += delay  # Update current_time by adding the total_delay_now  
         return delay, goodput  
   
-    def run_simulation(self):  
+    def run_simulation(self): 
         goodput = 0  
         processing_requests = []  
   
@@ -78,7 +79,6 @@ class SchedulerSimulator:
             for _ in range(num_requests)  
         ]  
         return requests  
-   
   
   
 if __name__ == "__main__":  
