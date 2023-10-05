@@ -33,7 +33,7 @@ if __name__ == "__main__":
     for num_requests in num_requests_values:  
         goodput_bidding = main(num_requests, inference_delays, policy='bidding')  
         goodput_values_bidding.append(goodput_bidding)  
-  
+
     # Plot the results  
     plt.plot(num_requests_values, goodput_values_random, marker='o', linestyle='-', linewidth=2, label='Random')  
     plt.plot(num_requests_values, goodput_values_bidding, marker='o', linestyle='-', linewidth=2, label='Bidding')  
