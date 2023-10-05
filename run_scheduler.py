@@ -23,6 +23,7 @@ if __name__ == "__main__":
     num_requests_values = list(range(100, 2100, 100))  
     goodput_values_random = []  
     goodput_values_bidding = []  
+    goodput_values_fcfs = []
   
     # Loop through num_requests from 100 to 2000 with a step of 100 for random policy  
     for num_requests in num_requests_values:  
@@ -34,9 +35,15 @@ if __name__ == "__main__":
         goodput_bidding = main(num_requests, inference_delays, policy='bidding')  
         goodput_values_bidding.append(goodput_bidding)  
 
+    # Loop through num_requests from 100 to 2000 with a step of 100 for bidding policy  
+    for num_requests in num_requests_values:  
+        goodput_fcfs = main(num_requests, inference_delays, policy='fcfs')  
+        goodput_values_fcfs.append(goodput_bidding)  
+
     # Plot the results  
     plt.plot(num_requests_values, goodput_values_random, marker='o', linestyle='-', linewidth=2, label='Random')  
-    plt.plot(num_requests_values, goodput_values_bidding, marker='o', linestyle='-', linewidth=2, label='Bidding')  
+    plt.plot(num_requests_values, goodput_values_bidding, marker='o', linestyle='-', linewidth=2, label='Bidding') 
+    plt.plot(num_requests_values, goodput_values_fcfs, marker='o', linestyle='-', linewidth=2, label='First Come First Serve')   
     plt.xlabel("Number of Requests")  
     plt.ylabel("Goodput")  
     plt.title("Scheduler Simulator Goodput vs. Number of Requests")  

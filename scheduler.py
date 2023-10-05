@@ -37,6 +37,9 @@ class SchedulerSimulator:
         if self.policy == 'random':
             selected_requests = random.sample(processing_requests, min(len(processing_requests), 16))  
             batch_size = max(len(selected_requests), 16)  # Ensure batch size is no smaller than the number of selected requests  
+        if self.policy == 'fcfs':
+            selected_requests = sorted(processing_requests, key=lambda req: req.arrival_time, reverse=True)[:16]  
+            batch_size = max(len(selected_requests), 16)  # Ensure batch size is no smaller than the number of selected requests  
         return selected_requests, batch_size  
   
     def run_one_iteration(self, processing_requests, goodput):    
