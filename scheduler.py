@@ -1,7 +1,7 @@
-import argparse  
 import random  
-import numpy as np
-import itertools
+import numpy as np  
+import gurobipy as gp  
+from gurobipy import GRB 
   
   
 class Request:  
@@ -10,48 +10,141 @@ class Request:
         self.deadline = deadline  
         self.arrival_time = arrival_time  
         self.score = tokens / deadline  
+        if deadline > arrival_time:
+            self.remain = 1 / (deadline - arrival_time)  
+        else:
+            self.remain = 0
   
     def update_score(self, current_time):  
-        self.score = self.tokens / (self.deadline - current_time)  
+        if current_time < self.deadline:  
+            self.score = self.tokens / (self.deadline - current_time)  
+  
+    def update_remaintime(self, current_time):  
+        if current_time < self.deadline:  
+            self.remain = 1 / (self.deadline - current_time)  
   
   
 class SchedulerSimulator:  
-    def __init__(self, requests, inference_delays, policy):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.current_time = 0  
-        self.policy = policy
+        self.total_completion_time = 0 
+        self.scheduling_policy = scheduling_policy  
+        self.batching_policy = batching_policy
   
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
             return self.inference_delays[batch_size]  
         else:  
             return float('inf')  # Assume infinite delay for batch sizes not in the list  
-  
-    def scheduler(self, processing_requests):  
-        if self.policy == 'bidding':
-            for req in processing_requests:  
-                req.update_score(self.current_time)  
-            selected_requests = sorted(processing_requests, key=lambda req: req.score, reverse=True)[:16]  
-            batch_size = max(len(selected_requests), 16)  # Ensure batch size is no smaller than the number of selected requests  
-        if self.policy == 'random':
-            selected_requests = random.sample(processing_requests, min(len(processing_requests), 16))  
-            batch_size = max(len(selected_requests), 16)  # Ensure batch size is no smaller than the number of selected requests  
-        if self.policy == 'fcfs':
-            selected_requests = sorted(processing_requests, key=lambda req: req.arrival_time, reverse=True)[:16]  
-            batch_size = max(len(selected_requests), 16)  # Ensure batch size is no smaller than the number of selected requests  
+        
+    def offline_optimal_scheduler(self, processing_requests):  
+        if not processing_requests:  
+            return [], 1  
+        model = gp.Model("OfflineOptimal")  
+
+        # Add time limit for the Gurobi solver (in seconds)  
+        time_limit = 10  # Set your desired time limit here  
+        model.setParam('TimeLimit', time_limit) 
+    
+        num_requests = len(processing_requests)  
+        num_timeslots = max([req.deadline for req in processing_requests])  
+    
+        x = model.addVars(num_requests, num_requests, vtype=GRB.BINARY, name="x")  
+        C = model.addVars(num_requests, vtype=GRB.BINARY, name="C")  
+    
+        model.setObjective(sum(C[i] for i in range(num_requests)), GRB.MAXIMIZE)  
+
+        # Initialize variables  
+        x = {}  
+        for i in range(num_requests):  
+            for j in range(num_timeslots):  
+                x[i, j] = model.addVar(vtype=GRB.BINARY, name=f"x_{i}_{j}")  
+    
+        # Constraints   
+        for i in range(num_requests):  
+            req = processing_requests[i]  
+            for j in range(num_timeslots):  
+                if req.arrival_time > j or req.deadline <= j:  
+                    model.addConstr(x[i, j] == 0)  
+            model.addConstr(sum(x[i, j] for j in range(num_timeslots)) >= req.tokens * C[i])  
+
+        model.update()  
+        model.optimize()  
+    
+        if model.status == GRB.OPTIMAL:  
+            batch_size = sum(x[i, j].x for i in range(num_requests) for j in range(num_requests))  
+            selected_requests = [processing_requests[i] for i in range(num_requests) if C[i].x == 1]  
+        else:  
+            batch_size = 1  
+            selected_requests = []  
+    
         return selected_requests, batch_size  
   
-    def run_one_iteration(self, processing_requests, goodput):    
+    def scheduler(self, processing_requests):  
+        selected_requests = []  
+    
+        # Update scores and sort based on the scheduling policy.  
+        if self.scheduling_policy == 'offline optimal':  
+            selected_requests, best_batch_size = self.offline_optimal_scheduler(processing_requests)  
+            return selected_requests, best_batch_size 
+        if self.scheduling_policy == 'bidding':  
+            for req in processing_requests:  
+                req.update_score(self.current_time)  
+            processing_requests = sorted(processing_requests, key=lambda req: req.score, reverse=True)  
+        if self.scheduling_policy == 'random':  
+            # Shuffle requests for random selection.  
+            random.shuffle(processing_requests)  
+        if self.scheduling_policy == 'deadline':  
+            for req in processing_requests:  
+                req.update_remaintime(self.current_time)  
+            processing_requests = sorted(processing_requests, key=lambda req: req.remain, reverse=True)  
+        if self.scheduling_policy == 'fcfs':  
+            processing_requests = sorted(processing_requests, key=lambda req: req.arrival_time) 
+
+        if self.batching_policy in self.inference_delays:
+            best_batch_size = self.batching_policy
+            selected_requests = processing_requests[:best_batch_size]
+    
+        if self.batching_policy == 'dynamic batching':
+            # Initialize variables for finding the best batch size.  
+            max_score = -1  
+            best_batch_size = 1  
+        
+            # Iterate through all possible batch sizes.  
+            for batch_size in range(1, len(self.inference_delays) + 1):  
+                # Select current batch of requests for the given batch size.  
+                current_requests = processing_requests[:batch_size]  
+        
+                # Calculate the number of requests that can be processed within their deadlines.  
+                num_requests_within_deadline = sum(  
+                    req.deadline >= self.current_time + self.calculate_delay(batch_size)*req.tokens  
+                    for req in current_requests  
+                )  
+        
+                # Calculate the score (goodput) for the current batch size.  
+                score = num_requests_within_deadline / self.calculate_delay(batch_size)  
+        
+                # Update the best batch size and selected requests if the current score is better.  
+                if score > max_score:  
+                    max_score = score  
+                    best_batch_size = batch_size  
+                    selected_requests = current_requests  
+    
+        return selected_requests, best_batch_size  
+  
+    def run_one_iteration(self, processing_requests, goodput):  
         selected_requests, batch_size = self.scheduler(processing_requests)  
   
         for req in selected_requests:  
             req.tokens -= 1  
             if req.tokens == 0:  
                 processing_requests.remove(req)  
-                if self.current_time <= req.deadline:  
+                if self.current_time < req.deadline:  
                     goodput += 1  # Increment goodput if request finishes before deadline  
-        delay = self.calculate_delay(batch_size)   
+        delay = self.calculate_delay(batch_size)  
+        self.total_completion_time += delay  # Update total_completion_time 
   
         self.current_time += delay  # Update current_time by adding the total_delay_now  
         return delay, goodput  
@@ -64,48 +157,24 @@ class SchedulerSimulator:
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
             processing_requests.extend(arrived_requests)  
             self.requests = [req for req in self.requests if req not in arrived_requests]  
+            #print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
   
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
+        
+        average_jct = self.total_completion_time / goodput  # Calculate average JCT 
   
-        return goodput  
+        return goodput, average_jct  
   
     def generate_requests(self, num_requests, inference_delays):  
         mu = 35.403855367569996  
-        sigma = 31.604314122710903  
-        lambda_param = 1/1000  # Adjust this value to control the distribution of deadlines  
+        sigma = 31.604314122710903   
         requests = [  
             Request(  
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
-                arrival_time := round(random.uniform(0, num_requests*mu)),
-                deadline= arrival_time + inference_delays[16] * tokens * 20 + int(random.expovariate(lambda_param)),   
+                arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
+                deadline= arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens * 2)))
             )  
             for _ in range(num_requests)  
         ]  
         return requests  
-  
-  
-if __name__ == "__main__":  
-    random.seed(42)  
-  
-    inference_delays = {1: 42.89945313, 2: 45.02945313, 4: 50.47695313, 8: 62.123125, 16: 84.1871875}  
-  
-    # Generate custom requests using the generate_requests method  
-    num_requests = 1000  
-    parser = argparse.ArgumentParser(description="Scheduler Simulator")  
-    # Add arguments  
-    parser.add_argument("--num_requests", type=int, default=1000, help="Number of requests to generate") 
-    parser.add_argument("--policy", type=str, default="random", help="Specify scheduling policy")   
-    # Parse the arguments  
-    args = parser.parse_args()  
-    # Access the parsed arguments  
-    num_requests = args.num_requests  
-    policy = args.policy
-  
-    simulator = SchedulerSimulator([], inference_delays, policy)  
-    requests = simulator.generate_requests(num_requests, inference_delays)  
-    simulator.requests = requests  
-  
-    goodput = simulator.run_simulation()  
-  
-    print(f"Goodput: {goodput}")  
 
