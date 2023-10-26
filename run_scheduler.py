@@ -32,7 +32,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(100, 500, 100))  
+    num_requests_values = list(range(10, 100, 10))  
   
     # Define colors for each scheduling policy  
     color_map = {  
