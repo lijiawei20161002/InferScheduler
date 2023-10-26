@@ -2,6 +2,7 @@ import random
 import numpy as np  
 import gurobipy as gp  
 from gurobipy import GRB 
+import matplotlib.pyplot as plt
   
   
 class Request:  
@@ -32,6 +33,7 @@ class SchedulerSimulator:
         self.total_completion_time = 0 
         self.scheduling_policy = scheduling_policy  
         self.batching_policy = batching_policy
+        self.iteration = 0
   
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -42,46 +44,52 @@ class SchedulerSimulator:
     def offline_optimal_scheduler(self, processing_requests):  
         if not processing_requests:  
             return [], 1  
-        model = gp.Model("OfflineOptimal")  
+        
+        best_selected_requests = []
+        best_batch_size = 1
+        max_goodput = -1
+        
+        for batch_size in self.inference_delays.keys():
+            model = gp.Model("OfflineOptimal")  
+            model.setParam('OutputFlag', 0)  # Turn off Gurobi output
 
-        # Add time limit for the Gurobi solver (in seconds)  
-        time_limit = 10  # Set your desired time limit here  
-        model.setParam('TimeLimit', time_limit) 
+            num_requests = len(processing_requests)  
+            max_iterations = int(max(req.tokens for req in processing_requests) // self.inference_delays[batch_size]) + 1
+            
+            x = model.addVars(num_requests, max_iterations, vtype=GRB.BINARY, name="x")  
+            C = model.addVars(num_requests, vtype=GRB.BINARY, name="C")  
+        
+            model.setObjective(sum(C[i] for i in range(num_requests)), GRB.MAXIMIZE)  
+        
+            # Constraints   
+            for i in range(num_requests):  
+                req = processing_requests[i]  
+                delay_key = min((key for key in self.inference_delays if key >= req.tokens), default=batch_size)
+                iterations_required = int(req.tokens // self.inference_delays[delay_key]) + 1
+                for j in range(max_iterations):  
+                    if j < iterations_required:  
+                        model.addConstr(x[i, j] == 1)  
+                    else:  
+                        model.addConstr(x[i, j] == 0)  
+                model.addConstr(sum(x[i, j] for j in range(max_iterations)) >= req.tokens * C[i])  
+        
+            # Add time limit for the Gurobi solver (in seconds)  
+            time_limit = 0.01  # Set your desired time limit here  
+            model.setParam(GRB.Param.TimeLimit, time_limit) 
+        
+            model.update()  
+            model.optimize()  
+        
+            if model.status == GRB.OPTIMAL:  
+                selected_requests = [processing_requests[i] for i in range(num_requests) if C[i].X == 1]
+                goodput = sum(1 for req in selected_requests if req.deadline >= self.current_time + self.calculate_delay(batch_size)*req.tokens)
+                if goodput > max_goodput:
+                    best_selected_requests = selected_requests
+                    best_batch_size = batch_size
+                    max_goodput = goodput
+        
+        return best_selected_requests, best_batch_size
     
-        num_requests = len(processing_requests)  
-        num_timeslots = max([req.deadline for req in processing_requests])  
-    
-        x = model.addVars(num_requests, num_requests, vtype=GRB.BINARY, name="x")  
-        C = model.addVars(num_requests, vtype=GRB.BINARY, name="C")  
-    
-        model.setObjective(sum(C[i] for i in range(num_requests)), GRB.MAXIMIZE)  
-
-        # Initialize variables  
-        x = {}  
-        for i in range(num_requests):  
-            for j in range(num_timeslots):  
-                x[i, j] = model.addVar(vtype=GRB.BINARY, name=f"x_{i}_{j}")  
-    
-        # Constraints   
-        for i in range(num_requests):  
-            req = processing_requests[i]  
-            for j in range(num_timeslots):  
-                if req.arrival_time > j or req.deadline <= j:  
-                    model.addConstr(x[i, j] == 0)  
-            model.addConstr(sum(x[i, j] for j in range(num_timeslots)) >= req.tokens * C[i])  
-
-        model.update()  
-        model.optimize()  
-    
-        if model.status == GRB.OPTIMAL:  
-            batch_size = sum(x[i, j].x for i in range(num_requests) for j in range(num_requests))  
-            selected_requests = [processing_requests[i] for i in range(num_requests) if C[i].x == 1]  
-        else:  
-            batch_size = 1  
-            selected_requests = []  
-    
-        return selected_requests, batch_size  
-  
     def scheduler(self, processing_requests):  
         selected_requests = []  
     
@@ -116,10 +124,16 @@ class SchedulerSimulator:
             for batch_size in range(1, len(self.inference_delays) + 1):  
                 # Select current batch of requests for the given batch size.  
                 current_requests = processing_requests[:batch_size]  
+                # Round the actual batch size to the smallest profiled delay key
+                actual_batch_size = min(len(current_requests), batch_size)
+                for key in self.inference_delays:
+                    if key >= actual_batch_size:
+                        actual_batch_size = key
+                        break
         
                 # Calculate the number of requests that can be processed within their deadlines.  
                 num_requests_within_deadline = sum(  
-                    req.deadline >= self.current_time + self.calculate_delay(batch_size)*req.tokens  
+                    req.deadline >= self.current_time + self.calculate_delay(actual_batch_size)*req.tokens  
                     for req in current_requests  
                 )  
         
@@ -135,6 +149,8 @@ class SchedulerSimulator:
         return selected_requests, best_batch_size  
   
     def run_one_iteration(self, processing_requests, goodput):  
+        print(self.iteration)
+        self.iteration += 1
         selected_requests, batch_size = self.scheduler(processing_requests)  
   
         for req in selected_requests:  
@@ -152,7 +168,9 @@ class SchedulerSimulator:
     def run_simulation(self): 
         goodput = 0  
         processing_requests = []  
-  
+        
+        interval = 100
+        cnt = 0
         while self.requests or processing_requests:    
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
             processing_requests.extend(arrived_requests)  
@@ -160,8 +178,15 @@ class SchedulerSimulator:
             #print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
   
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
+
+            #if cnt < interval:
+            #    cnt += 1
+            #else:
+            #    cnt = 0
+            #    self.plot(processing_requests, goodput)
         
         average_jct = self.total_completion_time / goodput  # Calculate average JCT 
+
   
         return goodput, average_jct  
   
@@ -178,3 +203,20 @@ class SchedulerSimulator:
         ]  
         return requests  
 
+    def plot(self, processing_requests, goodput):
+        fig, ax = plt.subplots()
+        
+        # Filter out inactive requests
+        active_requests = [req for req in processing_requests if req.arrival_time <= self.current_time and req.deadline >= self.current_time]
+
+        # Add data to the plot
+        x = [req.arrival_time for req in active_requests]
+        y = [req.tokens for req in active_requests]
+        sc = ax.scatter(x, y, c='blue', label='Active Requests')
+
+        ax.set_xlabel('Arrival Time')
+        ax.set_ylabel('Tokens')
+        ax.set_title(f'Current Time: {self.current_time}, Goodput: {goodput}')
+        ax.legend()
+
+        plt.show()
