@@ -10,6 +10,7 @@ def main(num_requests, inference_delays, scheduling_policy, batching_policy):
     # Generate the requests  
     requests = simulator.generate_requests(num_requests, inference_delays)  
     simulator.requests = requests  
+    simulator.update_timespan()
   
     # Run the simulation  
     goodput, average_jct = simulator.run_simulation()  
@@ -43,7 +44,7 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
   
-    scheduling_policies = ['random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline optimal', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = [16, 'dynamic batching']  
   
     goodput_values = {}  
