@@ -60,19 +60,19 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(processing_requests[i].di * x[i, t] for t in range(processing_requests[i].ai, T)) -
-            gp.quicksum(processing_requests[i].di * t * x[i, t] for t in range(processing_requests[i].di, T))
+            gp.quicksum(processing_requests[i].deadline * x[i, t] for t in range(processing_requests[i].arrival_time, T)) -
+            gp.quicksum(processing_requests[i].deadline * t * x[i, t] for t in range(processing_requests[i].deadline, T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MAXIMIZE)
         # Add constraints
         # Completion constraint
         for i in range(N):
-            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].token)
+            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(processing_requests[i].ai):
+            for t in range(processing_requests[i].arrival_time):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
