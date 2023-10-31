@@ -50,6 +50,10 @@ class SchedulerSimulator:
     def offline_optimal_scheduler(self, processing_requests):  
         # Create a new model
         model = gp.Model("Scheduler")
+        # Disable model output
+        #model.Params.LogToConsole = 0
+        # Set time limit
+        #model.setParam('TimeLimit', 0.1)
 
         # Define constants
         N = len(processing_requests)  # Number of requests
@@ -60,8 +64,8 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(processing_requests[i].deadline * x[i, t] for t in range(processing_requests[i].arrival_time, T)) -
-            gp.quicksum(processing_requests[i].deadline * t * x[i, t] for t in range(processing_requests[i].deadline, T))
+            gp.quicksum(x[i, t] for t in range(processing_requests[i].arrival_time, processing_requests[i].deadline)) -
+            gp.quicksum(self.alpha** (t-processing_requests[i].deadline) * x[i, t] for t in range(processing_requests[i].deadline, T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MAXIMIZE)
@@ -76,7 +80,7 @@ class SchedulerSimulator:
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
-        for t in range(T-self.iteration):
+        for t in range(self.iteration, T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
 
         # Solve
@@ -89,7 +93,7 @@ class SchedulerSimulator:
                 solution[i, t] = x[i, t].x
         
         # Store the requests in the dictionary
-        selected_requests = [i for i in range(N) if x[i, t].x > 0.5]
+        selected_requests = [processing_requests[i] for i in range(N) if x[i, t].x > 0.5]
         
         # Store the batch size in the dictionary
         batch_size = len(selected_requests)
