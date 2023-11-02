@@ -39,7 +39,7 @@ class SchedulerSimulator:
         self.alpha = 0.5
   
     def update_timespan(self):
-        self.T = int(max([req.deadline for req in self.requests]) * 1.2)
+        self.T = int(max([req.deadline for req in self.requests])//np.mean(self.inference_delays))
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -47,7 +47,7 @@ class SchedulerSimulator:
         else:  
             return float('inf')  # Assume infinite delay for batch sizes not in the list  
         
-    def offline_optimal_scheduler(self, processing_requests):  
+    def repeated_offline_scheduler(self, processing_requests):  
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
@@ -79,6 +79,11 @@ class SchedulerSimulator:
             for t in range(processing_requests[i].arrival_time):
                 model.addConstr(x[i, t] == 0)
 
+        # Cannot change previous decisions
+        for i in range(N):
+            for t in range(self.iteration):
+                model.addConstr(x[i, t] == 0)
+
         # Batch size constraint
         for t in range(self.iteration, T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
@@ -93,20 +98,82 @@ class SchedulerSimulator:
                 solution[i, t] = x[i, t].x
         
         # Store the requests in the dictionary
-        selected_requests = [processing_requests[i] for i in range(N) if x[i, t].x > 0.5]
+        selected_requests = [processing_requests[i] for i in range(N) if x[i, self.iteration].x > 0.5]
         
         # Store the batch size in the dictionary
-        batch_size = len(selected_requests)
+        for batch_size in self.inference_delays:
+            if batch_size >= len(selected_requests):
+                break
 
         return selected_requests, batch_size
+    
+    def offline_optimal(self):  
+        # Create a new model
+        model = gp.Model("Scheduler")
+        # Disable model output
+        #model.Params.LogToConsole = 0
+        # Set time limit
+        #model.setParam('TimeLimit', 0.1)
+
+        # Define constants
+        N = len(self.requests)  # Number of requests
+        T = self.T                    # Max iterations
+
+        # Add decision variables
+        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
+
+        # Set the objective
+        objective = gp.quicksum(
+            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, self.requests[i].deadline)) -
+            gp.quicksum(self.alpha** (t-self.requets[i].deadline) * x[i, t] for t in range(self.requests[i].deadline, T))
+            for i in range(N)
+        )
+        model.setObjective(objective, GRB.MAXIMIZE)
+        # Add constraints
+        # Completion constraint
+        for i in range(N):
+            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == self.requests[i].tokens)
+
+        # No scheduling before arrival constraint
+        for i in range(N):
+            for t in range(self.requests[i].arrival_time):
+                model.addConstr(x[i, t] == 0)
+
+        # Batch size constraint
+        for t in range(self.iteration, T):
+            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
+
+        # Solve
+        model.optimize()
+
+        # Extract the solution (this is just an example to extract the x values)
+        solution = {}
+        for i in range(N):
+            for t in range(T):
+                solution[i, t] = x[i, t].x
+        
+        # Store the requests in the dictionary
+        requests_order = []
+        for iteration in range(T):
+            selected_requests = [self.requests[i] for i in range(N) if x[i, iteration].x > 0.5]
+            requests_order.append(selected_requests)
+
+        return requests_order
 
     def scheduler(self, processing_requests):
         selected_requests = []
 
         # Update scores and sort based on the scheduling policy.
-        if self.scheduling_policy == 'offline optimal':
-            selected_requests, best_batch_size = self.offline_optimal_scheduler(processing_requests)
+        if self.scheduling_policy == 'repeated offline solver':
+            selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
             return selected_requests, best_batch_size
+        if self.scheduling_policy == 'offline optimal':
+            requests_order = self.offline_optimal()
+            selected_requests = requests_order[self.iteration]
+            for batch_size in self.inference_delays:
+                if batch_size >= len(selected_requests):
+                    break
+            return selected_requests, batch_size
         if self.scheduling_policy == 'bidding':
             for req in processing_requests:
                 req.update_score(self.current_time)
@@ -120,11 +187,9 @@ class SchedulerSimulator:
             processing_requests = sorted(processing_requests, key=lambda req: req.priority, reverse=True)
         if self.scheduling_policy == 'fcfs':
             processing_requests = sorted(processing_requests, key=lambda req: req.arrival_time)
-
         if self.batching_policy in self.inference_delays:
             best_batch_size = self.batching_policy
             selected_requests = processing_requests[:best_batch_size]
-    
         if self.batching_policy == 'dynamic batching':
             # Initialize variables for finding the best batch size.  
             max_score = -1  
@@ -178,7 +243,7 @@ class SchedulerSimulator:
         goodput = 0  
         processing_requests = []  
         
-        interval = 100
+        interval = 1000
         cnt = 0
         while self.requests or processing_requests:    
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
@@ -188,15 +253,14 @@ class SchedulerSimulator:
   
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
 
-            #if cnt < interval:
-            #    cnt += 1
-            #else:
-            #    cnt = 0
-            #    self.plot(processing_requests, goodput)
+            if cnt < interval:
+                cnt += 1
+            else:
+                cnt = 0
+                self.plot(processing_requests, goodput)
         
         average_jct = self.total_completion_time / goodput  # Calculate average JCT 
 
-  
         return goodput, average_jct  
   
     def generate_requests(self, num_requests, inference_delays):  
@@ -228,4 +292,4 @@ class SchedulerSimulator:
         ax.set_title(f'Current Time: {self.current_time}, Goodput: {goodput}')
         ax.legend()
 
-        plt.show()
+        plt.savefig(str(self.iteration)+'.png')

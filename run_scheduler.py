@@ -38,6 +38,7 @@ if __name__ == "__main__":
     # Define colors for each scheduling policy  
     color_map = {  
         'offline optimal': 'purple',  
+        'repeated offline solver': 'pink',
         'random': 'blue',  
         'bidding': 'green',  
         'fcfs': 'red',  
