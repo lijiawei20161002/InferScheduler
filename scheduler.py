@@ -39,7 +39,7 @@ class SchedulerSimulator:
         self.alpha = 0.5
   
     def update_timespan(self):
-        self.T = int(max([req.deadline for req in self.requests])//np.mean(self.inference_delays))
+        self.T = int(max([req.deadline for req in self.requests])//np.mean(list(self.inference_delays.values())))
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -64,7 +64,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(processing_requests[i].arrival_time, processing_requests[i].deadline)) -
+            gp.quicksum(x[i, t] for t in range(processing_requests[i].arrival_time, min(processing_requests[i].deadline, T))) -
             gp.quicksum(self.alpha** (t-processing_requests[i].deadline) * x[i, t] for t in range(processing_requests[i].deadline, T))
             for i in range(N)
         )
@@ -76,7 +76,7 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(processing_requests[i].arrival_time):
+            for t in range(min(processing_requests[i].arrival_time, T)):
                 model.addConstr(x[i, t] == 0)
 
         # Cannot change previous decisions
@@ -95,10 +95,16 @@ class SchedulerSimulator:
         solution = {}
         for i in range(N):
             for t in range(T):
-                solution[i, t] = x[i, t].x
+                if hasattr(x[i, t], 'X'):
+                    solution[i, t] = x[i, t].X
+                elif hasattr(x[i,t], 'Xn'):
+                    solution[i, t] = x[i, t].Xn
         
         # Store the requests in the dictionary
-        selected_requests = [processing_requests[i] for i in range(N) if x[i, self.iteration].x > 0.5]
+        selected_requests = []
+        for i in range(N):
+            if (hasattr(x[i, t], 'X') and x[i, self.iteration].X > 0.5) or (hasattr(x[i, t], 'Xn') and x[i, self.iteration].Xn > 0.5):
+                selected_requests.append(self.requests[i])
         
         # Store the batch size in the dictionary
         for batch_size in self.inference_delays:
@@ -124,8 +130,8 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, self.requests[i].deadline)) -
-            gp.quicksum(self.alpha** (t-self.requets[i].deadline) * x[i, t] for t in range(self.requests[i].deadline, T))
+            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, min(T, self.requests[i].deadline))) -
+            gp.quicksum(self.alpha** (t-self.requests[i].deadline) * x[i, t] for t in range(self.requests[i].deadline, T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MAXIMIZE)
@@ -136,7 +142,7 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.requests[i].arrival_time):
+            for t in range(min(self.requests[i].arrival_time, T)):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -150,12 +156,18 @@ class SchedulerSimulator:
         solution = {}
         for i in range(N):
             for t in range(T):
-                solution[i, t] = x[i, t].x
+                if hasattr(x[i, t], 'X'):
+                    solution[i, t] = x[i, t].X
+                elif hasattr(x[i,t], 'Xn'):
+                    solution[i, t] = x[i, t].Xn
         
         # Store the requests in the dictionary
         requests_order = []
         for iteration in range(T):
-            selected_requests = [self.requests[i] for i in range(N) if x[i, iteration].x > 0.5]
+            selected_requests = []
+            for i in range(N):
+                if (hasattr(x[i, t], 'X') and x[i, iteration].X > 0.5) or (hasattr(x[i, t], 'Xn') and x[i, iteration].Xn > 0.5):
+                    selected_requests.append(self.requests[i])
             requests_order.append(selected_requests)
 
         return requests_order
