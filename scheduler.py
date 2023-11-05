@@ -42,7 +42,7 @@ class SchedulerSimulator:
         self.requests_order = self.offline_optimal()
   
     def update_timespan(self):
-        self.T = int(max([req.deadline for req in self.requests])//np.mean(list(self.inference_delays.values()))) * 1000
+        self.T = int(max([req.deadline for req in self.requests])//self.inference_delays[16]) * 100
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -56,7 +56,7 @@ class SchedulerSimulator:
         # Disable model output
         #model.Params.LogToConsole = 0
         # Set time limit
-        #model.setParam('TimeLimit', 0.1)
+        model.setParam('TimeLimit', 0.1)
 
         # Define constants
         N = len(processing_requests)  # Number of requests
@@ -117,24 +117,24 @@ class SchedulerSimulator:
         return selected_requests, batch_size
     
     def offline_optimal(self):  
-        # Create a new model
-        model = gp.Model("Scheduler")
-        # Disable model output
-        #model.Params.LogToConsole = 0
-        # Set time limit
-        #model.setParam('TimeLimit', 0.1)
+        model = gp.Model("Scheduler")  # Create a new model
+        model.Params.LogToConsole = 0  # Disable model output
+        #model.setParam('TimeLimit', 0.1)  # Set time limit
+        model.Params.Presolve = 2  # Aggressive presolve
+        model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
 
         # Define constants
         N = len(self.requests)  # Number of requests
         T = self.T                    # Max iterations
+        print("N=", N, " T=", T)
 
         # Add decision variables
-        #x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
-        x = model.addVars(N, T, vtype=GRB.CONTINUOUS, lb=0, ub=1, name="x")
+        x = model.addVars(N, T, vtype=GRB.BINARY, lb=0, ub=1, name="x")
+        print("Add variables done!")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, min(T, self.requests[i].deadline))) -
+            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, min(T, self.requests[i].deadline))) +
             gp.quicksum(self.alpha** int(t-self.requests[i].deadline) * x[i, t] for t in range(self.requests[i].deadline, T))
             for i in range(N)
         )
@@ -142,6 +142,7 @@ class SchedulerSimulator:
         # Add constraints
         # Completion constraint
         for i in range(N):
+            print("adding contrainst ", i)
             model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == self.requests[i].tokens)
 
         # No scheduling before arrival constraint
@@ -273,21 +274,13 @@ class SchedulerSimulator:
         goodput = 0  
         processing_requests = []  
         
-        interval = 1000
-        cnt = 0
         while self.requests or processing_requests:    
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
             processing_requests.extend(arrived_requests)  
             self.requests = [req for req in self.requests if req not in arrived_requests]  
-            #print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
+            # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
   
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
-
-            #if cnt < interval:
-            #    cnt += 1
-            #else:
-            #    cnt = 0
-            #    self.plot(processing_requests, goodput)
         
         if goodput > 0:
             average_jct = self.total_completion_time / goodput  # Calculate average JCT 
@@ -303,7 +296,8 @@ class SchedulerSimulator:
             Request(  
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
                 arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
-                deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens * 3))))
+                # deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens))))
+                deadline= round(arrival_time + int(random.uniform(inference_delays[16] * tokens, inference_delays[16] * tokens * 3)))
             )  
             for _ in range(num_requests)  
         ]  

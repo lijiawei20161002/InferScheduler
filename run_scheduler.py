@@ -11,7 +11,8 @@ def main(num_requests, inference_delays, scheduling_policy, batching_policy):
     requests = simulator.generate_requests(num_requests, inference_delays)  
     simulator.requests = requests  
     simulator.update_timespan()
-    simulator.calculate_offline_optimal()
+    if scheduling_policy == 'offline optimal':
+        simulator.calculate_offline_optimal()
   
     # Run the simulation  
     goodput, average_jct = simulator.run_simulation()  
@@ -34,7 +35,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(10, 400, 100))  
+    num_requests_values = list(range(100, 1010, 100))  
   
     # Define colors for each scheduling policy  
     color_map = {  
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     }  
   
     scheduling_policies = ['offline optimal', 'random', 'bidding', 'fcfs', 'deadline']  
-    batching_policies = [16, 'dynamic batching']  
+    batching_policies = ['dynamic batching']  
   
     goodput_values = {}  
     average_jct_values = {}  
@@ -61,6 +62,7 @@ if __name__ == "__main__":
     for num_requests in num_requests_values:  
         for policy in scheduling_policies:  
             for batch_policy in batching_policies:  
+                print(policy, batch_policy)
                 goodput, average_jct = main(num_requests, inference_delays, scheduling_policy=policy, batching_policy=batch_policy)  
                 key = f'{policy}_{"wo" if batch_policy == 16 else "w"}_dynamic_batching'  
                 goodput_values[key].append(goodput)  
