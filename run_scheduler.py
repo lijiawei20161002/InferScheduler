@@ -10,7 +10,6 @@ def main(num_requests, inference_delays, scheduling_policy, batching_policy):
     # Generate the requests  
     requests = simulator.generate_requests(num_requests, inference_delays)  
     simulator.requests = requests  
-    simulator.update_timespan()
     if scheduling_policy == 'offline optimal':
         simulator.calculate_offline_optimal()
   

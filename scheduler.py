@@ -35,14 +35,14 @@ class SchedulerSimulator:
         self.batching_policy = batching_policy
         self.iteration = 0
         self.B = 16
-        self.T = 0
         self.alpha = 0.5
 
     def calculate_offline_optimal(self):
         self.requests_order = self.offline_optimal()
-  
-    def update_timespan(self):
-        self.T = int(max([req.deadline for req in self.requests])//self.inference_delays[16]) * 100
+        print(self.requests_order)
+
+    def time2iter(self, t):
+        return int(t//self.inference_delays[16])+1
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -60,18 +60,17 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = self.T                    # Max iterations
+        T = self.time2iter(max([req.deadline for req in processing_requests]))*10  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(processing_requests[i].arrival_time, min(processing_requests[i].deadline, T))) -
-            gp.quicksum(self.alpha * (t-processing_requests[i].deadline) * x[i, t] for t in range(processing_requests[i].deadline, T))
+            gp.quicksum(self.alpha ** (t-self.time2iter(processing_requests[i].deadline)) * x[i, t] for t in range(self.time2iter(processing_requests[i].deadline), T))
             for i in range(N)
         )
-        model.setObjective(objective, GRB.MAXIMIZE)
+        model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
         # Completion constraint
         for i in range(N):
@@ -79,12 +78,12 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(min(processing_requests[i].arrival_time, T)):
+            for t in range(self.time2iter(processing_requests[i].arrival_time)):
                 model.addConstr(x[i, t] == 0)
 
         # Cannot change previous decisions
         for i in range(N):
-            for t in range(min(self.iteration, T)):
+            for t in range(self.iteration):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -125,29 +124,27 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = self.T                    # Max iterations
+        T = self.time2iter(max([req.deadline for req in self.requests]))*10  # Max iterations
         print("N=", N, " T=", T)
 
         # Add decision variables
-        x = model.addVars(N, T, vtype=GRB.BINARY, lb=0, ub=1, name="x")
+        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
         print("Add variables done!")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(self.requests[i].arrival_time, min(T, self.requests[i].deadline))) +
-            gp.quicksum(self.alpha** int(t-self.requests[i].deadline) * x[i, t] for t in range(self.requests[i].deadline, T))
+            gp.quicksum(self.alpha** int(t-self.time2iter(self.requests[i].deadline)) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
             for i in range(N)
         )
-        model.setObjective(objective, GRB.MAXIMIZE)
+        model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
         # Completion constraint
         for i in range(N):
-            print("adding contrainst ", i)
             model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == self.requests[i].tokens)
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(min(self.requests[i].arrival_time, T)):
+            for t in range(self.time2iter(self.requests[i].arrival_time)):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -183,7 +180,7 @@ class SchedulerSimulator:
         for iteration in range(T):
             selected_requests = []
             for i in range(N):
-                if (hasattr(x[i, t], 'X') and x[i, iteration].X > 0.5) or (hasattr(x[i, t], 'Xn') and x[i, iteration].Xn > 0.5):
+                if (hasattr(x[i, iteration], 'X') and x[i, iteration].X > 0.5) or (hasattr(x[i, iteration], 'Xn') and x[i, iteration].Xn > 0.5):
                     selected_requests.append(self.requests[i])
             requests_order.append(selected_requests)
         
@@ -197,10 +194,7 @@ class SchedulerSimulator:
             selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
             return selected_requests, best_batch_size
         if self.scheduling_policy == 'offline optimal':
-            if self.iteration < len(self.requests_order):
-                selected_requests = self.requests_order[self.iteration]
-            else:
-                selected_requests = []
+            selected_requests = self.requests_order[self.iteration]
             for batch_size in self.inference_delays:
                 if batch_size >= len(selected_requests):
                     break
@@ -255,9 +249,14 @@ class SchedulerSimulator:
         return selected_requests, best_batch_size  
   
     def run_one_iteration(self, processing_requests, goodput):  
-        self.iteration += 1
         selected_requests, batch_size = self.scheduler(processing_requests)  
-  
+        print("Iteration:", self.iteration, "Batch_size:", batch_size)
+        print("Selected Requests:")
+        for req in selected_requests:
+            print(req.arrival_time, req.deadline, req.tokens)
+        print("Processing Requests:")
+        for req in processing_requests:
+            print(req.arrival_time, req.deadline, req.tokens)
         for req in selected_requests:  
             req.tokens -= 1  
             if req.tokens == 0:  
@@ -267,7 +266,8 @@ class SchedulerSimulator:
         delay = self.calculate_delay(batch_size)  
         self.total_completion_time += delay  # Update total_completion_time 
   
-        self.current_time += delay  # Update current_time by adding the total_delay_now  
+        self.current_time += delay  # Update current_time by adding the total_delay_now 
+        self.iteration += 1 
         return delay, goodput  
   
     def run_simulation(self): 
@@ -297,7 +297,7 @@ class SchedulerSimulator:
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
                 arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
                 # deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens))))
-                deadline= round(arrival_time + int(random.uniform(inference_delays[16] * tokens, inference_delays[16] * tokens * 3)))
+                deadline= round(arrival_time + int(random.uniform(inference_delays[16] * tokens, inference_delays[16] * tokens * 2)))
             )  
             for _ in range(num_requests)  
         ]  
