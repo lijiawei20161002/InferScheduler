@@ -46,7 +46,7 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
   
-    scheduling_policies = ['offline optimal', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline optimal', 'repeated offline solver', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = ['dynamic batching']  
   
     goodput_values = {}  
