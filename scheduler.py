@@ -1,3 +1,4 @@
+from multiprocessing import process
 import random
 import numpy as np
 import gurobipy as gp
@@ -39,7 +40,6 @@ class SchedulerSimulator:
 
     def calculate_offline_optimal(self):
         self.requests_order = self.offline_optimal()
-        print(self.requests_order)
 
     def time2iter(self, t):
         return int(t//self.inference_delays[16])+1
@@ -51,16 +51,19 @@ class SchedulerSimulator:
             return float('inf')  # Assume infinite delay for batch sizes not in the list  
         
     def repeated_offline_scheduler(self, processing_requests):  
+        if len(processing_requests) == 0:
+            return [], 16
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
-        #model.Params.LogToConsole = 0
+        model.Params.LogToConsole = 0
         # Set time limit
-        model.setParam('TimeLimit', 0.1)
+        #model.setParam('TimeLimit', 0.1)
+        #model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = self.time2iter(max([req.deadline for req in processing_requests]))*10  # Max iterations
+        T = 1000  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
@@ -78,7 +81,7 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(processing_requests[i].arrival_time)):
+            for t in range(self.time2iter(processing_requests[i].arrival_time)+1):
                 model.addConstr(x[i, t] == 0)
 
         # Cannot change previous decisions
@@ -106,7 +109,7 @@ class SchedulerSimulator:
         selected_requests = []
         for i in range(N):
             if (hasattr(x[i, t], 'X') and x[i, self.iteration].X > 0.5) or (hasattr(x[i, t], 'Xn') and x[i, self.iteration].Xn > 0.5):
-                selected_requests.append(self.requests[i])
+                selected_requests.append(processing_requests[i])
         
         # Store the batch size in the dictionary
         for batch_size in self.inference_delays:
@@ -117,14 +120,15 @@ class SchedulerSimulator:
     
     def offline_optimal(self):  
         model = gp.Model("Scheduler")  # Create a new model
-        model.Params.LogToConsole = 0  # Disable model output
+        #model.Params.LogToConsole = 0  # Disable model output
         #model.setParam('TimeLimit', 0.1)  # Set time limit
         model.Params.Presolve = 2  # Aggressive presolve
         model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
+        model.setParam('LogFile', 'offline_optimal.log')  # Write a log file
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = self.time2iter(max([req.deadline for req in self.requests]))*10  # Max iterations
+        T = self.time2iter(max([req.deadline for req in self.requests]))*2  # Max iterations
         print("N=", N, " T=", T)
 
         # Add decision variables
@@ -144,7 +148,7 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(self.requests[i].arrival_time)):
+            for t in range(self.time2iter(self.requests[i].arrival_time)+1):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -250,20 +254,21 @@ class SchedulerSimulator:
   
     def run_one_iteration(self, processing_requests, goodput):  
         selected_requests, batch_size = self.scheduler(processing_requests)  
-        print("Iteration:", self.iteration, "Batch_size:", batch_size)
-        print("Selected Requests:")
-        for req in selected_requests:
-            print(req.arrival_time, req.deadline, req.tokens)
-        print("Processing Requests:")
-        for req in processing_requests:
-            print(req.arrival_time, req.deadline, req.tokens)
+        #print("Iteration:", self.iteration, "Current Time:", self.current_time, "Batch_size:", batch_size)
+        #print("Selected Requests:")
+        #for req in selected_requests:
+        #    print(req.arrival_time, req.deadline, req.tokens)
+        #print("Processing Requests:")
+        #for req in processing_requests:
+        #    print(req.arrival_time, req.deadline, req.tokens)
         for req in selected_requests:  
             req.tokens -= 1  
             if req.tokens == 0:  
                 processing_requests.remove(req)  
                 if self.current_time < req.deadline:  
                     goodput += 1  # Increment goodput if request finishes before deadline  
-        delay = self.calculate_delay(batch_size)  
+        #delay = self.calculate_delay(batch_size)  
+        delay = self.calculate_delay(16)
         self.total_completion_time += delay  # Update total_completion_time 
   
         self.current_time += delay  # Update current_time by adding the total_delay_now 
