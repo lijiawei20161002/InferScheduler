@@ -56,21 +56,21 @@ class SchedulerSimulator:
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
-        model.Params.LogToConsole = 0
+        #model.Params.LogToConsole = 0
         # Set time limit
         #model.setParam('TimeLimit', 0.1)
-        #model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
+        model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = 1000  # Max iterations
+        T = (max([req.deadline for req in processing_requests])-self.iteration) * 10  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(self.alpha ** (t-self.time2iter(processing_requests[i].deadline)) * x[i, t] for t in range(self.time2iter(processing_requests[i].deadline), T))
+            gp.quicksum(self.alpha ** (t-self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] for t in range(max(self.iteration, self.time2iter(processing_requests[i].deadline)), T+self.iteration))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -84,13 +84,8 @@ class SchedulerSimulator:
             for t in range(self.time2iter(processing_requests[i].arrival_time)+1):
                 model.addConstr(x[i, t] == 0)
 
-        # Cannot change previous decisions
-        for i in range(N):
-            for t in range(self.iteration):
-                model.addConstr(x[i, t] == 0)
-
         # Batch size constraint
-        for t in range(self.iteration, T):
+        for t in range(T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
 
         # Solve
@@ -108,7 +103,7 @@ class SchedulerSimulator:
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if (hasattr(x[i, t], 'X') and x[i, self.iteration].X > 0.5) or (hasattr(x[i, t], 'Xn') and x[i, self.iteration].Xn > 0.5):
+            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
         # Store the batch size in the dictionary
