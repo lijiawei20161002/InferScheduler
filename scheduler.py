@@ -36,7 +36,7 @@ class SchedulerSimulator:
         self.batching_policy = batching_policy
         self.iteration = 0
         self.B = 16
-        self.alpha = 0.5
+        self.alpha = 1.0001
 
     def calculate_offline_optimal(self):
         self.requests_order = self.offline_optimal()
@@ -132,7 +132,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(self.alpha** int(t-self.time2iter(self.requests[i].deadline)) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
+            gp.quicksum(self.alpha** int(t-self.time2iter(self.requests[i].deadline)+1) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -262,8 +262,8 @@ class SchedulerSimulator:
                 processing_requests.remove(req)  
                 if self.current_time < req.deadline:  
                     goodput += 1  # Increment goodput if request finishes before deadline  
-        #delay = self.calculate_delay(batch_size)  
-        delay = self.calculate_delay(16)
+        #delay = self.calculate_delay(batch_size) 
+        delay = self.calculate_delay(16) 
         self.total_completion_time += delay  # Update total_completion_time 
   
         self.current_time += delay  # Update current_time by adding the total_delay_now 
@@ -296,8 +296,7 @@ class SchedulerSimulator:
             Request(  
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
                 arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
-                # deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens))))
-                deadline= round(arrival_time + int(random.uniform(inference_delays[16] * tokens, inference_delays[16] * tokens * 2)))
+                deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens * 2))))
             )  
             for _ in range(num_requests)  
         ]  

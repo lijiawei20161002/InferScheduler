@@ -34,7 +34,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(100, 710, 100))  
+    num_requests_values = list(range(100, 510, 100))  
   
     # Define colors for each scheduling policy  
     color_map = {  
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     }  
   
     scheduling_policies = ['offline optimal', 'random', 'bidding', 'fcfs', 'deadline']  
-    batching_policies = ['dynamic batching']  
+    batching_policies = [16]  
   
     goodput_values = {}  
     average_jct_values = {}  
