@@ -4,6 +4,7 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import Model, GRB
 import matplotlib.pyplot as plt
+import math
 
 
 class Request:
@@ -36,13 +37,16 @@ class SchedulerSimulator:
         self.batching_policy = batching_policy
         self.iteration = 0
         self.B = 16
-        self.alpha = 1.0001
+        self.alpha = 0.5
+        self.new_request_arrived = False  # Flag to track arrival of new requests
+        self.previous_selected_requests = []
+        self.previous_batch_size = 16
 
     def calculate_offline_optimal(self):
         self.requests_order = self.offline_optimal()
 
     def time2iter(self, t):
-        return int(t//self.inference_delays[16])+1
+        return int(t//self.inference_delays[16])
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -56,21 +60,21 @@ class SchedulerSimulator:
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
-        #model.Params.LogToConsole = 0
+        model.Params.LogToConsole = 0
         # Set time limit
         #model.setParam('TimeLimit', 0.1)
         model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = (max([req.deadline for req in processing_requests])-self.iteration) * 10  # Max iterations
+        T = (max([req.deadline for req in processing_requests])-self.iteration) * 2  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(self.alpha ** (t-self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] for t in range(max(self.iteration, self.time2iter(processing_requests[i].deadline)), T+self.iteration))
+            gp.quicksum(int(t-self.time2iter(processing_requests[i].deadline)+1) * x[i, t-self.iteration] for t in range(max(self.iteration, self.time2iter(processing_requests[i].deadline)), T+self.iteration))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -103,7 +107,7 @@ class SchedulerSimulator:
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
+            if solution[i, t] > 0.5:
                 selected_requests.append(processing_requests[i])
         
         # Store the batch size in the dictionary
@@ -132,7 +136,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(self.alpha** int(t-self.time2iter(self.requests[i].deadline)+1) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
+            gp.quicksum(int(t-self.time2iter(self.requests[i].deadline)+1) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -190,8 +194,14 @@ class SchedulerSimulator:
 
         # Update scores and sort based on the scheduling policy.
         if self.scheduling_policy == 'repeated offline solver':
-            selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
-            return selected_requests, best_batch_size
+            if self.new_request_arrived:  # Only call if new requests have arrived
+                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
+                self.new_request_arrived = False  # Reset the flag
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            else:
+                return self.previous_selected_requests, self.previous_batch_size
         if self.scheduling_policy == 'offline optimal':
             selected_requests = self.requests_order[self.iteration]
             for batch_size in self.inference_delays:
@@ -260,7 +270,7 @@ class SchedulerSimulator:
             req.tokens -= 1  
             if req.tokens == 0:  
                 processing_requests.remove(req)  
-                if self.current_time < req.deadline:  
+                if self.current_time <= req.deadline:  
                     goodput += 1  # Increment goodput if request finishes before deadline  
         #delay = self.calculate_delay(batch_size) 
         delay = self.calculate_delay(16) 
@@ -273,20 +283,25 @@ class SchedulerSimulator:
     def run_simulation(self): 
         goodput = 0  
         processing_requests = []  
-        
+        pending_tokens_over_time = []  
+
         while self.requests or processing_requests:    
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
-            processing_requests.extend(arrived_requests)  
-            self.requests = [req for req in self.requests if req not in arrived_requests]  
-            # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
-  
+            if arrived_requests:
+                processing_requests.extend(arrived_requests)  
+                self.new_request_arrived = True
+                self.requests = [req for req in self.requests if req not in arrived_requests]  
+                # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
+    
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
+            pending_tokens_over_time.append(self.pending_tokens(processing_requests))  # Record pending tokens
         
         if goodput > 0:
             average_jct = self.total_completion_time / goodput  # Calculate average JCT 
         else:
             average_jct = 0
 
+        #self.plot_pending_tokens(pending_tokens_over_time)
         return goodput, average_jct  
   
     def generate_requests(self, num_requests, inference_delays):  
@@ -302,20 +317,18 @@ class SchedulerSimulator:
         ]  
         return requests  
 
-    def plot(self, processing_requests, goodput):
-        fig, ax = plt.subplots()
-        
+    def pending_tokens(self, processing_requests):
         # Filter out inactive requests
         active_requests = [req for req in processing_requests if req.arrival_time <= self.current_time and req.deadline >= self.current_time]
-
-        # Add data to the plot
-        x = [req.arrival_time for req in active_requests]
-        y = [req.tokens for req in active_requests]
-        sc = ax.scatter(x, y, c='blue', label='Active Requests')
-
-        ax.set_xlabel('Arrival Time')
-        ax.set_ylabel('Tokens')
-        ax.set_title(f'Current Time: {self.current_time}, Goodput: {goodput}')
-        ax.legend()
-
-        plt.savefig(str(self.iteration)+'.png')
+        return sum([req.tokens for req in active_requests])
+    
+    def plot_pending_tokens(self, pending_tokens_over_time):
+        plt.grid()
+        plt.plot(pending_tokens_over_time)
+        plt.title('Pending Tokens Over Time')
+        plt.xlabel('Time (iterations)')
+        plt.ylabel('Pending Tokens')
+        filename = f"{self.scheduling_policy}_{self.batching_policy}.png"
+        plt.savefig(filename)
+        print(f"Plot saved as {filename}")
+        plt.clf()
