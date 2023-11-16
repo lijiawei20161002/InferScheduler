@@ -15,6 +15,8 @@ def main(num_requests, inference_delays, scheduling_policy, batching_policy):
   
     # Run the simulation  
     goodput, average_jct = simulator.run_simulation()  
+    simulator.reset([], inference_delays, scheduling_policy, batching_policy)
+    del simulator
   
     # Return the goodput and average_jct  
     return goodput, average_jct  
@@ -34,7 +36,8 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(100, 310, 100))  
+    num_requests_values = list(range(100, 1010, 100))  
+    first_time_flag = True
   
     # Define colors for each scheduling policy  
     color_map = {  

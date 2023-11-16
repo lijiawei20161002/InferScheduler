@@ -38,7 +38,8 @@ class SchedulerSimulator:
         self.iteration = 0
         self.B = 16
         self.alpha = 0.5
-        self.new_request_arrived = False  # Flag to track arrival of new requests
+        self.new_request_arrive = False  # Flag to track arrival of new requests
+        self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
 
@@ -47,6 +48,21 @@ class SchedulerSimulator:
 
     def time2iter(self, t):
         return int(t//self.inference_delays[16])
+    
+    def reset(self, requests, inference_delays, scheduling_policy, batching_policy):
+        self.requests = requests  
+        self.inference_delays = inference_delays  
+        self.current_time = 0  
+        self.total_completion_time = 0 
+        self.scheduling_policy = scheduling_policy  
+        self.batching_policy = batching_policy
+        self.iteration = 0
+        self.B = 16
+        self.alpha = 0.5
+        self.new_request_arrive = False  # Flag to track arrival of new requests
+        self.old_request_leave = False  # Flag to track leaving of old requests
+        self.previous_selected_requests = []
+        self.previous_batch_size = 16
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -57,24 +73,26 @@ class SchedulerSimulator:
     def repeated_offline_scheduler(self, processing_requests):  
         if len(processing_requests) == 0:
             return [], 16
+        if len(processing_requests) < 16:
+            return processing_requests, 16
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
-        model.Params.LogToConsole = 0
+        #model.Params.LogToConsole = 0
         # Set time limit
         #model.setParam('TimeLimit', 0.1)
         model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = (max([req.deadline for req in processing_requests])-self.iteration) * 2  # Max iterations
+        T = max(sum([req.tokens for req in processing_requests])*2, (max([req.deadline for req in processing_requests])-self.iteration) * 2)  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(processing_requests[i].deadline)+1) * x[i, t-self.iteration] for t in range(max(self.iteration, self.time2iter(processing_requests[i].deadline)), T+self.iteration))
+            gp.quicksum(int(t-self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -94,27 +112,28 @@ class SchedulerSimulator:
 
         # Solve
         model.optimize()
+        if model.status == GRB.INFEASIBLE:
+            # Compute and print an Irreducible Inconsistent Subsystem (IIS)
+            print("Model is infeasible. Computing IIS...")
+            model.computeIIS()
+            print("\nThe following constraint(s) cannot be satisfied:")
+            for c in model.getConstrs():
+                if c.IISConstr:
+                    print('%s' % c.constrName)
 
-        # Extract the solution (this is just an example to extract the x values)
-        solution = {}
-        for i in range(N):
-            for t in range(T):
-                if hasattr(x[i, t], 'X'):
-                    solution[i, t] = x[i, t].X
-                elif hasattr(x[i,t], 'Xn'):
-                    solution[i, t] = x[i, t].Xn
+            # Optionally, you could also write the IIS to a file
+            model.write("infeasible_model.ilp")
         
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if solution[i, t] > 0.5:
+            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
         # Store the batch size in the dictionary
         for batch_size in self.inference_delays:
             if batch_size >= len(selected_requests):
                 break
-
         return selected_requests, batch_size
     
     def offline_optimal(self):  
@@ -136,7 +155,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(self.requests[i].deadline)+1) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
+            gp.quicksum(int(t-self.time2iter(self.requests[i].deadline)) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -183,7 +202,7 @@ class SchedulerSimulator:
         for iteration in range(T):
             selected_requests = []
             for i in range(N):
-                if (hasattr(x[i, iteration], 'X') and x[i, iteration].X > 0.5) or (hasattr(x[i, iteration], 'Xn') and x[i, iteration].Xn > 0.5):
+                if solution[i, iteration] > 0.5:
                     selected_requests.append(self.requests[i])
             requests_order.append(selected_requests)
         
@@ -194,9 +213,21 @@ class SchedulerSimulator:
 
         # Update scores and sort based on the scheduling policy.
         if self.scheduling_policy == 'repeated offline solver':
-            if self.new_request_arrived:  # Only call if new requests have arrived
+            if self.new_request_arrive:  # Only call if new requests have arrived
                 selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
-                self.new_request_arrived = False  # Reset the flag
+                self.new_request_arrive = False  # Reset the flag
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            elif self.old_request_leave:  # Only call if old requests have left
+                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
+                self.old_request_leave = False  # Reset the flag
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            elif len(self.previous_selected_requests) == 0 and len(processing_requests)>0:
+                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
+                print(processing_requests[0].tokens, len(processing_requests), len(selected_requests))
                 self.previous_selected_requests = selected_requests
                 self.previous_batch_size = best_batch_size
                 return selected_requests, best_batch_size
@@ -259,17 +290,11 @@ class SchedulerSimulator:
   
     def run_one_iteration(self, processing_requests, goodput):  
         selected_requests, batch_size = self.scheduler(processing_requests)  
-        #print("Iteration:", self.iteration, "Current Time:", self.current_time, "Batch_size:", batch_size)
-        #print("Selected Requests:")
-        #for req in selected_requests:
-        #    print(req.arrival_time, req.deadline, req.tokens)
-        #print("Processing Requests:")
-        #for req in processing_requests:
-        #    print(req.arrival_time, req.deadline, req.tokens)
         for req in selected_requests:  
             req.tokens -= 1  
-            if req.tokens == 0:  
+            if req.tokens <= 0:  
                 processing_requests.remove(req)  
+                self.old_request_leave = True
                 if self.current_time <= req.deadline:  
                     goodput += 1  # Increment goodput if request finishes before deadline  
         #delay = self.calculate_delay(batch_size) 
@@ -285,11 +310,11 @@ class SchedulerSimulator:
         processing_requests = []  
         pending_tokens_over_time = []  
 
-        while self.requests or processing_requests:    
+        while len(self.requests)>0 or len(processing_requests)>0:    
             arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
-            if arrived_requests:
+            if len(arrived_requests)>0:
                 processing_requests.extend(arrived_requests)  
-                self.new_request_arrived = True
+                self.new_request_arrive = True
                 self.requests = [req for req in self.requests if req not in arrived_requests]  
                 # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
     
