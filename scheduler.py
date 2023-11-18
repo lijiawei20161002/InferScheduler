@@ -336,7 +336,7 @@ class SchedulerSimulator:
             Request(  
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
                 arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
-                deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens * 2))))
+                deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens))))
             )  
             for _ in range(num_requests)  
         ]  
