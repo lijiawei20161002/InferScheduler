@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from scheduler import SchedulerSimulator  
 import copy
 import os
+import glob
   
 inference_delays = {1: 42.89945313, 2: 45.02945313, 4: 50.47695313, 8: 62.123125, 16: 84.1871875}  
   
@@ -32,7 +33,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(10, 101, 10))  
+    num_requests_values = list(range(10, 41, 10))  
     first_time_flag = True
   
     # Define colors for each scheduling policy  
@@ -70,6 +71,7 @@ if __name__ == "__main__":
                 print(scheduling_policy, batch_policy)  
                 requests = copy.deepcopy(original_requests)
                 simulator.reset([], inference_delays, scheduling_policy, batch_policy)
+                simulator.switching_cost = 10
                 goodput, average_jct, objective_metric = main(simulator, requests)  
                 key = f'{scheduling_policy}'  
                 goodput_values[key].append(goodput)  
