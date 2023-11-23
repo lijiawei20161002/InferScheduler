@@ -5,6 +5,8 @@ import gurobipy as gp
 from gurobipy import Model, GRB
 import matplotlib.pyplot as plt
 import math
+import re
+import ast
 
 
 class Request:
@@ -43,8 +45,8 @@ class SchedulerSimulator:
         self.previous_selected_requests = []
         self.previous_batch_size = 16
 
-    def calculate_offline_optimal(self):
-        self.requests_order = self.offline_optimal()
+    def call_offline_solver(self):
+        self.requests_order = self.offline_solver()
 
     def time2iter(self, t):
         return int(t//self.inference_delays[16])
@@ -68,31 +70,55 @@ class SchedulerSimulator:
         if batch_size in self.inference_delays:  
             return self.inference_delays[batch_size]  
         else:  
-            return float('inf')  # Assume infinite delay for batch sizes not in the list  
+            return float('inf')  # Assume infinite delay for batch sizes not in the list 
+
+    def log_scheduler_decision(self, iteration, current_requests, selected_requests, batch_size):
+        """
+        Logs the decision made by the scheduler at each iteration, including the current state of requests.
+
+        Args:
+            iteration (int): The current iteration of the simulation.
+            current_requests (list): List of current requests waiting for processing.
+            selected_requests (list): List of selected requests in the current iteration.
+            batch_size (int): The batch size used in the current iteration.
+        """
+        decision_text = f"Iteration: {iteration}, Time: {(iteration-1)*self.inference_delays[16]} to {iteration*self.inference_delays[16]}\n"
+        decision_text += f"Current Requests: {[req.__dict__ for req in current_requests]}\n"
+        decision_text += f"Selected Requests: {[req.__dict__ for req in selected_requests]}\n"
+        decision_text += f"Batch Size: {batch_size}\n"
+        decision_text += "---------------------------------\n"
+
+        with open(self.scheduling_policy + '.log', 'a') as log_file:
+            log_file.write(decision_text)
         
-    def repeated_offline_scheduler(self, processing_requests):  
+    def online_solver(self, processing_requests):  
         if len(processing_requests) == 0:
             return [], 16
-        if len(processing_requests) < 16:
-            return processing_requests, 16
         # Create a new model
         model = gp.Model("Scheduler")
         # Disable model output
-        #model.Params.LogToConsole = 0
+        model.Params.LogToConsole = 0
         # Set time limit
         #model.setParam('TimeLimit', 0.1)
-        model.setParam('LogFile', 'repeated_offline_scheduler.log')  # Write a log file
+        model.setParam('LogFile', 'online.solver')  # Write a log file
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = max(sum([req.tokens for req in processing_requests])*2, (max([req.deadline for req in processing_requests])-self.iteration) * 2)  # Max iterations
+        T = max(max([self.time2iter(req.deadline) for req in processing_requests]), sum([req.tokens for req in processing_requests])) + max([req.tokens for req in processing_requests])  # Max iterations
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
+        
+        # Use previous solution as intial solution
+        if len(self.previous_selected_requests)>0:
+            for i, req in enumerate(processing_requests):
+                if req in self.previous_selected_requests:
+                    for t in range(T):
+                        x[i, t].start=1
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
+            gp.quicksum(int(t-self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -100,10 +126,12 @@ class SchedulerSimulator:
         # Completion constraint
         for i in range(N):
             model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
+            if processing_requests[i].tokens < 0:
+                print('here:', processing_requests[i].tokens)
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(processing_requests[i].arrival_time)+1):
+            for t in range(self.time2iter(processing_requests[i].arrival_time)-self.iteration):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -122,7 +150,7 @@ class SchedulerSimulator:
                     print('%s' % c.constrName)
 
             # Optionally, you could also write the IIS to a file
-            model.write("infeasible_model.ilp")
+            model.write("infeasible_model.lp")
         
         # Store the requests in the dictionary
         selected_requests = []
@@ -131,22 +159,23 @@ class SchedulerSimulator:
                 selected_requests.append(processing_requests[i])
         
         # Store the batch size in the dictionary
-        for batch_size in self.inference_delays:
-            if batch_size >= len(selected_requests):
-                break
+        #for batch_size in self.inference_delays:
+            #if batch_size >= len(selected_requests):
+                #break
+        batch_size = 16
         return selected_requests, batch_size
     
-    def offline_optimal(self):  
+    def offline_solver(self):  
         model = gp.Model("Scheduler")  # Create a new model
-        #model.Params.LogToConsole = 0  # Disable model output
+        model.Params.LogToConsole = 0  # Disable model output
         #model.setParam('TimeLimit', 0.1)  # Set time limit
         model.Params.Presolve = 2  # Aggressive presolve
         model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
-        model.setParam('LogFile', 'offline_optimal.log')  # Write a log file
+        model.setParam('LogFile', 'offline.solver')  # Write a log file
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = self.time2iter(max([req.deadline for req in self.requests]))*2  # Max iterations
+        T = max(sum([req.tokens for req in self.requests]), max([self.time2iter(req.deadline) for req in self.requests])) + max([req.tokens for req in self.requests])  # Max iterations
         print("N=", N, " T=", T)
 
         # Add decision variables
@@ -155,7 +184,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(self.requests[i].deadline)) * x[i, t] for t in range(self.time2iter(self.requests[i].deadline), T))
+            gp.quicksum(int(t-self.time2iter(self.requests[i].arrival_time)) * x[i, t] for t in range(self.time2iter(self.requests[i].arrival_time), T))
             for i in range(N)
         )
         model.setObjective(objective, GRB.MINIMIZE)
@@ -166,7 +195,7 @@ class SchedulerSimulator:
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(self.requests[i].arrival_time)+1):
+            for t in range(self.time2iter(self.requests[i].arrival_time)):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
@@ -212,32 +241,32 @@ class SchedulerSimulator:
         selected_requests = []
 
         # Update scores and sort based on the scheduling policy.
-        if self.scheduling_policy == 'repeated offline solver':
+        if self.scheduling_policy == 'online solver':
             if self.new_request_arrive:  # Only call if new requests have arrived
-                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
+                selected_requests, best_batch_size = self.online_solver(processing_requests)
                 self.new_request_arrive = False  # Reset the flag
                 self.previous_selected_requests = selected_requests
                 self.previous_batch_size = best_batch_size
                 return selected_requests, best_batch_size
             elif self.old_request_leave:  # Only call if old requests have left
-                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
+                selected_requests, best_batch_size = self.online_solver(processing_requests)
                 self.old_request_leave = False  # Reset the flag
                 self.previous_selected_requests = selected_requests
                 self.previous_batch_size = best_batch_size
                 return selected_requests, best_batch_size
             elif len(self.previous_selected_requests) == 0 and len(processing_requests)>0:
-                selected_requests, best_batch_size = self.repeated_offline_scheduler(processing_requests)
-                print(processing_requests[0].tokens, len(processing_requests), len(selected_requests))
+                selected_requests, best_batch_size = self.online_solver(processing_requests)
                 self.previous_selected_requests = selected_requests
                 self.previous_batch_size = best_batch_size
                 return selected_requests, best_batch_size
             else:
                 return self.previous_selected_requests, self.previous_batch_size
-        if self.scheduling_policy == 'offline optimal':
+        if self.scheduling_policy == 'offline solver':
             selected_requests = self.requests_order[self.iteration]
-            for batch_size in self.inference_delays:
-                if batch_size >= len(selected_requests):
-                    break
+            batch_size = 16
+            #for batch_size in self.inference_delays:
+                #if batch_size >= len(selected_requests):
+                    #break
             return selected_requests, batch_size
         if self.scheduling_policy == 'bidding':
             for req in processing_requests:
@@ -290,8 +319,10 @@ class SchedulerSimulator:
   
     def run_one_iteration(self, processing_requests, goodput):  
         selected_requests, batch_size = self.scheduler(processing_requests)  
+        self.log_scheduler_decision(self.iteration, processing_requests, selected_requests, batch_size)
         for req in selected_requests:  
             req.tokens -= 1  
+        for req in processing_requests:
             if req.tokens <= 0:  
                 processing_requests.remove(req)  
                 self.old_request_leave = True
@@ -319,7 +350,7 @@ class SchedulerSimulator:
                 # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
     
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
-            pending_tokens_over_time.append(self.pending_tokens(processing_requests))  # Record pending tokens
+            #pending_tokens_over_time.append(self.pending_tokens(processing_requests))  # Record pending tokens
         
         if goodput > 0:
             average_jct = self.total_completion_time / goodput  # Calculate average JCT 
@@ -332,11 +363,13 @@ class SchedulerSimulator:
     def generate_requests(self, num_requests, inference_delays):  
         mu = 35.403855367569996  
         sigma = 31.604314122710903   
+        lambda_poisson = 1
         requests = [  
             Request(  
                 tokens := max(1, int(np.random.normal(mu, sigma))),  
-                arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
-                deadline= round(arrival_time + int(random.expovariate(1/(inference_delays[16] * tokens))))
+                #arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
+                arrival_time := np.random.poisson(lambda_poisson) * num_requests * mu * inference_delays[16] // 16,
+                deadline= round(arrival_time + inference_delays[16] * tokens + int(random.expovariate(1/(inference_delays[16] * tokens))))
             )  
             for _ in range(num_requests)  
         ]  
@@ -357,3 +390,33 @@ class SchedulerSimulator:
         plt.savefig(filename)
         print(f"Plot saved as {filename}")
         plt.clf()
+
+    def calculate_objective_from_log(self, log_filename, scheduling_policy):
+        objective_metric = 0
+
+        with open(f'{scheduling_policy}.log', 'r') as log_file:
+            log_data = log_file.read()
+
+        iterations_data = log_data.split('---------------------------------\n')
+
+        for iteration_data in iterations_data:
+            if iteration_data.strip() == '':
+                continue
+
+            # Extract iteration number
+            iteration_match = re.search(r"Iteration: (\d+)", iteration_data)
+            iteration = int(iteration_match.group(1)) if iteration_match else None
+
+            # Extract selected requests
+            selected_requests_match = re.search(r"Selected Requests: (.+?)\n", iteration_data)
+            if selected_requests_match:
+                selected_requests_str = selected_requests_match.group(1)
+                selected_requests = ast.literal_eval(selected_requests_str)  # Convert string to list of dicts
+
+                for req in selected_requests:
+                    arrival_iter = self.time2iter(req['deadline'])
+                    if iteration >= arrival_iter:
+                        # Calculate the objective for each selected request
+                        objective_metric += int(iteration - arrival_iter)
+
+        return objective_metric
