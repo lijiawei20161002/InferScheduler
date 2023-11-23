@@ -1,5 +1,5 @@
 
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:09 2023
+Gurobi 10.0.3 (linux64) logging started Thu Nov 23 20:14:44 2023
 
 Set parameter LogFile to value "offline.solver"
 Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
@@ -8,34 +8,30 @@ CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
 Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
 
 Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 813 rows, 4290 columns and 8954 nonzeros
-Model fingerprint: 0xe807ba93
-Variable types: 0 continuous, 4290 integer (4290 binary)
+Optimize a model with 286 rows, 2160 columns and 4380 nonzeros
+Model fingerprint: 0xce40e24c
+Variable types: 0 continuous, 2160 integer (2160 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 4e+02]
+  Objective range  [1e+00, 2e+02]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 63878.000000
-Presolve removed 812 rows and 3861 columns
-Presolve time: 0.02s
-Presolved: 1 rows, 429 columns, 429 nonzeros
-Found heuristic solution: objective 9552.0000000
-Variable types: 0 continuous, 429 integer (429 binary)
-Root relaxation presolved: 1 rows, 429 columns, 429 nonzeros
+  RHS range        [1e+00, 5e+01]
+Found heuristic solution: objective 17405.000000
+Presolve removed 285 rows and 1944 columns
+Presolve time: 0.01s
+Presolved: 1 rows, 216 columns, 216 nonzeros
+Found heuristic solution: objective 2908.0000000
+Variable types: 0 continuous, 216 integer (216 binary)
 
-
-Root relaxation: cutoff, 0 iterations, 0.00 seconds (0.00 work units)
-
-Explored 1 nodes (0 simplex iterations) in 0.02 seconds (0.02 work units)
+Explored 1 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
 Thread count was 32 (of 64 available processors)
 
-Solution count 2: 9552 63878 
+Solution count 2: 2908 17405 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 9.552000000000e+03, best bound 9.552000000000e+03, gap 0.0000%
+Best objective 2.908000000000e+03, best bound 2.908000000000e+03, gap 0.0000%
 
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:09 2023
+Gurobi 10.0.3 (linux64) logging started Thu Nov 23 20:14:44 2023
 
 Set parameter LogFile to value "offline.solver"
 Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
@@ -44,39 +40,37 @@ CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
 Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
 
 Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 1417 rows, 15620 columns and 31856 nonzeros
-Model fingerprint: 0x80e9a709
-Variable types: 0 continuous, 15620 integer (15620 binary)
+Optimize a model with 949 rows, 15340 columns and 30842 nonzeros
+Model fingerprint: 0x1f080f0d
+Variable types: 0 continuous, 15340 integer (15340 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
   Objective range  [1e+00, 8e+02]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 261566.00000
-Presolve removed 706 rows and 2621 columns
-Presolve time: 0.09s
-Presolved: 711 rows, 12999 columns, 25429 nonzeros
-Found heuristic solution: objective 17638.000000
-Variable types: 0 continuous, 12999 integer (12999 binary)
-Root relaxation presolved: 711 rows, 12999 columns, 25429 nonzeros
+  RHS range        [1e+00, 7e+01]
+Found heuristic solution: objective 253044.00000
+Presolve removed 198 rows and 2495 columns
+Presolve time: 0.03s
+Presolved: 751 rows, 12845 columns, 25323 nonzeros
+Found heuristic solution: objective 16711.000000
+Variable types: 0 continuous, 12845 integer (12845 binary)
 
-
-Root relaxation: cutoff, 18 iterations, 0.01 seconds (0.01 work units)
+Root relaxation: cutoff, 17 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0     cutoff    0      17638.0000 17638.0000  0.00%     -    0s
+     0     0     cutoff    0      16711.0000 16711.0000  0.00%     -    0s
 
-Explored 1 nodes (18 simplex iterations) in 0.14 seconds (0.16 work units)
+Explored 1 nodes (17 simplex iterations) in 0.05 seconds (0.04 work units)
 Thread count was 32 (of 64 available processors)
 
-Solution count 2: 17638 261566 
+Solution count 2: 16711 253044 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 1.763800000000e+04, best bound 1.763800000000e+04, gap 0.0000%
+Best objective 1.671100000000e+04, best bound 1.671100000000e+04, gap 0.0000%
 
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:10 2023
+Gurobi 10.0.3 (linux64) logging started Thu Nov 23 20:14:51 2023
 
 Set parameter LogFile to value "offline.solver"
 Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
@@ -85,39 +79,37 @@ CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
 Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
 
 Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 3302 rows, 40650 columns and 83217 nonzeros
-Model fingerprint: 0xe579737f
-Variable types: 0 continuous, 40650 integer (40650 binary)
+Optimize a model with 1913 rows, 44250 columns and 88908 nonzeros
+Model fingerprint: 0xd081670f
+Variable types: 0 continuous, 44250 integer (44250 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
   Objective range  [1e+00, 1e+03]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 787706.00000
-Presolve removed 1985 rows and 4875 columns
-Presolve time: 0.25s
-Presolved: 1317 rows, 35775 columns, 71006 nonzeros
-Found heuristic solution: objective 38678.000000
-Variable types: 0 continuous, 35775 integer (35775 binary)
-Root relaxation presolved: 1317 rows, 35775 columns, 71006 nonzeros
+  RHS range        [1e+00, 9e+01]
+Found heuristic solution: objective 1000147.0000
+Presolve removed 422 rows and 3358 columns
+Presolve time: 0.08s
+Presolved: 1491 rows, 40892 columns, 81676 nonzeros
+Found heuristic solution: objective 50007.000000
+Variable types: 0 continuous, 40892 integer (40892 binary)
 
-
-Root relaxation: cutoff, 30 iterations, 0.04 seconds (0.04 work units)
+Root relaxation: objective 4.896600e+04, 492 iterations, 0.02 seconds (0.05 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0     cutoff    0      38678.0000 38678.0000  0.00%     -    0s
+*    0     0               0    48966.000000 48966.0000  0.00%     -    0s
 
-Explored 1 nodes (30 simplex iterations) in 0.34 seconds (0.45 work units)
+Explored 1 nodes (492 simplex iterations) in 0.18 seconds (0.17 work units)
 Thread count was 32 (of 64 available processors)
 
-Solution count 2: 38678 787706 
+Solution count 3: 48966 50007 1.00015e+06 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 3.867800000000e+04, best bound 3.867800000000e+04, gap 0.0000%
+Best objective 4.896600000000e+04, best bound 4.896600000000e+04, gap 0.0000%
 
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:12 2023
+Gurobi 10.0.3 (linux64) logging started Thu Nov 23 20:15:41 2023
 
 Set parameter LogFile to value "offline.solver"
 Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
@@ -126,22 +118,20 @@ CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
 Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
 
 Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 4533 rows, 63200 columns and 129313 nonzeros
-Model fingerprint: 0x1c611bdc
-Variable types: 0 continuous, 63200 integer (63200 binary)
+Optimize a model with 2439 rows, 68560 columns and 137805 nonzeros
+Model fingerprint: 0x468a2eeb
+Variable types: 0 continuous, 68560 integer (68560 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
   Objective range  [1e+00, 2e+03]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 1103236.0000
-Presolve removed 2913 rows and 2913 columns
-Presolve time: 0.47s
-Presolved: 1620 rows, 60287 columns, 120574 nonzeros
-Variable types: 0 continuous, 60287 integer (60287 binary)
-Found heuristic solution: objective 44084.000000
-Root relaxation presolved: 1620 rows, 60287 columns, 120574 nonzeros
-
+Found heuristic solution: objective 1354813.0000
+Presolve removed 702 rows and 2399 columns
+Presolve time: 0.12s
+Presolved: 1737 rows, 66161 columns, 132162 nonzeros
+Found heuristic solution: objective 65304.000000
+Variable types: 0 continuous, 66161 integer (66161 binary)
 Deterministic concurrent LP optimizer: primal and dual simplex
 Showing first log only...
 
@@ -149,345 +139,17 @@ Concurrent spin time: 0.01s
 
 Solved with dual simplex
 
-Root relaxation: objective 4.399600e+04, 60 iterations, 0.09 seconds (0.07 work units)
+Root relaxation: objective 6.271000e+04, 692 iterations, 0.10 seconds (0.12 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-*    0     0               0    43996.000000 43996.0000  0.00%     -    0s
+*    0     0               0    62710.000000 62710.0000  0.00%     -    0s
 
-Explored 1 nodes (60 simplex iterations) in 0.63 seconds (0.85 work units)
+Explored 1 nodes (692 simplex iterations) in 0.31 seconds (0.32 work units)
 Thread count was 32 (of 64 available processors)
 
-Solution count 3: 43996 44084 1.10324e+06 
+Solution count 3: 62710 65304 1.35481e+06 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 4.399600000000e+04, best bound 4.399600000000e+04, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:16 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 5488 rows, 101050 columns and 205517 nonzeros
-Model fingerprint: 0x4c3837af
-Variable types: 0 continuous, 101050 integer (101050 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 2e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 1912824.0000
-Presolve removed 3417 rows and 3417 columns
-Presolve time: 0.80s
-Presolved: 2071 rows, 97633 columns, 195266 nonzeros
-Variable types: 0 continuous, 97633 integer (97633 binary)
-Found heuristic solution: objective 62995.000000
-Root relaxation presolved: 2071 rows, 97633 columns, 195266 nonzeros
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.01s
-
-Solved with dual simplex
-
-Root relaxation: objective 5.960800e+04, 342 iterations, 0.17 seconds (0.15 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    59608.000000 59608.0000  0.00%     -    1s
-
-Explored 1 nodes (342 simplex iterations) in 1.09 seconds (1.46 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 59608 62995 1.91282e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 5.960800000000e+04, best bound 5.960800000000e+04, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:22 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 9959 rows, 141000 columns and 289549 nonzeros
-Model fingerprint: 0x39793659
-Variable types: 0 continuous, 141000 integer (141000 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 2e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 2450499.0000
-Presolve removed 7549 rows and 7549 columns
-Presolve time: 1.19s
-Presolved: 2410 rows, 133451 columns, 266902 nonzeros
-Variable types: 0 continuous, 133451 integer (133451 binary)
-Found heuristic solution: objective 72362.000000
-Root relaxation presolved: 2410 rows, 133451 columns, 266902 nonzeros
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.00s
-
-Solved with primal simplex
-
-Root relaxation: objective 7.174500e+04, 1586 iterations, 0.22 seconds (0.22 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    71745.000000 71745.0000  0.00%     -    1s
-
-Explored 1 nodes (1586 simplex iterations) in 1.57 seconds (2.31 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 71745 72362 2.4505e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 7.174500000000e+04, best bound 7.174500000000e+04, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:29 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 14270 rows, 172690 columns and 357113 nonzeros
-Model fingerprint: 0x269834b9
-Variable types: 0 continuous, 172690 integer (172690 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 2e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 2725009.0000
-Presolve removed 11733 rows and 11733 columns
-Presolve time: 1.53s
-Presolved: 2537 rows, 160957 columns, 321914 nonzeros
-Variable types: 0 continuous, 160957 integer (160957 binary)
-Found heuristic solution: objective 67579.000000
-Root relaxation presolved: 2537 rows, 160957 columns, 321914 nonzeros
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.01s
-
-Solved with primal simplex
-
-Root relaxation: objective 6.554400e+04, 1627 iterations, 0.27 seconds (0.25 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    65544.000000 65544.0000  0.00%     -    1s
-
-Explored 1 nodes (1627 simplex iterations) in 1.99 seconds (2.97 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 65544 67579 2.72501e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 6.554400000000e+04, best bound 6.554400000000e+04, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:38 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 16842 rows, 222320 columns and 458623 nonzeros
-Model fingerprint: 0x50416200
-Variable types: 0 continuous, 222320 integer (222320 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 3e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 3527219.0000
-Presolve removed 13983 rows and 13983 columns
-Presolve time: 2.20s
-Presolved: 2859 rows, 208337 columns, 416674 nonzeros
-Variable types: 0 continuous, 208337 integer (208337 binary)
-Found heuristic solution: objective 84119.000000
-Root relaxation presolved: 2859 rows, 208337 columns, 416674 nonzeros
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.00s
-
-Solved with primal simplex
-
-Root relaxation: objective 8.111000e+04, 2680 iterations, 0.36 seconds (0.33 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    81110.000000 81110.0000  0.00%     -    2s
-
-Explored 1 nodes (2680 simplex iterations) in 2.81 seconds (4.36 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 81110 84119 3.52722e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 8.111000000000e+04, best bound 8.111000000000e+04, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:32:50 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 21113 rows, 280170 columns and 578250 nonzeros
-Model fingerprint: 0x1249dffd
-Variable types: 0 continuous, 280170 integer (280170 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 3e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 4335614.0000
-Presolve removed 17910 rows and 17910 columns
-Presolve time: 2.25s
-Presolved: 3203 rows, 262260 columns, 524520 nonzeros
-Variable types: 0 continuous, 262260 integer (262260 binary)
-Found heuristic solution: objective 104375.00000
-Root relaxation presolved: 3203 rows, 262260 columns, 524520 nonzeros
-
-Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
-Showing barrier log only...
-
-Root barrier log...
-
-Ordering time: 0.01s
-
-Barrier statistics:
- AA' NZ     : 2.623e+05
- Factor NZ  : 3.096e+05 (roughly 100 MB of memory)
- Factor Ops : 3.116e+07 (less than 1 second per iteration)
- Threads    : 30
-
-                  Objective                Residual
-Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   1.75686341e+09 -5.70183701e+08  1.42e+04 0.00e+00  1.49e+04     3s
-   1   5.67665125e+07 -4.16519305e+08  5.41e+02 8.61e+01  1.25e+03     3s
-   2   2.83011590e+06 -1.94099845e+07  4.01e+00 2.88e-03  4.37e+01     3s
-   3   1.76618144e+06 -4.19218147e+06  4.83e-13 2.27e-12  1.13e+01     3s
-
-Barrier performed 3 iterations in 3.16 seconds (4.31 work units)
-Barrier solve interrupted - model solved by another algorithm
-
-Concurrent spin time: 0.34s (can be avoided by choosing Method=3)
-
-Solved with primal simplex
-
-Root relaxation: objective 1.019410e+05, 3738 iterations, 0.82 seconds (0.42 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    101941.00000 101941.000  0.00%     -    3s
-
-Explored 1 nodes (3738 simplex iterations) in 3.41 seconds (4.33 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 101941 104375 4.33561e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 1.019410000000e+05, best bound 1.019410000000e+05, gap 0.0000%
-
-Gurobi 10.0.3 (linux64) logging started Thu Nov 23 16:33:06 2023
-
-Set parameter LogFile to value "offline.solver"
-Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
-
-CPU model: AMD EPYC 7R32, instruction set [SSE2|AVX|AVX2]
-Thread count: 32 physical cores, 64 logical processors, using up to 32 threads
-
-Academic license 2440659 - for non-commercial use only - registered to ji___@andrew.cmu.edu
-Optimize a model with 28347 rows, 459700 columns and 943050 nonzeros
-Model fingerprint: 0xfb70d0c9
-Variable types: 0 continuous, 459700 integer (459700 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 5e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Found heuristic solution: objective 9528690.0000
-Presolve removed 23650 rows and 23650 columns
-Presolve time: 4.92s
-Presolved: 4697 rows, 436050 columns, 872100 nonzeros
-Variable types: 0 continuous, 436050 integer (436050 binary)
-Found heuristic solution: objective 215062.00000
-Root relaxation presolved: 4697 rows, 436050 columns, 872100 nonzeros
-
-Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
-Showing barrier log only...
-
-Root barrier log...
-
-Ordering time: 0.01s
-
-Barrier statistics:
- AA' NZ     : 4.360e+05
- Factor NZ  : 5.039e+05 (roughly 180 MB of memory)
- Factor Ops : 5.605e+07 (less than 1 second per iteration)
- Threads    : 30
-
-                  Objective                Residual
-Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   4.80273329e+09 -1.42423902e+09  2.31e+04 0.00e+00  2.43e+04     6s
-   1   1.75083235e+08 -1.11966921e+09  9.40e+02 1.27e+02  2.11e+03     6s
-   2   7.42551917e+06 -5.78666970e+07  1.51e+01 2.60e-01  8.03e+01     6s
-   3   4.04549278e+06 -1.27568437e+07  1.14e-12 4.76e-02  1.92e+01     6s
-   4   3.83443405e+06 -6.23721139e+06  1.24e-12 3.64e-12  1.15e+01     7s
-
-Barrier performed 4 iterations in 6.54 seconds (9.44 work units)
-Barrier solve interrupted - model solved by another algorithm
-
-Concurrent spin time: 0.53s (can be avoided by choosing Method=3)
-
-Solved with primal simplex
-
-Root simplex log...
-
-Iteration    Objective       Primal Inf.    Dual Inf.      Time
-    6190    2.0759300e+05   0.000000e+00   0.000000e+00      7s
-
-Root relaxation: objective 2.075930e+05, 6190 iterations, 1.46 seconds (0.77 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-*    0     0               0    207593.00000 207593.000  0.00%     -    6s
-
-Explored 1 nodes (6190 simplex iterations) in 7.07 seconds (9.46 work units)
-Thread count was 32 (of 64 available processors)
-
-Solution count 3: 207593 215062 9.52869e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 2.075930000000e+05, best bound 2.075930000000e+05, gap 0.0000%
+Best objective 6.271000000000e+04, best bound 6.271000000000e+04, gap 0.0000%

@@ -4,17 +4,16 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import Model, GRB
 import matplotlib.pyplot as plt
-import math
-import re
-import ast
-
+import math, re, ast, os, glob
+from datetime import datetime, timedelta
+import copy
 
 class Request:
     def __init__(self, tokens, arrival_time, deadline):
         self.tokens = tokens
         self.deadline = deadline
         self.arrival_time = arrival_time
-        self.score = tokens / deadline
+        self.score = tokens / deadline if deadline >0 else inf
         if deadline > arrival_time:
             self.priority = 1 / (deadline - arrival_time)
         else:
@@ -44,6 +43,8 @@ class SchedulerSimulator:
         self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
+        self.switching_cost = 0
+        self.mode = 'incremental'
 
     def call_offline_solver(self):
         self.requests_order = self.offline_solver()
@@ -65,6 +66,7 @@ class SchedulerSimulator:
         self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
+        self.mode == 'incremental'
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -101,6 +103,7 @@ class SchedulerSimulator:
         # Set time limit
         #model.setParam('TimeLimit', 0.1)
         model.setParam('LogFile', 'online.solver')  # Write a log file
+        model.Params.Presolve = -1  # Automatic presolve level
 
         # Define constants
         N = len(processing_requests)  # Number of requests
@@ -108,19 +111,33 @@ class SchedulerSimulator:
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
+        if self.switching_cost:
+            s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
+            c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
         
         # Use previous solution as intial solution
-        if len(self.previous_selected_requests)>0:
-            for i, req in enumerate(processing_requests):
-                if req in self.previous_selected_requests:
-                    for t in range(T):
-                        x[i, t].start=1
+        if self.mode == 'incremental':
+            if len(self.previous_selected_requests)>0:
+                for i, req in enumerate(processing_requests):
+                    if req in self.previous_selected_requests:
+                        for t in range(T):
+                            x[i, t].start=1
 
         # Set the objective
-        objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
-            for i in range(N)
-        )
+        if self.switching_cost > 0:
+            penalty_cost = 1  # Define the penalty cost per unit time after the deadline
+            switching_cost = 1  # Define the switching cost
+            objective = gp.quicksum(
+                gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
+                            for t in range(self.iteration, T + self.iteration)) 
+                for i in range(N)) + gp.quicksum(
+                    gp.quicksum(s[i, t] for t in range(T)) * switching_cost
+                for i in range(N))
+        else:
+            objective = gp.quicksum(
+                gp.quicksum(int(t-self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
+                for i in range(N)
+            )
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
         # Completion constraint
@@ -137,6 +154,20 @@ class SchedulerSimulator:
         # Batch size constraint
         for t in range(T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
+
+        if self.switching_cost > 0:
+            # Schedule constraint
+            for i in range(N):
+                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                    model.addConstr(s[i, t] <= x[i, t])
+                    model.addConstr(s[i, t] <= 1 - x[i, t-1])
+                    model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
+                    model.addConstr(s[i, t] >= 0)
+            # Tracking processed token constraint
+            for i in range(N):
+                for t in range(1, T):  # Starting from 1 because we need t-1 to be valid
+                    model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
+                model.addConstr(c[i, 0] == x[i, 0])
 
         # Solve
         model.optimize()
@@ -169,7 +200,7 @@ class SchedulerSimulator:
         model = gp.Model("Scheduler")  # Create a new model
         model.Params.LogToConsole = 0  # Disable model output
         #model.setParam('TimeLimit', 0.1)  # Set time limit
-        model.Params.Presolve = 2  # Aggressive presolve
+        model.Params.Presolve = -1  # Automatic presolve level
         model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
         model.setParam('LogFile', 'offline.solver')  # Write a log file
 
@@ -359,21 +390,25 @@ class SchedulerSimulator:
 
         #self.plot_pending_tokens(pending_tokens_over_time)
         return goodput, average_jct  
-  
-    def generate_requests(self, num_requests, inference_delays):  
-        mu = 35.403855367569996  
-        sigma = 31.604314122710903   
+
+    # Adjusting for diurnal patterns
+    def diurnal_variation(self, hour):
+        peak_hours = [9, 10, 11, 12, 13, 14, 15, 16]  # 9 AM to 5 PM
+        return 1.5 if hour in peak_hours else 0.7
+
+    def generate_requests(self, num_requests, inference_delays):
+        mu = 35.403855367569996
+        sigma = 31.604314122710903
         lambda_poisson = 1
-        requests = [  
-            Request(  
-                tokens := max(1, int(np.random.normal(mu, sigma))),  
-                #arrival_time := round(random.uniform(0, num_requests*mu*inference_delays[16])),
-                arrival_time := np.random.poisson(lambda_poisson) * num_requests * mu * inference_delays[16] // 16,
-                deadline= round(arrival_time + inference_delays[16] * tokens + int(random.expovariate(1/(inference_delays[16] * tokens))))
-            )  
-            for _ in range(num_requests)  
-        ]  
-        return requests  
+        requests = []
+        for i in range(num_requests):
+            tokens = max(1, int(np.random.normal(mu, sigma)))
+            arrival_time = np.random.poisson(lambda_poisson) * num_requests * mu
+            deadline = arrival_time + int(random.expovariate(1 / (inference_delays[16] * tokens)))
+            request = Request(tokens, arrival_time, deadline)
+            requests.append(request)
+
+        return requests
 
     def pending_tokens(self, processing_requests):
         # Filter out inactive requests
@@ -399,6 +434,7 @@ class SchedulerSimulator:
 
         iterations_data = log_data.split('---------------------------------\n')
 
+        previous_selected_requests = []
         for iteration_data in iterations_data:
             if iteration_data.strip() == '':
                 continue
@@ -414,9 +450,57 @@ class SchedulerSimulator:
                 selected_requests = ast.literal_eval(selected_requests_str)  # Convert string to list of dicts
 
                 for req in selected_requests:
-                    arrival_iter = self.time2iter(req['deadline'])
+                    arrival_iter = self.time2iter(req['arrival_time'])
                     if iteration >= arrival_iter:
                         # Calculate the objective for each selected request
                         objective_metric += int(iteration - arrival_iter)
+                    switching_cost = self.switching_cost
+                    for pre in previous_selected_requests:
+                        if pre['arrival_time'] == req['arrival_time'] and pre['deadline'] == req['deadline']:
+                            switching_cost = 0
+                            break
+                    objective_metric += switching_cost
+                previous_selected_requests = copy.deepcopy(selected_requests)
 
         return objective_metric
+
+    def remove_files(self, pattern):
+        files = glob.glob(pattern)
+        for f in files:
+            try:
+                os.remove(f)
+                print(f"Removed: {f}")
+            except OSError as e:
+                print(f"Error: {f} : {e.strerror}")
+
+    def parse_log_line(self, line):
+        """Parse a single line of the log file."""
+        # Assuming the line format is consistent with the provided example
+        # Extracting the relevant parts using string manipulation
+        parts = line.split('\n')
+        if len(parts)<6:
+            return None
+        iteration_info = parts[0].strip()
+        current_requests = parts[1].split('Current Requests: ')[0].strip()
+        selected_requests = parts[2].split('Selected Requests: ')[0].strip()
+        batch_size = parts[3].split('Batch Size: ')[0].strip()
+        return iteration_info, current_requests, selected_requests, batch_size
+
+    def compare_log_files(self, file1, file2):
+        """Compare two log files and return the differences."""
+        differences = []
+
+        with open(file1, 'r') as f1, open(file2, 'r') as f2:
+            file1_lines = f1.read().strip().split('---------------------------------')
+            file2_lines = f2.read().strip().split('---------------------------------')
+
+            # Compare line by line
+            for line1, line2 in zip(file1_lines, file2_lines):
+                parsed_line1 = self.parse_log_line(line1)
+                parsed_line2 = self.parse_log_line(line2)
+
+                if parsed_line1 != parsed_line2:
+                    differences.append((parsed_line1, parsed_line2))
+
+        return differences
+
