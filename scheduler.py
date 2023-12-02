@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import math, re, ast, os, glob
 from datetime import datetime, timedelta
 import copy
+from numpy import inf
 
 class Request:
     def __init__(self, tokens, arrival_time, deadline):
@@ -108,6 +109,7 @@ class SchedulerSimulator:
         # Define constants
         N = len(processing_requests)  # Number of requests
         T = max(max([self.time2iter(req.deadline) for req in processing_requests]), sum([req.tokens for req in processing_requests])) + max([req.tokens for req in processing_requests])  # Max iterations
+        print("N:", N, "T:", T)
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
@@ -125,8 +127,7 @@ class SchedulerSimulator:
 
         # Set the objective
         if self.switching_cost > 0:
-            penalty_cost = 1  # Define the penalty cost per unit time after the deadline
-            switching_cost = 1  # Define the switching cost
+            switching_cost = self.switching_cost  # Define the switching cost
             objective = gp.quicksum(
                 gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
                             for t in range(self.iteration, T + self.iteration)) 
@@ -165,7 +166,7 @@ class SchedulerSimulator:
                     model.addConstr(s[i, t] >= 0)
             # Tracking processed token constraint
             for i in range(N):
-                for t in range(1, T):  # Starting from 1 because we need t-1 to be valid
+                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
                     model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
                 model.addConstr(c[i, 0] == x[i, 0])
 
@@ -211,6 +212,9 @@ class SchedulerSimulator:
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
+        if self.switching_cost:
+            s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
+            c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
         print("Add variables done!")
 
         # Set the objective
@@ -232,6 +236,20 @@ class SchedulerSimulator:
         # Batch size constraint
         for t in range(self.iteration, T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
+
+        if self.switching_cost > 0:
+            # Schedule constraint
+            for i in range(N):
+                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                    model.addConstr(s[i, t] <= x[i, t])
+                    model.addConstr(s[i, t] <= 1 - x[i, t-1])
+                    model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
+                    model.addConstr(s[i, t] >= 0)
+            # Tracking processed token constraint
+            for i in range(N):
+                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                    model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
+                model.addConstr(c[i, 0] == x[i, 0])
 
         # Solve
         model.optimize()
@@ -401,9 +419,23 @@ class SchedulerSimulator:
         sigma = 31.604314122710903
         lambda_poisson = 1
         requests = []
+        last_arrival = 0
+
+        # Parameters for burstiness
+        burst_period = 10  # Defines how often the rate changes
+        high_rate = 40  # High arrival rate
+        low_rate = 5  # Low arrival rate
+        current_rate = high_rate
+
         for i in range(num_requests):
             tokens = max(1, int(np.random.normal(mu, sigma)))
-            arrival_time = np.random.poisson(lambda_poisson) * num_requests * mu
+
+            # Alternate between high and low arrival rates
+            if i % burst_period < 1:
+                current_rate = high_rate if current_rate == low_rate else low_rate
+
+            arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
+            last_arrival = arrival_time
             deadline = arrival_time + int(random.expovariate(1 / (inference_delays[16] * tokens)))
             request = Request(tokens, arrival_time, deadline)
             requests.append(request)
@@ -426,7 +458,7 @@ class SchedulerSimulator:
         print(f"Plot saved as {filename}")
         plt.clf()
 
-    def calculate_objective_from_log(self, log_filename, scheduling_policy):
+    def calculate_objective_from_log(self, scheduling_policy, start=0):
         objective_metric = 0
 
         with open(f'{scheduling_policy}.log', 'r') as log_file:
@@ -435,6 +467,7 @@ class SchedulerSimulator:
         iterations_data = log_data.split('---------------------------------\n')
 
         previous_selected_requests = []
+        startpoint = -1
         for iteration_data in iterations_data:
             if iteration_data.strip() == '':
                 continue
@@ -442,6 +475,12 @@ class SchedulerSimulator:
             # Extract iteration number
             iteration_match = re.search(r"Iteration: (\d+)", iteration_data)
             iteration = int(iteration_match.group(1)) if iteration_match else None
+            if iteration == 0:
+                startpoint += 1
+            if startpoint < start:
+                continue
+            if startpoint > start:
+                return objective_metric
 
             # Extract selected requests
             selected_requests_match = re.search(r"Selected Requests: (.+?)\n", iteration_data)
