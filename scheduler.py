@@ -10,7 +10,8 @@ import copy
 from numpy import inf
 
 class Request:
-    def __init__(self, tokens, arrival_time, deadline):
+    def __init__(self, id, tokens, arrival_time, deadline):
+        self.id = id
         self.tokens = tokens
         self.deadline = deadline
         self.arrival_time = arrival_time
@@ -75,6 +76,10 @@ class SchedulerSimulator:
         else:  
             return float('inf')  # Assume infinite delay for batch sizes not in the list 
 
+    def log_info(self, info):
+        with open(self.scheduling_policy + '.log', 'a') as log_file:
+            log_file.write(info)
+
     def log_scheduler_decision(self, iteration, current_requests, selected_requests, batch_size):
         """
         Logs the decision made by the scheduler at each iteration, including the current state of requests.
@@ -126,19 +131,13 @@ class SchedulerSimulator:
                             x[i, t].start=1
 
         # Set the objective
-        if self.switching_cost > 0:
-            switching_cost = self.switching_cost  # Define the switching cost
-            objective = gp.quicksum(
-                gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
-                            for t in range(self.iteration, T + self.iteration)) 
-                for i in range(N)) + gp.quicksum(
-                    gp.quicksum(s[i, t] for t in range(T)) * switching_cost
-                for i in range(N))
-        else:
-            objective = gp.quicksum(
-                gp.quicksum(int(t-self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] for t in range(self.iteration, T+self.iteration))
-                for i in range(N)
-            )
+        switching_cost = self.switching_cost  # Define the switching cost
+        objective = gp.quicksum(
+            gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
+                        for t in range(self.iteration, T + self.iteration)) 
+            for i in range(N)) + gp.quicksum(
+                gp.quicksum(s[i, t] for t in range(T)) * switching_cost
+            for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
         # Completion constraint
@@ -198,6 +197,7 @@ class SchedulerSimulator:
         return selected_requests, batch_size
     
     def offline_solver(self):  
+        requests = list(self.requests.values())
         model = gp.Model("Scheduler")  # Create a new model
         model.Params.LogToConsole = 0  # Disable model output
         #model.setParam('TimeLimit', 0.1)  # Set time limit
@@ -207,34 +207,34 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = max(sum([req.tokens for req in self.requests]), max([self.time2iter(req.deadline) for req in self.requests])) + max([req.tokens for req in self.requests])  # Max iterations
+        T = max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + max([req.tokens for req in requests])  # Max iterations
         print("N=", N, " T=", T)
 
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
-        if self.switching_cost:
-            s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
-            c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
+        s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
+        c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
         print("Add variables done!")
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum(int(t-self.time2iter(self.requests[i].arrival_time)) * x[i, t] for t in range(self.time2iter(self.requests[i].arrival_time), T))
-            for i in range(N)
-        )
+                gp.quicksum((t - self.time2iter(requests[i].arrival_time)) * x[i, t-self.iteration] 
+                            for t in range(self.iteration, T + self.iteration)) 
+                for i in range(N)) + gp.quicksum(
+                    gp.quicksum(s[i, t] for t in range(T)) * self.switching_cost
+                for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
         # Completion constraint
         for i in range(N):
-            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == self.requests[i].tokens)
+            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == requests[i].tokens)
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(self.requests[i].arrival_time)):
+            for t in range(self.time2iter(requests[i].arrival_time)+1):
                 model.addConstr(x[i, t] == 0)
 
         # Batch size constraint
-        for t in range(self.iteration, T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
 
         if self.switching_cost > 0:
@@ -281,7 +281,7 @@ class SchedulerSimulator:
             selected_requests = []
             for i in range(N):
                 if solution[i, iteration] > 0.5:
-                    selected_requests.append(self.requests[i])
+                    selected_requests.append(requests[i])
             requests_order.append(selected_requests)
         
         return requests_order
@@ -389,14 +389,19 @@ class SchedulerSimulator:
         goodput = 0  
         processing_requests = []  
         pending_tokens_over_time = []  
+        requests = list(self.requests.values())
+        self.log_info(f"---------------------------------\n")
+        self.log_info(f"N={len(requests)}\n")
+        self.log_info(f"---------------------------------\n")
 
-        while len(self.requests)>0 or len(processing_requests)>0:    
-            arrived_requests = [req for req in self.requests if req.arrival_time <= self.current_time]  
+        while len(requests)>0 or len(processing_requests)>0:    
+            arrived_requests = [req for req in requests if req.arrival_time <= self.current_time]  
             if len(arrived_requests)>0:
                 processing_requests.extend(arrived_requests)  
                 self.new_request_arrive = True
-                self.requests = [req for req in self.requests if req not in arrived_requests]  
-                # print('Total Requests:', len(self.requests), 'Processing Requests:', len(processing_requests))
+                requests = [req for req in requests if req not in arrived_requests]  
+                for req in arrived_requests:
+                    del self.requests[req.id]
     
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
             #pending_tokens_over_time.append(self.pending_tokens(processing_requests))  # Record pending tokens
@@ -409,17 +414,12 @@ class SchedulerSimulator:
         #self.plot_pending_tokens(pending_tokens_over_time)
         return goodput, average_jct  
 
-    # Adjusting for diurnal patterns
-    def diurnal_variation(self, hour):
-        peak_hours = [9, 10, 11, 12, 13, 14, 15, 16]  # 9 AM to 5 PM
-        return 1.5 if hour in peak_hours else 0.7
-
     def generate_requests(self, num_requests, inference_delays):
         mu = 35.403855367569996
         sigma = 31.604314122710903
         lambda_poisson = 1
-        requests = []
         last_arrival = 0
+        requests = {}
 
         # Parameters for burstiness
         burst_period = 10  # Defines how often the rate changes
@@ -428,17 +428,19 @@ class SchedulerSimulator:
         current_rate = high_rate
 
         for i in range(num_requests):
+            id = f"{i+1}"
             tokens = max(1, int(np.random.normal(mu, sigma)))
 
             # Alternate between high and low arrival rates
-            if i % burst_period < 1:
-                current_rate = high_rate if current_rate == low_rate else low_rate
+            #if i % burst_period < 1:
+                #current_rate = high_rate if current_rate == low_rate else low_rate
+            current_rate = high_rate
 
             arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
             last_arrival = arrival_time
             deadline = arrival_time + int(random.expovariate(1 / (inference_delays[16] * tokens)))
-            request = Request(tokens, arrival_time, deadline)
-            requests.append(request)
+            request = Request(id, tokens, arrival_time, deadline)
+            requests[id] = request
 
         return requests
 
