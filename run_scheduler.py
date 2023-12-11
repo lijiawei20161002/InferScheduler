@@ -46,7 +46,7 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
   
-    scheduling_policies = ['offline solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = [16]  
   
     goodput_values = {}  

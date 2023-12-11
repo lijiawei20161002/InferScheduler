@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import re
 
-import re
-
-def parse_log_file(filename, request_ids, request_num):
+def parse_request_data(filename, request_ids, request_num):
     with open(filename, 'r') as file:
         log_data = file.read()
 
@@ -37,6 +35,19 @@ def parse_log_file(filename, request_ids, request_num):
 
     return request_data
 
+def parse_request_num(filename):
+    with open(filename, 'r') as file:
+        log_data = file.read()
+    iteration_pattern = r"Iteration: (\d+), Time:.*?Current Requests: \[(.*?)\]"
+    iterations = re.findall(iteration_pattern, log_data, re.DOTALL)
+    current_request_counts = []
+
+    for iteration, requests in iterations:
+        current_requests = requests.split('}, {') if requests else []
+        current_request_counts.append(len(current_requests))
+
+    return current_request_counts   
+
 def plot_request_data(request_data, filename):
     plt.figure(figsize=(10, 6))
 
@@ -58,9 +69,24 @@ def plot_request_data(request_data, filename):
     plt.legend(fontsize='large')
     plt.savefig(filename)
 
-# Usage
-filename = 'offline solver.log'  # Replace with your log file path
-request_ids = ['1', '2', '3', '4', '5', '6']  # Replace with your list of request IDs
+def plot_request_counts(request_counts, filename):
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(request_counts)+1), request_counts, marker='o', linestyle='-', color='blue')
+    plt.xlabel('Iteration')
+    plt.ylabel('Number of Pending Requests')
+    plt.title('Pending Requests per Iteration')
+    plt.grid(True)
+    plt.savefig(filename)
+
+
+logfile = 'offline solver.log'  # Replace with your log file path
+request_ids = ['10', '12', '3', '4', '5', '6', '7', '8', '9']  # Replace with your list of request IDs
 request_num = 90  
-request_data = parse_log_file(filename, request_ids, request_num)
-plot_request_data(request_data, 'tokenviz_'+filename.split('.log')[0]+'.png')
+request_data = parse_request_data(logfile, request_ids, request_num)
+plot_request_data(request_data, 'tokenviz_'+logfile.split('.log')[0]+'.png')
+
+'''
+logfile = 'offline solver.log'
+request_counts = parse_request_num(logfile)
+plot_request_counts(request_counts, 'pendingviz.png')'''
+
