@@ -417,32 +417,39 @@ class SchedulerSimulator:
     def generate_requests(self, num_requests, inference_delays):
         mu = 35.403855367569996
         sigma = 31.604314122710903
-        lambda_poisson = 1
         last_arrival = 0
         requests = {}
 
-        # Parameters for burstiness
-        burst_period = 10  # Defines how often the rate changes
-        high_rate = 40  # High arrival rate
-        low_rate = 5  # Low arrival rate
+        # Parameters for burstiness and urgency
+        burst_period = 10  # Defines how often the arrival rate changes
+        urgent_request_period = 5  # Interval for injecting urgent requests
+        high_rate = 70  # High arrival rate
+        low_rate = 15  # Low arrival rate
         current_rate = high_rate
 
         for i in range(num_requests):
             id = f"{i+1}"
-            tokens = max(1, int(np.random.normal(mu, sigma)))
+            
+            # Introduce short, urgent requests
+            if i % urgent_request_period == 0:
+                tokens = np.random.randint(1, 5)  # Urgent requests have 1 to 4 tokens
+                deadline_factor = 2.0  # Tighter deadlines for urgent requests
+            else:
+                tokens = max(1, int(np.random.normal(mu, sigma)))
+                deadline_factor = 0.5  # Normal deadlines for regular requests
 
             # Alternate between high and low arrival rates
-            #if i % burst_period < 1:
-                #current_rate = high_rate if current_rate == low_rate else low_rate
-            current_rate = high_rate
+            if i % burst_period < 1:
+                current_rate = high_rate if current_rate == low_rate else low_rate
 
             arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
             last_arrival = arrival_time
-            deadline = arrival_time + int(random.expovariate(1 / (inference_delays[16] * tokens)))
+            deadline = arrival_time + int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))
             request = Request(id, tokens, arrival_time, deadline)
             requests[id] = request
 
         return requests
+
 
     def pending_tokens(self, processing_requests):
         # Filter out inactive requests
