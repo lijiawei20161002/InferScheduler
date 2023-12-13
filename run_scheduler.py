@@ -55,9 +55,9 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
   
-    #scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
 
-    scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    #scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
 
 
     batching_policies = [16]  
@@ -98,11 +98,11 @@ if __name__ == "__main__":
         cnt += 1
 
     # Plot the goodput results  
-    #plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
+    plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
                  #"Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  
   
     # Plot the average JCT results  
-    #plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  
+    plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  
                  #"Scheduler Simulator Average JCT vs. Number of Requests", "average_jct.png")  
 
     # Plot the goodput results  
