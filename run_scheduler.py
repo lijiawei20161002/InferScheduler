@@ -55,8 +55,10 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
   
-    scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    #scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+
     scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+
 
     batching_policies = [16]  
   
@@ -78,6 +80,7 @@ if __name__ == "__main__":
     for num_requests in num_requests_values:  
         # Generate the requests  
         original_requests = simulator.generate_requests(num_requests, inference_delays)
+  
         for scheduling_policy in scheduling_policies:  
             for batch_policy in batching_policies:  
                 print(scheduling_policy, batch_policy)  
@@ -91,8 +94,9 @@ if __name__ == "__main__":
                 #average_jct_values[key].append(average_jct)  
                 objective_metrics[key].append(objective_metric)
                 #os.system('python3 autoremove.py')
+
         cnt += 1
-    
+
     # Plot the goodput results  
     #plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
                  #"Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  

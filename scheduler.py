@@ -132,8 +132,15 @@ class SchedulerSimulator:
 
         # Set the objective
         switching_cost = self.switching_cost  # Define the switching cost
+        # objective = gp.quicksum(
+        #     gp.quicksum((t - self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] 
+        #                 for t in range(self.iteration, T + self.iteration)) 
+        #     for i in range(N)) + gp.quicksum(
+        #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+        #     for i in range(N))
+    
         objective = gp.quicksum(
-            gp.quicksum((t - self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] 
+            gp.quicksum((t - processing_requests[i].deadline) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
                 gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
@@ -217,8 +224,14 @@ class SchedulerSimulator:
         print("Add variables done!")
 
         # Set the objective
+        # objective = gp.quicksum(
+        #     gp.quicksum((t - self.time2iter(requests[i].deadline)) * x[i, t-self.iteration] 
+        #                 for t in range(self.iteration, T + self.iteration)) 
+        #     for i in range(N)) + gp.quicksum(
+        #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+        #     for i in range(N))
         objective = gp.quicksum(
-            gp.quicksum((t - self.time2iter(requests[i].deadline)) * x[i, t-self.iteration] 
+            gp.quicksum((t - requests[i].deadline) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
                 gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
@@ -444,7 +457,12 @@ class SchedulerSimulator:
 
             arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
             last_arrival = arrival_time
-            deadline = arrival_time + int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))
+            if deadline_factor == 0.5:
+                deadline = arrival_time + random.randint(0,2000)
+            else:
+                deadline = arrival_time + random.randint(0,20)
+            #+ int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))
+            print(f'deadline_factor:{deadline_factor} and arrival_time:{arrival_time} and tokens:{tokens} and deadline_factor / (inference_delays[16] * tokens):{deadline_factor / (inference_delays[16] * tokens)} and deadline:{deadline}')
             request = Request(id, tokens, arrival_time, deadline)
             requests[id] = request
 
