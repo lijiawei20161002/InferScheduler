@@ -37,6 +37,15 @@ if __name__ == "__main__":
     first_time_flag = True
   
     # Define colors for each scheduling policy  
+    # color_map = {  
+    #     'offline solver': 'purple',  
+    #     'online solver': 'pink',
+    #     'random': 'blue',  
+    #     'bidding': 'green',  
+    #     'fcfs': 'red',  
+    #     'deadline': 'orange'  
+    # }  
+
     color_map = {  
         'offline solver': 'purple',  
         'online solver': 'pink',
@@ -47,6 +56,8 @@ if __name__ == "__main__":
     }  
   
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+
     batching_policies = [16]  
   
     goodput_values = {}  

@@ -133,10 +133,10 @@ class SchedulerSimulator:
         # Set the objective
         switching_cost = self.switching_cost  # Define the switching cost
         objective = gp.quicksum(
-            gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
+            gp.quicksum((t - self.time2iter(processing_requests[i].deadline)) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
-                gp.quicksum(s[i, t] for t in range(T)) * switching_cost
+                gp.quicksum(c[i, t-1] for t in range(T)) * switching_cost
             for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
@@ -218,7 +218,7 @@ class SchedulerSimulator:
 
         # Set the objective
         objective = gp.quicksum(
-                gp.quicksum((t - self.time2iter(requests[i].arrival_time)) * x[i, t-self.iteration] 
+                gp.quicksum((t - self.time2iter(requests[i].deadline)) * x[i, t-self.iteration] 
                             for t in range(self.iteration, T + self.iteration)) 
                 for i in range(N)) + gp.quicksum(
                     gp.quicksum(s[i, t] for t in range(T)) * self.switching_cost
