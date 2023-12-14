@@ -334,3 +334,69 @@ No other solutions better than -1.62999e+07
 
 Optimal solution found (tolerance 1.00e-04)
 Best objective -1.629985300000e+07, best bound -1.629985300000e+07, gap 0.0000%
+
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:43:56 2023
+
+Changed value of parameter LogFile to offline.solver
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
+Optimize a model with 1936708 rows, 1156650 columns and 4646228 nonzeros
+Model fingerprint: 0xd4ae911c
+Variable types: 0 continuous, 1156650 integer (771100 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Presolve removed 906582 rows and 442553 columns (presolve time = 5s) ...
+Presolve removed 948670 rows and 496054 columns (presolve time = 10s) ...
+Presolve removed 982809 rows and 520710 columns
+Presolve time: 13.98s
+Presolved: 953899 rows, 635940 columns, 2546710 nonzeros
+Variable types: 0 continuous, 635940 integer (635940 binary)
+Found heuristic solution: objective -1.78439e+07
+Found heuristic solution: objective -2.39474e+07
+
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.12s
+
+Barrier statistics:
+ AA' NZ     : 3.195e+06
+ Factor NZ  : 1.529e+07 (roughly 800 MBytes of memory)
+ Factor Ops : 3.015e+08 (less than 1 second per iteration)
+ Threads    : 30
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0  -2.04449604e+10 -2.03099708e+07  4.23e+04 1.18e+03  3.73e+04    19s
+   1  -4.50308055e+08 -1.19058272e+09  8.76e+02 5.46e-12  1.27e+03    20s
+   2  -6.10493893e+07 -1.61284732e+08  8.30e+01 7.28e-12  1.30e+02    21s
+
+Barrier performed 2 iterations in 21.01 seconds
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 2.87s (can be avoided by choosing Method=3)
+
+Solved with dual simplex
+
+Root relaxation: objective -2.395883e+07, 991 iterations, 4.11 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                    -2.39588e+07 -1.719e+09  7077%     -   23s
+     0     0          -    0      -2.396e+07 -2.396e+07  0.00%     -   23s
+
+Explored 0 nodes (1182 simplex iterations) in 23.69 seconds
+Thread count was 32 (of 128 available processors)
+
+Solution count 3: -2.39588e+07 -2.39474e+07 -1.78439e+07 
+No other solutions better than -2.39588e+07
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -2.395882600000e+07, best bound -2.395882600000e+07, gap 0.0000%
