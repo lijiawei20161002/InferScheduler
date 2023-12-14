@@ -33,10 +33,19 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(10, 101, 20))  
+    num_requests_values = list(range(10, 111, 20))  
     first_time_flag = True
   
     # Define colors for each scheduling policy  
+    # color_map = {  
+    #     'offline solver': 'purple',  
+    #     'online solver': 'pink',
+    #     'random': 'blue',  
+    #     'bidding': 'green',  
+    #     'fcfs': 'red',  
+    #     'deadline': 'orange'  
+    # }  
+
     color_map = {  
         'offline solver': 'purple',  
         'online solver': 'pink',
@@ -45,8 +54,20 @@ if __name__ == "__main__":
         'fcfs': 'red',  
         'deadline': 'orange'  
     }  
+
+    # color_map = {  
+    #     'online solver': 'pink',
+    #     'random': 'blue',  
+    #     'bidding': 'green',  
+    #     'fcfs': 'red',  
+    #     'deadline': 'orange'  
+    # }  
   
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+
+    #scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+
+
     batching_policies = [16]  
   
     goodput_values = {}  
@@ -67,6 +88,7 @@ if __name__ == "__main__":
     for num_requests in num_requests_values:  
         # Generate the requests  
         original_requests = simulator.generate_requests(num_requests, inference_delays)
+  
         for scheduling_policy in scheduling_policies:  
             for batch_policy in batching_policies:  
                 print(scheduling_policy, batch_policy)  
@@ -76,21 +98,20 @@ if __name__ == "__main__":
                 #objective_metric = main(simulator, requests, cnt)
                 goodput, average_jct, objective_metric = main(simulator, requests, cnt)  
                 key = f'{scheduling_policy}'  
-                #goodput_values[key].append(goodput)  
-                #average_jct_values[key].append(average_jct)  
+                goodput_values[key].append(goodput)  
+                average_jct_values[key].append(average_jct)  
                 objective_metrics[key].append(objective_metric)
                 #os.system('python3 autoremove.py')
+
         cnt += 1
-    
+
     # Plot the goodput results  
-    #plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
-                 #"Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  
+    plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  "Scheduler Simulator Goodput vs. Number of Requests", "goodput_only_Sit_500_1000.png")  
   
     # Plot the average JCT results  
-    #plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  
-                 #"Scheduler Simulator Average JCT vs. Number of Requests", "average_jct.png")  
+    plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  "Scheduler Simulator Average JCT vs. Number of Requests", "average_only_Sit_500_1000.png")  
 
     # Plot the goodput results  
     plot_results(num_requests_values, objective_metrics, "Number of Requests", "Objective",  
-                 "Scheduler Simulator Objective vs. Number of Requests", "objective.png")  
+                 "Scheduler Simulator Objective vs. Number of Requests", "objective_only_Sit_500_1000.png")  
   
