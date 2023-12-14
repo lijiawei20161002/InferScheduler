@@ -139,11 +139,17 @@ class SchedulerSimulator:
         #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
         #     for i in range(N))
     
+        # objective = gp.quicksum(
+        #     gp.quicksum((t - processing_requests[i].arrival_time) * x[i, t-self.iteration] 
+        #                 for t in range(self.iteration, T + self.iteration)) 
+        #     for i in range(N)) + gp.quicksum(
+        #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+        #     for i in range(N))
         objective = gp.quicksum(
             gp.quicksum((t - processing_requests[i].arrival_time) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
-                gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+                gp.quicksum(s[i,t] for t in range(2, T)) 
             for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
@@ -230,11 +236,17 @@ class SchedulerSimulator:
         #     for i in range(N)) + gp.quicksum(
         #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
         #     for i in range(N))
+        # objective = gp.quicksum(
+        #     gp.quicksum((t - requests[i].arrival_time) * x[i, t-self.iteration] 
+        #                 for t in range(self.iteration, T + self.iteration)) 
+        #     for i in range(N)) + gp.quicksum(
+        #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+        #     for i in range(N))
         objective = gp.quicksum(
             gp.quicksum((t - requests[i].arrival_time) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
-                gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
+                gp.quicksum(s[i,t] for t in range(2, T)) 
             for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
@@ -458,7 +470,7 @@ class SchedulerSimulator:
             arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
             last_arrival = arrival_time
             if deadline_factor == 0.5:
-                deadline = arrival_time + random.randint(0,2000)
+                deadline = arrival_time + random.randint(1000,2000)
             else:
                 deadline = arrival_time + random.randint(0,20)
             #+ int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))
