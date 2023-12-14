@@ -33,7 +33,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(10, 81, 20))  
+    num_requests_values = list(range(10, 111, 20))  
     first_time_flag = True
   
     # Define colors for each scheduling policy  
@@ -55,17 +55,17 @@ if __name__ == "__main__":
         'deadline': 'orange'  
     }  
 
-    color_map = {  
-        'online solver': 'pink',
-        'random': 'blue',  
-        'bidding': 'green',  
-        'fcfs': 'red',  
-        'deadline': 'orange'  
-    }  
+    # color_map = {  
+    #     'online solver': 'pink',
+    #     'random': 'blue',  
+    #     'bidding': 'green',  
+    #     'fcfs': 'red',  
+    #     'deadline': 'orange'  
+    # }  
   
-    #scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
 
-    scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    #scheduling_policies = ['online solver', 'random', 'bidding', 'fcfs', 'deadline']  
 
 
     batching_policies = [16]  
