@@ -140,7 +140,7 @@ class SchedulerSimulator:
         #     for i in range(N))
     
         objective = gp.quicksum(
-            gp.quicksum((t - processing_requests[i].deadline) * x[i, t-self.iteration] 
+            gp.quicksum((t - processing_requests[i].arrival_time) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
                 gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
@@ -231,7 +231,7 @@ class SchedulerSimulator:
         #         gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
         #     for i in range(N))
         objective = gp.quicksum(
-            gp.quicksum((t - requests[i].deadline) * x[i, t-self.iteration] 
+            gp.quicksum((t - requests[i].arrival_time) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
                 gp.quicksum(c[i, t-1] * s[i,t] for t in range(2, T)) 
