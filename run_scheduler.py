@@ -106,12 +106,12 @@ if __name__ == "__main__":
         cnt += 1
 
     # Plot the goodput results  
-    plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  "Scheduler Simulator Goodput vs. Number of Requests", "goodput_only_Sit.png")  
+    plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  "Scheduler Simulator Goodput vs. Number of Requests", "goodput_only_Sit_500_1000.png")  
   
     # Plot the average JCT results  
-    plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  "Scheduler Simulator Average JCT vs. Number of Requests", "average_only_Sit.png")  
+    plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  "Scheduler Simulator Average JCT vs. Number of Requests", "average_only_Sit_500_1000.png")  
 
     # Plot the goodput results  
     plot_results(num_requests_values, objective_metrics, "Number of Requests", "Objective",  
-                 "Scheduler Simulator Objective vs. Number of Requests", "objective_only_Sit.png")  
+                 "Scheduler Simulator Objective vs. Number of Requests", "objective_only_Sit_500_1000.png")  
   

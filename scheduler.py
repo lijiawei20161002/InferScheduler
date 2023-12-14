@@ -470,7 +470,7 @@ class SchedulerSimulator:
             arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
             last_arrival = arrival_time
             if deadline_factor == 0.5:
-                deadline = arrival_time + random.randint(1000,2000)
+                deadline = arrival_time + random.randint(500,1000)
             else:
                 deadline = arrival_time + random.randint(0,20)
             #+ int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))

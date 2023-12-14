@@ -1,179 +1,56 @@
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:34:22 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:02:37 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 20331 rows, 12180 columns and 48721 nonzeros
-Model fingerprint: 0x42792e7d
-Variable types: 0 continuous, 12180 integer (8120 binary)
+Optimize a model with 22469 rows, 13470 columns and 53869 nonzeros
+Model fingerprint: 0xfa0e6cc3
+Variable types: 0 continuous, 13470 integer (8980 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 2e+03]
+  Objective range  [1e+00, 1e+03]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 8e+01]
-Presolve removed 19118 rows and 11371 columns
+  RHS range        [1e+00, 1e+02]
+Presolve removed 21130 rows and 12577 columns
 Presolve time: 0.08s
-Presolved: 1213 rows, 809 columns, 3233 nonzeros
-Variable types: 0 continuous, 809 integer (809 binary)
-Found heuristic solution: objective -284109.0000
-Found heuristic solution: objective -284118.0000
+Presolved: 1339 rows, 893 columns, 3569 nonzeros
+Variable types: 0 continuous, 893 integer (893 binary)
+Found heuristic solution: objective -204312.0000
+Found heuristic solution: objective -204396.0000
 
 Root relaxation: cutoff, 0 iterations, 0.00 seconds
 
 Explored 0 nodes (0 simplex iterations) in 0.09 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 2: -284118 -284109 
-No other solutions better than -284118
+Solution count 2: -204396 -204312 
+No other solutions better than -204396
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -2.841180000000e+05, best bound -2.841180000000e+05, gap 0.0000%
+Best objective -2.043960000000e+05, best bound -2.043960000000e+05, gap 0.0000%
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:34:23 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:02:38 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 146752 rows, 87840 columns and 352222 nonzeros
-Model fingerprint: 0x3f37ad01
-Variable types: 0 continuous, 87840 integer (58560 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 3e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 9e+01]
-Presolve removed 83583 rows and 45722 columns
-Presolve time: 0.63s
-Presolved: 63169 rows, 42118 columns, 168519 nonzeros
-Variable types: 0 continuous, 42118 integer (42118 binary)
-Found heuristic solution: objective -1285705.000
-Found heuristic solution: objective -1553074.000
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.01s
-
-Solved with dual simplex
-
-Root relaxation: objective -1.553084e+06, 29 iterations, 0.06 seconds
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0 -1553084.0    0    5 -1553074.0 -1553084.0  0.00%     -    0s
-
-Explored 0 nodes (29 simplex iterations) in 0.96 seconds
-Thread count was 32 (of 128 available processors)
-
-Solution count 2: -1.55307e+06 -1.2857e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective -1.553074000000e+06, best bound -1.553084000000e+06, gap 0.0006%
-
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:34:41 2023
-
-Changed value of parameter LogFile to offline.solver
-   Prev:   Default: 
-Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
-Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 520301 rows, 311400 columns and 1248751 nonzeros
-Model fingerprint: 0xf7d94dbd
-Variable types: 0 continuous, 311400 integer (207600 binary)
+Optimize a model with 159478 rows, 95310 columns and 382378 nonzeros
+Model fingerprint: 0x422ab4a4
+Variable types: 0 continuous, 95310 integer (63540 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
   Objective range  [1e+00, 5e+03]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Presolve removed 244543 rows and 127557 columns
-Presolve time: 3.45s
-Presolved: 275758 rows, 183843 columns, 735906 nonzeros
-Variable types: 0 continuous, 183843 integer (183843 binary)
-Found heuristic solution: objective -3463835.000
-Found heuristic solution: objective -5235943.000
-
-Deterministic concurrent LP optimizer: primal and dual simplex
-Showing first log only...
-
-Concurrent spin time: 0.05s
-
-Solved with dual simplex
-
-Root relaxation: objective -5.238849e+06, 292 iterations, 0.29 seconds
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0 -5238849.0    0   10 -5235943.0 -5238849.0  0.06%     -    5s
-     0     0 -5238849.0    0   16 -5235943.0 -5238849.0  0.06%     -    5s
-H    0     0                    -5238831.000 -5238849.0  0.00%     -    6s
-
-Cutting planes:
-  RLT: 2
-
-Explored 1 nodes (344 simplex iterations) in 6.50 seconds
-Thread count was 32 (of 128 available processors)
-
-Solution count 3: -5.23883e+06 -5.23594e+06 -3.46384e+06 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective -5.238831000000e+06, best bound -5.238849000000e+06, gap 0.0003%
-
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:36:00 2023
-
-Changed value of parameter LogFile to offline.solver
-   Prev:   Default: 
-Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
-Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 21630 rows, 12930 columns and 51770 nonzeros
-Model fingerprint: 0x351c4728
-Variable types: 0 continuous, 12930 integer (8620 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 2e+03]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 7e+01]
-Presolve removed 20372 rows and 12091 columns
-Presolve time: 0.08s
-Presolved: 1258 rows, 839 columns, 3353 nonzeros
-Variable types: 0 continuous, 839 integer (839 binary)
-Found heuristic solution: objective -453430.0000
-Found heuristic solution: objective -453791.0000
-
-Root relaxation: cutoff, 0 iterations, 0.00 seconds
-
-Explored 0 nodes (0 simplex iterations) in 0.09 seconds
-Thread count was 32 (of 128 available processors)
-
-Solution count 2: -453791 -453430 
-No other solutions better than -453791
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective -4.537910000000e+05, best bound -4.537910000000e+05, gap 0.0000%
-
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:36:01 2023
-
-Changed value of parameter LogFile to offline.solver
-   Prev:   Default: 
-Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
-Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 119034 rows, 71100 columns and 285444 nonzeros
-Model fingerprint: 0xcbbacaf1
-Variable types: 0 continuous, 71100 integer (47400 binary)
-Coefficient statistics:
-  Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 4e+03]
-  Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 8e+01]
-Presolve removed 66159 rows and 35846 columns
-Presolve time: 0.48s
-Presolved: 52875 rows, 35254 columns, 141085 nonzeros
-Variable types: 0 continuous, 35254 integer (35254 binary)
-Found heuristic solution: objective -1360107.000
-Found heuristic solution: objective -1499311.000
+Presolve removed 85122 rows and 45736 columns
+Presolve time: 0.71s
+Presolved: 74356 rows, 49574 columns, 198429 nonzeros
+Variable types: 0 continuous, 49574 integer (49574 binary)
+Found heuristic solution: objective -2020345.000
+Found heuristic solution: objective -2427334.000
 
 Deterministic concurrent LP optimizer: primal and dual simplex
 Showing first log only...
@@ -182,221 +59,229 @@ Concurrent spin time: 0.00s
 
 Solved with dual simplex
 
-Root relaxation: cutoff, 22 iterations, 0.05 seconds
+Root relaxation: cutoff, 23 iterations, 0.07 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0     cutoff    0      -1499311.0 -1499311.0  0.00%     -    0s
+     0     0     cutoff    0      -2427334.0 -2427334.0  0.00%     -    1s
 
-Explored 0 nodes (22 simplex iterations) in 0.70 seconds
+Explored 0 nodes (23 simplex iterations) in 1.03 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 2: -1.49931e+06 -1.36011e+06 
-No other solutions better than -1.49931e+06
+Solution count 2: -2.42733e+06 -2.02034e+06 
+No other solutions better than -2.42733e+06
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -1.499311000000e+06, best bound -1.499311000000e+06, gap 0.0000%
+Best objective -2.427334000000e+06, best bound -2.427334000000e+06, gap 0.0000%
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:36:12 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:02:56 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 423827 rows, 252900 columns and 1015777 nonzeros
-Model fingerprint: 0x985125be
-Variable types: 0 continuous, 252900 integer (168600 binary)
+Optimize a model with 393254 rows, 235200 columns and 943904 nonzeros
+Model fingerprint: 0x3b30b782
+Variable types: 0 continuous, 235200 integer (156800 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 7e+03]
+  Objective range  [1e+00, 5e+03]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 1e+02]
-Presolve removed 223084 rows and 119068 columns
-Presolve time: 2.37s
-Presolved: 200743 rows, 133832 columns, 535772 nonzeros
-Variable types: 0 continuous, 133832 integer (133832 binary)
-Found heuristic solution: objective -6624387.000
-Found heuristic solution: objective -7888932.000
+Presolve removed 218001 rows and 118353 columns
+Presolve time: 2.11s
+Presolved: 175253 rows, 116847 columns, 467725 nonzeros
+Variable types: 0 continuous, 116847 integer (116847 binary)
+Found heuristic solution: objective -2721712.000
+Found heuristic solution: objective -3756718.000
 
 Deterministic concurrent LP optimizer: primal and dual simplex
 Showing first log only...
 
-Concurrent spin time: 0.02s
+Concurrent spin time: 0.01s
 
 Solved with dual simplex
 
-Root relaxation: objective -7.889660e+06, 106 iterations, 0.18 seconds
+Root relaxation: objective -3.757897e+06, 182 iterations, 0.18 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-*    0     0               0    -7889660.000 -7889660.0  0.00%     -    3s
+     0     0 -3757897.0    0    9 -3756718.0 -3757897.0  0.03%     -    2s
+H    0     0                    -3757897.000 -3757897.0  0.00%     -    2s
+     0     0 -3757897.0    0    9 -3757897.0 -3757897.0  0.00%     -    2s
 
-Explored 0 nodes (106 simplex iterations) in 3.40 seconds
+Explored 1 nodes (182 simplex iterations) in 3.01 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 3: -7.88966e+06 -7.88893e+06 -6.62439e+06 
-No other solutions better than -7.88966e+06
+Solution count 3: -3.7579e+06 -3.75672e+06 -2.72171e+06 
+No other solutions better than -3.7579e+06
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -7.889660000000e+06, best bound -7.889660000000e+06, gap 0.0000%
+Best objective -3.757897000000e+06, best bound -3.757897000000e+06, gap 0.0000%
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:37:08 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:04:46 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 814050 rows, 486150 columns and 1952390 nonzeros
-Model fingerprint: 0x93fa697b
-Variable types: 0 continuous, 486150 integer (324100 binary)
+Optimize a model with 925135 rows, 552930 columns and 2219295 nonzeros
+Model fingerprint: 0x2109910e
+Variable types: 0 continuous, 552930 integer (368620 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 1e+04]
+  Objective range  [1e+00, 9e+03]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 1e+02]
-Presolve removed 449058 rows and 242817 columns
-Presolve time: 4.74s
-Presolved: 364992 rows, 243333 columns, 974406 nonzeros
-Variable types: 0 continuous, 243333 integer (243333 binary)
-Found heuristic solution: objective -9242901.000
-Found heuristic solution: objective -1.21724e+07
+Presolve removed 499948 rows and 269434 columns (presolve time = 5s) ...
+Presolve removed 515144 rows and 279587 columns
+Presolve time: 5.48s
+Presolved: 409991 rows, 273343 columns, 1094296 nonzeros
+Variable types: 0 continuous, 273343 integer (273343 binary)
+Found heuristic solution: objective -7905604.000
+Found heuristic solution: objective -1.12711e+07
 
 Deterministic concurrent LP optimizer: primal and dual simplex
 Showing first log only...
 
-Concurrent spin time: 0.05s
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+       0   -1.1277457e+07   2.350000e+02   8.343456e+08      7s
+Concurrent spin time: 0.06s
 
 Solved with dual simplex
 
-Root relaxation: objective -1.217740e+07, 404 iterations, 0.38 seconds
+Root relaxation: objective -1.127494e+07, 621 iterations, 0.57 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0 -1.218e+07    0    6 -1.217e+07 -1.218e+07  0.04%     -    6s
-H    0     0                    -1.21758e+07 -1.218e+07  0.01%     -    7s
-     0     0 -1.218e+07    0    6 -1.218e+07 -1.218e+07  0.01%     -    8s
-     0     0 -1.218e+07    0    6 -1.218e+07 -1.218e+07  0.01%     -   10s
-H    0     0                    -1.21774e+07 -1.218e+07  0.00%     -   10s
+     0     0 -1.127e+07    0   14 -1.127e+07 -1.127e+07  0.03%     -    8s
+H    0     0                    -1.12749e+07 -1.127e+07  0.00%     -    8s
 
-Explored 1 nodes (854 simplex iterations) in 10.38 seconds
+Explored 1 nodes (673 simplex iterations) in 8.66 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 4: -1.21774e+07 -1.21758e+07 -1.21724e+07 -9.2429e+06 
+Solution count 3: -1.12749e+07 -1.12711e+07 -7.9056e+06 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -1.217739700000e+07, best bound -1.217739800000e+07, gap 0.0000%
+Best objective -1.127489300000e+07, best bound -1.127494366667e+07, gap 0.0004%
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:41:07 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:12:37 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 1281542 rows, 765450 columns and 3074522 nonzeros
-Model fingerprint: 0xfc56595e
-Variable types: 0 continuous, 765450 integer (510300 binary)
+Optimize a model with 1246664 rows, 744930 columns and 2991764 nonzeros
+Model fingerprint: 0xbfcd8efe
+Variable types: 0 continuous, 744930 integer (496620 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
   Objective range  [1e+00, 1e+04]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [1e+00, 1e+02]
-Presolve removed 667149 rows and 350000 columns (presolve time = 5s) ...
-Presolve removed 692648 rows and 372840 columns
-Presolve time: 8.39s
-Presolved: 588894 rows, 392610 columns, 1572166 nonzeros
-Variable types: 0 continuous, 392610 integer (392610 binary)
-Found heuristic solution: objective -1.31174e+07
-Found heuristic solution: objective -1.62965e+07
+  RHS range        [1e+00, 9e+01]
+Presolve removed 609232 rows and 315839 columns (presolve time = 5s) ...
+Presolve removed 631872 rows and 335058 columns
+Presolve time: 8.42s
+Presolved: 614792 rows, 409872 columns, 1641154 nonzeros
+Variable types: 0 continuous, 409872 integer (409872 binary)
+Found heuristic solution: objective -1.00343e+07
+Found heuristic solution: objective -1.35915e+07
 
 Deterministic concurrent LP optimizer: primal and dual simplex
 Showing first log only...
 
-Concurrent spin time: 0.04s
+Concurrent spin time: 0.06s
 
 Solved with dual simplex
 
-Root relaxation: objective -1.629985e+07, 385 iterations, 0.67 seconds
+Root relaxation: objective -1.359799e+07, 807 iterations, 0.63 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-H    0     0                    -1.62999e+07 -8.788e+08  5292%     -   12s
-     0     0          -    0      -1.630e+07 -1.630e+07  0.00%     -   12s
+     0     0 -1.360e+07    0   12 -1.359e+07 -1.360e+07  0.05%     -   11s
+H    0     0                    -1.35965e+07 -1.360e+07  0.01%     -   12s
+*    0     0               0    -1.35980e+07 -1.360e+07  0.00%     -   14s
 
-Explored 0 nodes (464 simplex iterations) in 12.24 seconds
+Cutting planes:
+  RLT: 4
+
+Explored 1 nodes (883 simplex iterations) in 14.47 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 3: -1.62999e+07 -1.62965e+07 -1.31174e+07 
-No other solutions better than -1.62999e+07
+Solution count 4: -1.3598e+07 -1.35965e+07 -1.35915e+07 -1.00343e+07 
+No other solutions better than -1.3598e+07
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -1.629985300000e+07, best bound -1.629985300000e+07, gap 0.0000%
+Best objective -1.359799200000e+07, best bound -1.359799200000e+07, gap 0.0000%
 
-Gurobi 9.1.2 (linux64) logging started Wed Dec 13 21:43:56 2023
+Gurobi 9.1.2 (linux64) logging started Wed Dec 13 22:21:15 2023
 
 Changed value of parameter LogFile to offline.solver
    Prev:   Default: 
 Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
 Thread count: 64 physical cores, 128 logical processors, using up to 32 threads
-Optimize a model with 1936708 rows, 1156650 columns and 4646228 nonzeros
-Model fingerprint: 0xd4ae911c
-Variable types: 0 continuous, 1156650 integer (771100 binary)
+Optimize a model with 2236648 rows, 1336830 columns and 5366588 nonzeros
+Model fingerprint: 0x8413b8f7
+Variable types: 0 continuous, 1336830 integer (891220 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 1e+00]
-  Objective range  [1e+00, 1e+04]
+  Objective range  [1e+00, 2e+04]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e+00, 1e+02]
-Presolve removed 906582 rows and 442553 columns (presolve time = 5s) ...
-Presolve removed 948670 rows and 496054 columns (presolve time = 10s) ...
-Presolve removed 982809 rows and 520710 columns
-Presolve time: 13.98s
-Presolved: 953899 rows, 635940 columns, 2546710 nonzeros
-Variable types: 0 continuous, 635940 integer (635940 binary)
-Found heuristic solution: objective -1.78439e+07
-Found heuristic solution: objective -2.39474e+07
+Presolve removed 998825 rows and 460687 columns (presolve time = 5s) ...
+Presolve removed 1094548 rows and 569786 columns (presolve time = 10s) ...
+Presolve removed 1106412 rows and 583260 columns (presolve time = 16s) ...
+Presolve removed 1141250 rows and 606565 columns
+Presolve time: 16.26s
+Presolved: 1095398 rows, 730265 columns, 2924474 nonzeros
+Variable types: 0 continuous, 730265 integer (730265 binary)
+Found heuristic solution: objective -1.87880e+07
+Found heuristic solution: objective -2.60925e+07
 
 Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
 Showing barrier log only...
 
 Root barrier log...
 
-Ordering time: 0.12s
+Ordering time: 0.14s
 
 Barrier statistics:
- AA' NZ     : 3.195e+06
- Factor NZ  : 1.529e+07 (roughly 800 MBytes of memory)
- Factor Ops : 3.015e+08 (less than 1 second per iteration)
+ AA' NZ     : 3.669e+06
+ Factor NZ  : 1.769e+07 (roughly 900 MBytes of memory)
+ Factor Ops : 3.582e+08 (less than 1 second per iteration)
  Threads    : 30
 
                   Objective                Residual
 Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0  -2.04449604e+10 -2.03099708e+07  4.23e+04 1.18e+03  3.73e+04    19s
-   1  -4.50308055e+08 -1.19058272e+09  8.76e+02 5.46e-12  1.27e+03    20s
-   2  -6.10493893e+07 -1.61284732e+08  8.30e+01 7.28e-12  1.30e+02    21s
+   0  -2.27078587e+10 -2.11751770e+07  5.33e+04 1.47e+03  4.75e+04    22s
+   1  -4.68398485e+08 -1.61259168e+09  1.03e+03 7.28e-12  1.50e+03    23s
 
-Barrier performed 2 iterations in 21.01 seconds
+Barrier performed 1 iterations in 22.80 seconds
 Barrier solve interrupted - model solved by another algorithm
 
-Concurrent spin time: 2.87s (can be avoided by choosing Method=3)
+Concurrent spin time: 1.88s (can be avoided by choosing Method=3)
 
 Solved with dual simplex
 
-Root relaxation: objective -2.395883e+07, 991 iterations, 4.11 seconds
+Root relaxation: objective -2.610373e+07, 899 iterations, 3.07 seconds
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-H    0     0                    -2.39588e+07 -1.719e+09  7077%     -   23s
-     0     0          -    0      -2.396e+07 -2.396e+07  0.00%     -   23s
+     0     0 -2.610e+07    0    7 -2.609e+07 -2.610e+07  0.04%     -   24s
+H    0     0                    -2.61037e+07 -2.610e+07  0.00%     -   25s
 
-Explored 0 nodes (1182 simplex iterations) in 23.69 seconds
+Explored 1 nodes (1000 simplex iterations) in 26.00 seconds
 Thread count was 32 (of 128 available processors)
 
-Solution count 3: -2.39588e+07 -2.39474e+07 -1.78439e+07 
-No other solutions better than -2.39588e+07
+Solution count 3: -2.61037e+07 -2.60925e+07 -1.8788e+07 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective -2.395882600000e+07, best bound -2.395882600000e+07, gap 0.0000%
+Best objective -2.610373100000e+07, best bound -2.610373200000e+07, gap 0.0000%
