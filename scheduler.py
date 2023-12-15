@@ -137,6 +137,7 @@ class SchedulerSimulator:
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
                 gp.quicksum(s[i, t] for t in range(T)) * switching_cost
+                #gp.quicksum(s[i, t]*c[i,t] for t in range(T)) * switching_cost
             for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
@@ -222,6 +223,7 @@ class SchedulerSimulator:
                             for t in range(self.iteration, T + self.iteration)) 
                 for i in range(N)) + gp.quicksum(
                     gp.quicksum(s[i, t] for t in range(T)) * self.switching_cost
+                    #gp.quicksum(s[i, t]*c[i, t] for t in range(T)) * self.switching_cost
                 for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
@@ -280,6 +282,7 @@ class SchedulerSimulator:
         for iteration in range(T):
             selected_requests = []
             for i in range(N):
+                print(solution[i, iteration])
                 if solution[i, iteration] > 0.5:
                     selected_requests.append(requests[i])
             requests_order.append(selected_requests)
@@ -423,8 +426,8 @@ class SchedulerSimulator:
         # Parameters for burstiness and urgency
         burst_period = 10  # Defines how often the arrival rate changes
         urgent_request_period = 5  # Interval for injecting urgent requests
-        high_rate = 70  # High arrival rate
-        low_rate = 15  # Low arrival rate
+        high_rate = 60  # High arrival rate
+        low_rate = 10  # Low arrival rate
         current_rate = high_rate
 
         for i in range(num_requests):
