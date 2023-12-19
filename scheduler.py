@@ -20,6 +20,7 @@ class Request:
             self.priority = 1 / (deadline - arrival_time)
         else:
             self.priority = 0
+        self.switching_cost = self.tokens/2
 
     def update_score(self, current_time):
         if current_time < self.deadline:
@@ -45,7 +46,7 @@ class SchedulerSimulator:
         self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
-        self.switching_cost = 0
+        self.switching_cost = True
         self.mode = 'incremental'
 
     def call_offline_solver(self):
@@ -120,7 +121,7 @@ class SchedulerSimulator:
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
         if self.switching_cost:
             s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
-            c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
+            #c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
         
         # Use previous solution as intial solution
         if self.mode == 'incremental':
@@ -131,12 +132,11 @@ class SchedulerSimulator:
                             x[i, t].start=1
 
         # Set the objective
-        switching_cost = self.switching_cost  # Define the switching cost
         objective = gp.quicksum(
             gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
                         for t in range(self.iteration, T + self.iteration)) 
             for i in range(N)) + gp.quicksum(
-                gp.quicksum(s[i, t] for t in range(T)) * switching_cost
+                gp.quicksum(s[i, t] for t in range(T)) * processing_requests[i].switching_cost
                 #gp.quicksum(s[i, t]*c[i,t] for t in range(T)) * switching_cost
             for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
@@ -165,10 +165,10 @@ class SchedulerSimulator:
                     model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
                     model.addConstr(s[i, t] >= 0)
             # Tracking processed token constraint
-            for i in range(N):
-                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
-                model.addConstr(c[i, 0] == x[i, 0])
+            #for i in range(N):
+                #for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                    #model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
+                #model.addConstr(c[i, 0] == x[i, 0])
 
         # Solve
         model.optimize()
@@ -214,7 +214,7 @@ class SchedulerSimulator:
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
         s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
-        c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
+        #c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
         print("Add variables done!")
 
         # Set the objective
@@ -222,7 +222,7 @@ class SchedulerSimulator:
                 gp.quicksum((t - self.time2iter(requests[i].arrival_time)) * x[i, t-self.iteration] 
                             for t in range(self.iteration, T + self.iteration)) 
                 for i in range(N)) + gp.quicksum(
-                    gp.quicksum(s[i, t] for t in range(T)) * self.switching_cost
+                    gp.quicksum(s[i, t] for t in range(T)) * requests[i].switching_cost
                     #gp.quicksum(s[i, t]*c[i, t] for t in range(T)) * self.switching_cost
                 for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
@@ -248,10 +248,10 @@ class SchedulerSimulator:
                     model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
                     model.addConstr(s[i, t] >= 0)
             # Tracking processed token constraint
-            for i in range(N):
-                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
-                model.addConstr(c[i, 0] == x[i, 0])
+            #for i in range(N):
+                #for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                    #model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
+                #model.addConstr(c[i, 0] == x[i, 0])
 
         # Solve
         model.optimize()
@@ -282,7 +282,7 @@ class SchedulerSimulator:
         for iteration in range(T):
             selected_requests = []
             for i in range(N):
-                print(solution[i, iteration])
+                #print(solution[i, iteration])
                 if solution[i, iteration] > 0.5:
                     selected_requests.append(requests[i])
             requests_order.append(selected_requests)
@@ -505,9 +505,9 @@ class SchedulerSimulator:
                     if iteration >= arrival_iter:
                         # Calculate the objective for each selected request
                         objective_metric += int(iteration - arrival_iter)
-                    switching_cost = self.switching_cost
+                    switching_cost = req['switching_cost']
                     for pre in previous_selected_requests:
-                        if pre['arrival_time'] == req['arrival_time'] and pre['deadline'] == req['deadline']:
+                        if pre['id'] == req['id']:
                             switching_cost = 0
                             break
                     objective_metric += switching_cost
