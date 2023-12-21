@@ -1,0 +1,483 @@
+---------------------------------
+N=10
+---------------------------------
+Iteration: 0, Time: -84.1871875 to 0.0
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 1, Time: 0.0 to 84.1871875
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 2, Time: 84.1871875 to 168.374375
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 3, Time: 168.374375 to 252.56156249999998
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 4, Time: 252.56156249999998 to 336.74875
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 5, Time: 336.74875 to 420.93593749999997
+Current Requests: []
+Selected Requests: []
+Batch Size: 16
+---------------------------------
+Iteration: 6, Time: 420.93593749999997 to 505.12312499999996
+Current Requests: [{'id': '1', 'tokens': 3, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}, {'id': '2', 'tokens': 1, 'deadline': 803, 'arrival_time': 493, 'score': 0.0012453300124533001, 'priority': 0.0032258064516129032, 'switching_cost': 0.5}]
+Selected Requests: [{'id': '1', 'tokens': 3, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}, {'id': '2', 'tokens': 1, 'deadline': 803, 'arrival_time': 493, 'score': 0.0012453300124533001, 'priority': 0.0032258064516129032, 'switching_cost': 0.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 7, Time: 505.12312499999996 to 589.3103125
+Current Requests: [{'id': '1', 'tokens': 2, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}]
+Selected Requests: [{'id': '1', 'tokens': 2, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 8, Time: 589.3103125 to 673.4975
+Current Requests: [{'id': '1', 'tokens': 1, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}, {'id': '3', 'tokens': 41, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '1', 'tokens': 1, 'deadline': 652, 'arrival_time': 478, 'score': 0.004601226993865031, 'priority': 0.005747126436781609, 'switching_cost': 1.5}, {'id': '3', 'tokens': 41, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 9, Time: 673.4975 to 757.6846874999999
+Current Requests: [{'id': '3', 'tokens': 40, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '3', 'tokens': 40, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 10, Time: 757.6846874999999 to 841.8718749999999
+Current Requests: [{'id': '3', 'tokens': 39, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '3', 'tokens': 39, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 11, Time: 841.8718749999999 to 926.0590625
+Current Requests: [{'id': '3', 'tokens': 38, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '3', 'tokens': 38, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 12, Time: 926.0590625 to 1010.2462499999999
+Current Requests: [{'id': '3', 'tokens': 37, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '3', 'tokens': 37, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 13, Time: 1010.2462499999999 to 1094.4334374999999
+Current Requests: [{'id': '3', 'tokens': 36, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Selected Requests: [{'id': '3', 'tokens': 36, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 14, Time: 1094.4334374999999 to 1178.620625
+Current Requests: [{'id': '3', 'tokens': 35, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 42, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 35, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 42, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 15, Time: 1178.620625 to 1262.8078125
+Current Requests: [{'id': '3', 'tokens': 34, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 41, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 34, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 41, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 16, Time: 1262.8078125 to 1346.995
+Current Requests: [{'id': '3', 'tokens': 33, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 40, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 33, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 40, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 17, Time: 1346.995 to 1431.1821874999998
+Current Requests: [{'id': '3', 'tokens': 32, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 39, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 32, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 39, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 18, Time: 1431.1821874999998 to 1515.3693749999998
+Current Requests: [{'id': '3', 'tokens': 31, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 38, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 31, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 38, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 19, Time: 1515.3693749999998 to 1599.5565625
+Current Requests: [{'id': '3', 'tokens': 30, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 37, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 30, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 37, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 20, Time: 1599.5565625 to 1683.7437499999999
+Current Requests: [{'id': '3', 'tokens': 29, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 36, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 42, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 29, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 36, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 42, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 21, Time: 1683.7437499999999 to 1767.9309374999998
+Current Requests: [{'id': '3', 'tokens': 28, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 35, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 41, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}]
+Selected Requests: [{'id': '3', 'tokens': 28, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 35, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 41, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 22, Time: 1767.9309374999998 to 1852.118125
+Current Requests: [{'id': '3', 'tokens': 27, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 34, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 40, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 4, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}]
+Selected Requests: [{'id': '3', 'tokens': 27, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 34, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 40, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 4, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}]
+Batch Size: 16
+---------------------------------
+Iteration: 23, Time: 1852.118125 to 1936.3053125
+Current Requests: [{'id': '3', 'tokens': 26, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 33, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 39, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 3, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 73, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 26, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 33, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 39, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 3, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 73, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 24, Time: 1936.3053125 to 2020.4924999999998
+Current Requests: [{'id': '3', 'tokens': 25, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 32, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 38, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 2, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 72, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 25, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 32, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 38, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 2, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 72, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 25, Time: 2020.4924999999998 to 2104.6796875
+Current Requests: [{'id': '3', 'tokens': 24, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 31, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 37, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 1, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 71, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 24, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 31, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 37, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '6', 'tokens': 1, 'deadline': 1833, 'arrival_time': 1802, 'score': 0.002182214948172395, 'priority': 0.03225806451612903, 'switching_cost': 2.0}, {'id': '7', 'tokens': 71, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 26, Time: 2104.6796875 to 2188.8668749999997
+Current Requests: [{'id': '3', 'tokens': 23, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 30, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 36, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 70, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 23, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 30, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 36, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 70, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 27, Time: 2188.8668749999997 to 2273.0540625
+Current Requests: [{'id': '3', 'tokens': 22, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 29, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 35, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 69, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 22, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 29, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 35, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 69, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 28, Time: 2273.0540625 to 2357.24125
+Current Requests: [{'id': '3', 'tokens': 21, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 28, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 34, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 68, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '3', 'tokens': 21, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 28, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 34, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 68, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 29, Time: 2357.24125 to 2441.4284374999997
+Current Requests: [{'id': '3', 'tokens': 20, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 27, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 33, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 67, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 21, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '9', 'tokens': 1, 'deadline': 2697, 'arrival_time': 2435, 'score': 0.0003707823507601038, 'priority': 0.003816793893129771, 'switching_cost': 0.5}]
+Selected Requests: [{'id': '3', 'tokens': 20, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 27, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 33, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 67, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 21, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '9', 'tokens': 1, 'deadline': 2697, 'arrival_time': 2435, 'score': 0.0003707823507601038, 'priority': 0.003816793893129771, 'switching_cost': 0.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 30, Time: 2441.4284374999997 to 2525.615625
+Current Requests: [{'id': '3', 'tokens': 19, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 26, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 32, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 66, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 20, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 15, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 19, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 26, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 32, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 66, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 20, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 15, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 31, Time: 2525.615625 to 2609.8028124999996
+Current Requests: [{'id': '3', 'tokens': 18, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 25, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 31, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 65, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 19, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 14, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 18, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 25, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 31, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 65, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 19, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 14, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 32, Time: 2609.8028124999996 to 2693.99
+Current Requests: [{'id': '3', 'tokens': 17, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 24, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 30, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 64, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 18, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 13, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 17, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 24, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 30, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 64, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 18, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 13, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 33, Time: 2693.99 to 2778.1771875
+Current Requests: [{'id': '3', 'tokens': 16, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 23, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 29, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 63, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 17, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 12, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 16, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 23, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 29, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 63, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 17, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 12, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 34, Time: 2778.1771875 to 2862.3643749999997
+Current Requests: [{'id': '3', 'tokens': 15, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 22, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 28, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 62, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 16, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 11, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 15, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 22, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 28, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 62, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 16, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 11, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 35, Time: 2862.3643749999997 to 2946.5515625
+Current Requests: [{'id': '3', 'tokens': 14, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 21, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 27, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 61, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 15, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 10, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 14, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 21, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 27, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 61, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 15, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 10, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 36, Time: 2946.5515625 to 3030.7387499999995
+Current Requests: [{'id': '3', 'tokens': 13, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 20, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 26, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 60, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 14, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 9, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 13, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 20, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 26, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 60, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 14, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 9, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 37, Time: 3030.7387499999995 to 3114.9259374999997
+Current Requests: [{'id': '3', 'tokens': 12, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 19, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 25, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 59, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 13, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 8, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 12, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 19, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 25, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 59, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 13, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 8, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 38, Time: 3114.9259374999997 to 3199.113125
+Current Requests: [{'id': '3', 'tokens': 11, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 18, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 24, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 58, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 12, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 7, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 11, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 18, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 24, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 58, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 12, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 7, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 39, Time: 3199.113125 to 3283.3003124999996
+Current Requests: [{'id': '3', 'tokens': 10, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 17, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 23, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 57, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 11, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 6, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 10, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 17, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 23, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 57, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 11, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 6, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 40, Time: 3283.3003124999996 to 3367.4874999999997
+Current Requests: [{'id': '3', 'tokens': 9, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 16, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 22, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 56, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 10, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 5, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 9, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 16, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 22, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 56, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 10, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 5, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 41, Time: 3367.4874999999997 to 3451.6746875
+Current Requests: [{'id': '3', 'tokens': 8, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 15, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 21, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 55, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 9, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 4, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 8, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 15, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 21, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 55, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 9, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 4, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 42, Time: 3451.6746875 to 3535.8618749999996
+Current Requests: [{'id': '3', 'tokens': 7, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 14, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 20, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 54, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 8, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 3, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 7, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 14, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 20, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 54, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 8, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 3, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 43, Time: 3535.8618749999996 to 3620.0490624999998
+Current Requests: [{'id': '3', 'tokens': 6, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 13, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 19, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 53, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 7, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 2, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 6, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 13, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 19, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 53, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 7, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 2, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 44, Time: 3620.0490624999998 to 3704.23625
+Current Requests: [{'id': '3', 'tokens': 5, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 12, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 18, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 52, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 6, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 1, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Selected Requests: [{'id': '3', 'tokens': 5, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 12, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 18, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 52, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 6, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}, {'id': '10', 'tokens': 1, 'deadline': 6165, 'arrival_time': 2451, 'score': 0.0024330900243309003, 'priority': 0.00026925148088314486, 'switching_cost': 7.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 45, Time: 3704.23625 to 3788.4234374999996
+Current Requests: [{'id': '3', 'tokens': 4, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 11, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 17, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 51, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 5, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Selected Requests: [{'id': '3', 'tokens': 4, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 11, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 17, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 51, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 5, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 46, Time: 3788.4234374999996 to 3872.610625
+Current Requests: [{'id': '3', 'tokens': 3, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 10, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 16, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 50, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 4, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Selected Requests: [{'id': '3', 'tokens': 3, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 10, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 16, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 50, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 4, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 47, Time: 3872.610625 to 3956.7978124999995
+Current Requests: [{'id': '3', 'tokens': 2, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 9, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 15, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 49, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 3, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Selected Requests: [{'id': '3', 'tokens': 2, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 9, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 15, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 49, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 3, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 48, Time: 3956.7978124999995 to 4040.9849999999997
+Current Requests: [{'id': '3', 'tokens': 1, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 8, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 14, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 48, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 2, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Selected Requests: [{'id': '3', 'tokens': 1, 'deadline': 10320, 'arrival_time': 672, 'score': 0.0039728682170542635, 'priority': 0.00010364842454394693, 'switching_cost': 20.5}, {'id': '4', 'tokens': 8, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 14, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 48, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 2, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 49, Time: 4040.9849999999997 to 4125.172187499999
+Current Requests: [{'id': '4', 'tokens': 7, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 13, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 47, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 1, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Selected Requests: [{'id': '4', 'tokens': 7, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 13, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 47, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}, {'id': '8', 'tokens': 1, 'deadline': 2691, 'arrival_time': 2432, 'score': 0.007803790412486065, 'priority': 0.003861003861003861, 'switching_cost': 10.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 50, Time: 4125.172187499999 to 4209.359375
+Current Requests: [{'id': '4', 'tokens': 6, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 12, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 46, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 6, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 12, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 46, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 51, Time: 4209.359375 to 4293.5465625
+Current Requests: [{'id': '4', 'tokens': 5, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 11, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 45, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 5, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 11, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 45, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 52, Time: 4293.5465625 to 4377.733749999999
+Current Requests: [{'id': '4', 'tokens': 4, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 10, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 44, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 4, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 10, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 44, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 53, Time: 4377.733749999999 to 4461.9209375
+Current Requests: [{'id': '4', 'tokens': 3, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 9, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 43, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 3, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 9, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 43, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 54, Time: 4461.9209375 to 4546.108125
+Current Requests: [{'id': '4', 'tokens': 2, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 8, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 42, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 2, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 8, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 42, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 55, Time: 4546.108125 to 4630.295312499999
+Current Requests: [{'id': '4', 'tokens': 1, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 7, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 41, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '4', 'tokens': 1, 'deadline': 5515, 'arrival_time': 1129, 'score': 0.007615593834995467, 'priority': 0.00022799817601459188, 'switching_cost': 21.0}, {'id': '5', 'tokens': 7, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 41, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 56, Time: 4630.295312499999 to 4714.4825
+Current Requests: [{'id': '5', 'tokens': 6, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 40, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 6, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 40, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 57, Time: 4714.4825 to 4798.6696875
+Current Requests: [{'id': '5', 'tokens': 5, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 39, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 5, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 39, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 58, Time: 4798.6696875 to 4882.8568749999995
+Current Requests: [{'id': '5', 'tokens': 4, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 38, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 4, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 38, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 59, Time: 4882.8568749999995 to 4967.044062499999
+Current Requests: [{'id': '5', 'tokens': 3, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 37, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 3, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 37, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 60, Time: 4967.044062499999 to 5051.23125
+Current Requests: [{'id': '5', 'tokens': 2, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 36, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 2, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 36, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 61, Time: 5051.23125 to 5135.4184374999995
+Current Requests: [{'id': '5', 'tokens': 1, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 35, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '5', 'tokens': 1, 'deadline': 9341, 'arrival_time': 1672, 'score': 0.004496306605288513, 'priority': 0.00013039509714434736, 'switching_cost': 21.0}, {'id': '7', 'tokens': 35, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 62, Time: 5135.4184374999995 to 5219.605624999999
+Current Requests: [{'id': '7', 'tokens': 34, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 34, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 63, Time: 5219.605624999999 to 5303.7928125
+Current Requests: [{'id': '7', 'tokens': 33, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 33, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 64, Time: 5303.7928125 to 5387.98
+Current Requests: [{'id': '7', 'tokens': 32, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 32, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 65, Time: 5387.98 to 5472.167187499999
+Current Requests: [{'id': '7', 'tokens': 31, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 31, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 66, Time: 5472.167187499999 to 5556.354375
+Current Requests: [{'id': '7', 'tokens': 30, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 30, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 67, Time: 5556.354375 to 5640.5415625
+Current Requests: [{'id': '7', 'tokens': 29, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 29, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 68, Time: 5640.5415625 to 5724.728749999999
+Current Requests: [{'id': '7', 'tokens': 28, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 28, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 69, Time: 5724.728749999999 to 5808.9159375
+Current Requests: [{'id': '7', 'tokens': 27, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 27, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 70, Time: 5808.9159375 to 5893.103125
+Current Requests: [{'id': '7', 'tokens': 26, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 26, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 71, Time: 5893.103125 to 5977.290312499999
+Current Requests: [{'id': '7', 'tokens': 25, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 25, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 72, Time: 5977.290312499999 to 6061.477499999999
+Current Requests: [{'id': '7', 'tokens': 24, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 24, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 73, Time: 6061.477499999999 to 6145.6646875
+Current Requests: [{'id': '7', 'tokens': 23, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 23, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 74, Time: 6145.6646875 to 6229.851874999999
+Current Requests: [{'id': '7', 'tokens': 22, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 22, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 75, Time: 6229.851874999999 to 6314.039062499999
+Current Requests: [{'id': '7', 'tokens': 21, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 21, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 76, Time: 6314.039062499999 to 6398.22625
+Current Requests: [{'id': '7', 'tokens': 20, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 20, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 77, Time: 6398.22625 to 6482.413437499999
+Current Requests: [{'id': '7', 'tokens': 19, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 19, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 78, Time: 6482.413437499999 to 6566.600624999999
+Current Requests: [{'id': '7', 'tokens': 18, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 18, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 79, Time: 6566.600624999999 to 6650.7878125
+Current Requests: [{'id': '7', 'tokens': 17, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 17, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 80, Time: 6650.7878125 to 6734.974999999999
+Current Requests: [{'id': '7', 'tokens': 16, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 16, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 81, Time: 6734.974999999999 to 6819.162187499999
+Current Requests: [{'id': '7', 'tokens': 15, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 15, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 82, Time: 6819.162187499999 to 6903.349375
+Current Requests: [{'id': '7', 'tokens': 14, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 14, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 83, Time: 6903.349375 to 6987.5365624999995
+Current Requests: [{'id': '7', 'tokens': 13, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 13, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 84, Time: 6987.5365624999995 to 7071.723749999999
+Current Requests: [{'id': '7', 'tokens': 12, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 12, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 85, Time: 7071.723749999999 to 7155.9109375
+Current Requests: [{'id': '7', 'tokens': 11, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 11, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 86, Time: 7155.9109375 to 7240.0981249999995
+Current Requests: [{'id': '7', 'tokens': 10, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 10, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 87, Time: 7240.0981249999995 to 7324.285312499999
+Current Requests: [{'id': '7', 'tokens': 9, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 9, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 88, Time: 7324.285312499999 to 7408.4725
+Current Requests: [{'id': '7', 'tokens': 8, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 8, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 89, Time: 7408.4725 to 7492.6596875
+Current Requests: [{'id': '7', 'tokens': 7, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 7, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 90, Time: 7492.6596875 to 7576.846874999999
+Current Requests: [{'id': '7', 'tokens': 6, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 6, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 91, Time: 7576.846874999999 to 7661.034062499999
+Current Requests: [{'id': '7', 'tokens': 5, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 5, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 92, Time: 7661.034062499999 to 7745.22125
+Current Requests: [{'id': '7', 'tokens': 4, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 4, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 93, Time: 7745.22125 to 7829.408437499999
+Current Requests: [{'id': '7', 'tokens': 3, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 3, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 94, Time: 7829.408437499999 to 7913.595624999999
+Current Requests: [{'id': '7', 'tokens': 2, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 2, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
+Iteration: 95, Time: 7913.595624999999 to 7997.7828125
+Current Requests: [{'id': '7', 'tokens': 1, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Selected Requests: [{'id': '7', 'tokens': 1, 'deadline': 19890, 'arrival_time': 1915, 'score': 0.0036701860231271996, 'priority': 5.5632823365785815e-05, 'switching_cost': 36.5}]
+Batch Size: 16
+---------------------------------
