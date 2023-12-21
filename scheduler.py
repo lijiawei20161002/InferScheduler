@@ -46,7 +46,6 @@ class SchedulerSimulator:
         self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
-        self.switching_cost = True
         self.mode = 'incremental'
 
     def call_offline_solver(self):
@@ -99,6 +98,12 @@ class SchedulerSimulator:
 
         with open(self.scheduling_policy + '.log', 'a') as log_file:
             log_file.write(decision_text)
+
+    def approximate_probability(self, request, x_i):
+        if self.time2iter(request.deadline) == 0:
+            return 9999  # Avoid division by zero
+        else:
+            return (request.tokens-x_i) / self.time2iter(request.deadline)
         
     def online_solver(self, processing_requests):  
         if len(processing_requests) == 0:
@@ -114,61 +119,33 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = max(max([self.time2iter(req.deadline) for req in processing_requests]), sum([req.tokens for req in processing_requests])) + max([req.tokens for req in processing_requests])  # Max iterations
-        print("N:", N, "T:", T)
 
-        # Add decision variables
-        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
-        if self.switching_cost:
-            s = model.addVars(N, T, vtype=GRB.BINARY, name="s")  # Switching variable
-            #c = model.addVars(N, T, vtype=GRB.INTEGER, name="c")  # Processed tokens variable
+        # Define decision variables for request selection, switching, and batch size
+        x = model.addVars(N, vtype=GRB.BINARY, name="x")
+        s = model.addVars(N, vtype=GRB.BINARY, name="s")  # Switching variable
+        b = model.addVar(vtype=GRB.INTEGER, lb=0, name="b")  # Batch size variable
         
         # Use previous solution as intial solution
         if self.mode == 'incremental':
             if len(self.previous_selected_requests)>0:
                 for i, req in enumerate(processing_requests):
                     if req in self.previous_selected_requests:
-                        for t in range(T):
-                            x[i, t].start=1
+                        x[i].start=1
+                        s[i].start=1
 
         # Set the objective
         objective = gp.quicksum(
-            gp.quicksum((t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
-                        for t in range(self.iteration, T + self.iteration)) 
-            for i in range(N)) + gp.quicksum(
-                gp.quicksum(s[i, t] for t in range(T)) * processing_requests[i].switching_cost
-                #gp.quicksum(s[i, t]*c[i,t] for t in range(T)) * switching_cost
-            for i in range(N))
+        (s[i] * req.switching_cost + self.approximate_probability(req, x[i]))
+        for i, req in enumerate(processing_requests)) + b
         model.setObjective(objective, GRB.MINIMIZE)
-        # Add constraints
-        # Completion constraint
-        for i in range(N):
-            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
-            if processing_requests[i].tokens < 0:
-                print('here:', processing_requests[i].tokens)
-
-        # No scheduling before arrival constraint
-        for i in range(N):
-            for t in range(self.time2iter(processing_requests[i].arrival_time)-self.iteration):
-                model.addConstr(x[i, t] == 0)
-
         # Batch size constraint
-        for t in range(T):
-            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
+        model.addConstr(gp.quicksum(x[i] for i in range(N)) <= b)
 
-        if self.switching_cost > 0:
-            # Schedule constraint
-            for i in range(N):
-                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    model.addConstr(s[i, t] <= x[i, t])
-                    model.addConstr(s[i, t] <= 1 - x[i, t-1])
-                    model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
-                    model.addConstr(s[i, t] >= 0)
-            # Tracking processed token constraint
-            #for i in range(N):
-                #for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    #model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
-                #model.addConstr(c[i, 0] == x[i, 0])
+        # Schedule constraint
+        for i in range(N):
+            model.addConstr(s[i] >= 0)
+            model.addConstr(s[i] >= x[i] - (1 if processing_requests[i] in self.previous_selected_requests else 0))
+
 
         # Solve
         model.optimize()
@@ -187,15 +164,10 @@ class SchedulerSimulator:
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
+            if (hasattr(x[i], 'X') and x[i].X > 0.5) or (hasattr(x[i], 'Xn') and x[i].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
-        # Store the batch size in the dictionary
-        #for batch_size in self.inference_delays:
-            #if batch_size >= len(selected_requests):
-                #break
-        batch_size = 16
-        return selected_requests, batch_size
+        return selected_requests, b
     
     def offline_solver(self):  
         requests = list(self.requests.values())
@@ -239,19 +211,18 @@ class SchedulerSimulator:
         # Batch size constraint
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
 
-        if self.switching_cost > 0:
-            # Schedule constraint
-            for i in range(N):
-                for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    model.addConstr(s[i, t] <= x[i, t])
-                    model.addConstr(s[i, t] <= 1 - x[i, t-1])
-                    model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
-                    model.addConstr(s[i, t] >= 0)
-            # Tracking processed token constraint
-            #for i in range(N):
-                #for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
-                    #model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
-                #model.addConstr(c[i, 0] == x[i, 0])
+        # Schedule constraint
+        for i in range(N):
+            for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                model.addConstr(s[i, t] <= x[i, t])
+                model.addConstr(s[i, t] <= 1 - x[i, t-1])
+                model.addConstr(s[i, t] >= x[i, t] - x[i, t-1])
+                model.addConstr(s[i, t] >= 0)
+        # Tracking processed token constraint
+        #for i in range(N):
+            #for t in range(2, T):  # Starting from 2 because we need t-1 to be valid
+                #model.addConstr(c[i, t] == c[i, t-1] + x[i, t])
+            #model.addConstr(c[i, 0] == x[i, 0])
 
         # Solve
         model.optimize()

@@ -1,0 +1,31 @@
+
+Gurobi 9.1.2 (linux64) logging started Thu Dec 21 15:35:52 2023
+
+Changed value of parameter LogFile to offline.solver
+   Prev:   Default: 
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (linux64)
+Thread count: 24 physical cores, 48 logical processors, using up to 24 threads
+Optimize a model with 12767 rows, 6320 columns and 28567 nonzeros
+Model fingerprint: 0x170cda4d
+Variable types: 0 continuous, 6320 integer (6320 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  Objective range  [5e-01, 3e+02]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 7e+01]
+Found heuristic solution: objective 40426.500000
+Presolve removed 11839 rows and 5701 columns
+Presolve time: 0.04s
+Presolved: 928 rows, 619 columns, 2473 nonzeros
+Found heuristic solution: objective 5858.5000000
+Variable types: 0 continuous, 619 integer (619 binary)
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds
+
+Explored 1 nodes (0 simplex iterations) in 0.05 seconds
+Thread count was 24 (of 48 available processors)
+
+Solution count 2: 5858.5 40426.5 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 5.858500000000e+03, best bound 5.858500000000e+03, gap 0.0000%
