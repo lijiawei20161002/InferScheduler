@@ -46,6 +46,7 @@ class SchedulerSimulator:
         self.old_request_leave = False  # Flag to track leaving of old requests
         self.previous_selected_requests = []
         self.previous_batch_size = 16
+        self.switching_cost = 4
         self.mode = 'incremental'
 
     def call_offline_solver(self):
@@ -194,8 +195,8 @@ class SchedulerSimulator:
                 gp.quicksum((t - self.time2iter(requests[i].arrival_time)) * x[i, t-self.iteration] 
                             for t in range(self.iteration, T + self.iteration)) 
                 for i in range(N)) + gp.quicksum(
-                    gp.quicksum(s[i, t] for t in range(T)) * requests[i].switching_cost
-                    #gp.quicksum(s[i, t]*c[i, t] for t in range(T)) * self.switching_cost
+                    #gp.quicksum(s[i, t] for t in range(T)) * requests[i].switching_cost
+                    gp.quicksum(s[i, t]*c[i, t] for t in range(T)) * self.switching_cost
                 for i in range(N))
         model.setObjective(objective, GRB.MINIMIZE)
         # Add constraints
