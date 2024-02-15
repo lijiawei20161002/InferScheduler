@@ -120,12 +120,13 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = 1000
+        T = max(sum([req.tokens for req in processing_requests]), max([self.time2iter(req.deadline) for req in processing_requests])) + max([req.tokens for req in processing_requests])
 
         # Define decision variables for request selection, switching, and batch size
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
         #x = model.addVars(N, vtype=GRB.BINARY, name="x")
         s = model.addVars(N, vtype=GRB.BINARY, name="s")  # Switching variable
+        #b = self.B
         b = model.addVar(vtype=GRB.INTEGER, lb=0, name="b")  # Batch size variable
         
         # Use previous solution as intial solution
@@ -155,6 +156,7 @@ class SchedulerSimulator:
 
         # Batch size constraint
         model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= b)
+        model.addConstr(b <= self.B)
 
         # Schedule constraint
         for i in range(N):
@@ -180,9 +182,9 @@ class SchedulerSimulator:
         selected_requests = []
         for i in range(N):
             if hasattr(x[i, 0], 'X'):
-                print(x[i, 0].X)
+                print("x"+str(i), x[i, 0].X)
             if hasattr(x[i, 0], 'Xn'):
-                print(x[i, 0].Xn)
+                print("xn"+str(i), x[i, 0].Xn)
             if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
@@ -425,7 +427,7 @@ class SchedulerSimulator:
             
             # Introduce short, urgent requests
             if i % urgent_request_period == 0:
-                tokens = np.random.randint(2, 5)  # Urgent requests have 1 to 4 tokens
+                tokens = np.random.randint(1, 5)  # Urgent requests have 1 to 4 tokens
                 deadline_factor = 2.0  # Tighter deadlines for urgent requests
             else:
                 tokens = max(1, int(np.random.normal(mu, sigma)))
