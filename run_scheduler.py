@@ -39,14 +39,14 @@ if __name__ == "__main__":
     # Define colors for each scheduling policy  
     color_map = {  
         'offline solver': 'purple',  
-        'online solver': 'pink',
+        'online alg': 'pink',
         'random': 'blue',  
         'bidding': 'green',  
         'fcfs': 'red',  
         'deadline': 'orange'  
     }  
   
-    scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    scheduling_policies = ['offline solver', 'online alg', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = [16]  
   
     goodput_values = {}  

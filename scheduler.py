@@ -106,6 +106,56 @@ class SchedulerSimulator:
         else:
             return (request.tokens-x_i) / self.time2iter(request.deadline)
         
+    def online_alg(self, processing_requests):
+        # Create a new model
+        model = gp.Model("OnlineScheduler")
+
+        # Parameters
+        N = len(processing_requests)  # Number of requests
+        T = 1000  # Maximum time step considered
+
+        # Decision variables
+        x = model.addVars(N, vtype=GRB.BINARY, name="x")  # Request inclusion in the batch
+        y = model.addVars(N, T, vtype=GRB.INTEGER, name="y")  # Tokens processed by request by timestep
+        s = model.addVars(T, vtype=GRB.CONTINUOUS, name="s")  # Slope variables
+        z = model.addVar(vtype=GRB.CONTINUOUS, name="z")  # Largest slope variable
+
+        # Objective function: maximize the number of selected requests minus the largest slope
+        model.setObjective(gp.quicksum(x[i] for i in range(N)) - z, GRB.MAXIMIZE)
+
+        # Constraints
+        # Batch size constraint
+        model.addConstr(gp.quicksum(x[i] for i in range(N)) <= self.B, "BatchSize")
+
+        # Token processing constraints for each request by its deadline
+        # Token processing constraints for each request by its deadline
+        for i in range(N):
+            for t in range(processing_requests[i].deadline, T):
+                model.addConstr(
+                    y[i, t] >= processing_requests[i].tokens - (processing_requests[i].deadline - t),
+                    f"TokenReq_{i}_{t}"
+                )
+
+        # Slope calculation constraints
+        for t in range(1, T):
+            model.addConstr(s[t] == gp.quicksum(y[i, t] for i in range(N)), f"Slope_{t}")
+
+        # Largest slope constraint
+        for t in range(1, T):
+            model.addConstr(z >= s[t], f"LargestSlope_{t}")
+
+        # Solve the model
+        model.optimize()
+
+        # Check if a solution was found
+        if model.status == GRB.OPTIMAL:
+            selected_requests = [processing_requests[i] for i in range(N) if x[i].X > 0.5]
+            largest_slope = z.X
+            return selected_requests, largest_slope
+        else:
+            print("No optimal solution found.")
+            return [], None
+        
     def online_solver(self, processing_requests):  
         if len(processing_requests) == 0:
             return [], 16
@@ -123,7 +173,7 @@ class SchedulerSimulator:
         T = max(sum([req.tokens for req in processing_requests]), max([self.time2iter(req.deadline) for req in processing_requests])) + max([req.tokens for req in processing_requests])
 
         # Define decision variables for request selection, switching, and batch size
-        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
+        x = model.addVars(N, vtype=GRB.BINARY, name="x")
         #x = model.addVars(N, vtype=GRB.BINARY, name="x")
         s = model.addVars(N, vtype=GRB.BINARY, name="s")  # Switching variable
         #b = self.B
@@ -134,35 +184,34 @@ class SchedulerSimulator:
             if len(self.previous_selected_requests)>0:
                 for i, req in enumerate(processing_requests):
                     if req in self.previous_selected_requests:
-                        x[i, 0].start=1
+                        x[i].start=1
                         s[i].start=1
 
         # Set the objective
-        objective = (
-            gp.quicksum((s[i] * req.switching_cost) for i, req in enumerate(processing_requests)) +
-            gp.quicksum(gp.quicksum(
-                (t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
-                for t in range(self.iteration, T + self.iteration)) 
-            for i in range(N))
-        )
-         #+ gp.quicksum(
-        #(s[i] * req.switching_cost + self.approximate_probability(req, x[i]))
-        #for i, req in enumerate(processing_requests)) + b
+        objective = gp.quicksum(
+        (s[i] * req.switching_cost + self.approximate_probability(req, x[i]))
+        for i, req in enumerate(processing_requests)) + b
+        #(
+        #    gp.quicksum((s[i] * req.switching_cost) for i, req in enumerate(processing_requests)) +
+        #    gp.quicksum(gp.quicksum(
+        #        (t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
+        #        for t in range(self.iteration, T + self.iteration)) 
+        #    for i in range(N))
+        #)
         model.setObjective(objective, GRB.MINIMIZE)
 
         # Completion constraint
-        for i in range(N):
-            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
+        #for i in range(N):
+            #model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
 
         # Batch size constraint
-        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= b)
+        model.addConstr(gp.quicksum(x[i] for i in range(N)) <= b)
         model.addConstr(b <= self.B)
 
         # Schedule constraint
         for i in range(N):
             model.addConstr(s[i] >= 0)
-            model.addConstr(s[i] >= x[i, 0] - (1 if processing_requests[i] in self.previous_selected_requests else 0))
-
+            model.addConstr(s[i] >= x[i] - (1 if processing_requests[i] in self.previous_selected_requests else 0))
 
         # Solve
         model.optimize()
@@ -181,16 +230,80 @@ class SchedulerSimulator:
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if hasattr(x[i, 0], 'X'):
-                print("x"+str(i), x[i, 0].X)
-            if hasattr(x[i, 0], 'Xn'):
-                print("xn"+str(i), x[i, 0].Xn)
-            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
+            if (hasattr(x[i], 'X') and x[i].X > 0.5) or (hasattr(x[i], 'Xn') and x[i].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
         return selected_requests, b
-    
+
     def offline_solver(self):  
+        requests = list(self.requests.values())
+        model = gp.Model("Scheduler")  # Create a new model
+        model.Params.LogToConsole = 0  # Disable model output
+        model.Params.Presolve = -1  # Automatic presolve level
+        model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
+        model.setParam('LogFile', 'offline.solver')  # Write a log file
+
+        # Define constants
+        N = len(self.requests)  # Number of requests
+        T = max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + max([req.tokens for req in requests])  # Max iterations
+        
+        # Add decision variables
+        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")  # Request processing at time t
+        finished = model.addVars(N, vtype=GRB.BINARY, name="finished")  # Request finished before deadline
+
+        # Set the objective to maximize the number of requests finished before the deadline
+        objective = gp.quicksum(finished[i] for i in range(N))
+        model.setObjective(objective, GRB.MAXIMIZE)
+
+        # Completion constraint: Request is considered finished if the tokens are processed before the deadline
+        for i in range(N):
+            model.addConstr(
+                gp.quicksum(x[i, t] for t in range(self.time2iter(requests[i].deadline))) >= requests[i].tokens * finished[i],
+                f"Completion_{i}"
+            )
+
+        # Request must be processed within its deadline
+        for i in range(N):
+            for t in range(self.time2iter(requests[i].deadline), T):
+                model.addConstr(x[i, t] == 0, f"Deadline_{i}_{t}")
+
+        # No scheduling before arrival constraint
+        for i in range(N):
+            for t in range(self.time2iter(requests[i].arrival_time)):
+                model.addConstr(x[i, t] == 0, f"Arrival_{i}_{t}")
+
+        # Solve the model
+        model.optimize()
+
+        if model.status == GRB.INFEASIBLE:
+            # Compute and print an Irreducible Inconsistent Subsystem (IIS)
+            print("Model is infeasible. Computing IIS...")
+            model.computeIIS()
+            print("\nThe following constraint(s) cannot be satisfied:")
+            for c in model.getConstrs():
+                if c.IISConstr:
+                    print('%s' % c.constrName)
+            model.write("infeasible_model.ilp")
+
+        # Extract the solution
+        solution = {}
+        for i in range(N):
+            for t in range(T):
+                if hasattr(x[i, t], 'X'):
+                    solution[i, t] = x[i, t].X
+
+        # Store the requests in the dictionary
+        requests_order = []
+        for iteration in range(T):
+            selected_requests = []
+            for i in range(N):
+                if solution[i, iteration] > 0.5:
+                    selected_requests.append(requests[i])
+            requests_order.append(selected_requests)
+
+        return requests_order
+    
+    def offline_solver_switching_cost(self):  
         requests = list(self.requests.values())
         model = gp.Model("Scheduler")  # Create a new model
         model.Params.LogToConsole = 0  # Disable model output
@@ -300,6 +413,26 @@ class SchedulerSimulator:
                 return selected_requests, best_batch_size
             elif len(self.previous_selected_requests) == 0 and len(processing_requests)>0:
                 selected_requests, best_batch_size = self.online_solver(processing_requests)
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            else:
+                return self.previous_selected_requests, self.previous_batch_size
+        if self.scheduling_policy == 'online alg':
+            if self.new_request_arrive:  # Only call if new requests have arrived
+                selected_requests, best_batch_size = self.online_alg(processing_requests)
+                self.new_request_arrive = False  # Reset the flag
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            elif self.old_request_leave:  # Only call if old requests have left
+                selected_requests, best_batch_size = self.online_alg(processing_requests)
+                self.old_request_leave = False  # Reset the flag
+                self.previous_selected_requests = selected_requests
+                self.previous_batch_size = best_batch_size
+                return selected_requests, best_batch_size
+            elif len(self.previous_selected_requests) == 0 and len(processing_requests)>0:
+                selected_requests, best_batch_size = self.online_alg(processing_requests)
                 self.previous_selected_requests = selected_requests
                 self.previous_batch_size = best_batch_size
                 return selected_requests, best_batch_size
@@ -418,8 +551,8 @@ class SchedulerSimulator:
         # Parameters for burstiness and urgency
         burst_period = 10  # Defines how often the arrival rate changes
         urgent_request_period = 5  # Interval for injecting urgent requests
-        high_rate = 500  # High arrival rate
-        low_rate = 100  # Low arrival rate
+        high_rate = 100  # High arrival rate
+        low_rate = 20  # Low arrival rate
         current_rate = high_rate
 
         for i in range(num_requests):
