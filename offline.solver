@@ -1,0 +1,30 @@
+
+Gurobi 10.0.3 (mac64[arm]) logging started Thu Feb 22 22:32:59 2024
+
+Set parameter LogFile to value "offline.solver"
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
+
+CPU model: Apple M2
+Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 3400 rows, 3990 columns and 3998 nonzeros
+Model fingerprint: 0x61c8f642
+Variable types: 0 continuous, 3990 integer (3990 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 4e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [0e+00, 0e+00]
+Found heuristic solution: objective -0.0000000
+Found heuristic solution: objective 7.0000000
+Presolve removed 3400 rows and 3990 columns
+Presolve time: 0.00s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 0.00 seconds (0.00 work units)
+Thread count was 1 (of 8 available processors)
+
+Solution count 2: 7 -0 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 7.000000000000e+00, best bound 7.000000000000e+00, gap 0.0000%
