@@ -128,7 +128,6 @@ class SchedulerSimulator:
         model.addConstr(gp.quicksum(x[i] for i in range(N)) <= self.B, "BatchSize")
 
         # Token processing constraints for each request by its deadline
-        # Token processing constraints for each request by its deadline
         for i in range(N):
             for t in range(processing_requests[i].deadline, T):
                 model.addConstr(
@@ -245,32 +244,41 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + max([req.tokens for req in requests])  # Max iterations
+        T = max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + 2*sum([req.tokens for req in requests]) + 100  # Max iterations
         
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")  # Request processing at time t
         finished = model.addVars(N, vtype=GRB.BINARY, name="finished")  # Request finished before deadline
 
         # Set the objective to maximize the number of requests finished before the deadline
-        objective = gp.quicksum(finished[i] for i in range(N))
+        # and finish as early as possible
+        objective = gp.quicksum(finished[i] for i in range(N)) - gp.quicksum(gp.quicksum((t - self.time2iter(requests[i].arrival_time)) * x[i, t] 
+                            for t in range(T)) for i in range(N))
         model.setObjective(objective, GRB.MAXIMIZE)
 
         # Completion constraint: Request is considered finished if the tokens are processed before the deadline
         for i in range(N):
             model.addConstr(
                 gp.quicksum(x[i, t] for t in range(self.time2iter(requests[i].deadline))) >= requests[i].tokens * finished[i],
-                f"Completion_{i}"
+                f"Completion_{i}",
             )
 
-        # Request must be processed within its deadline
+        # Global Allocation Constraint: Ensures that each request i gets allocated a total amount of tokens 
+        # across the entire timeline (T) that is at least equal to the required tokens, regardless of its deadline
         for i in range(N):
-            for t in range(self.time2iter(requests[i].deadline), T):
-                model.addConstr(x[i, t] == 0, f"Deadline_{i}_{t}")
+            model.addConstr(
+                gp.quicksum(x[i, t] for t in range(T)) == requests[i].tokens,
+                name=f"TotalAllocation_{i}"
+            )
 
         # No scheduling before arrival constraint
         for i in range(N):
-            for t in range(self.time2iter(requests[i].arrival_time)):
+            for t in range(self.time2iter(requests[i].arrival_time)+1):
                 model.addConstr(x[i, t] == 0, f"Arrival_{i}_{t}")
+
+        # Batch size constraint
+        for t in range(T):
+            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B)
 
         # Solve the model
         model.optimize()
@@ -499,12 +507,12 @@ class SchedulerSimulator:
         self.log_scheduler_decision(self.iteration, processing_requests, selected_requests, batch_size)
         for req in selected_requests:  
             req.tokens -= 1  
-        for req in processing_requests:
-            if req.tokens <= 0:  
-                processing_requests.remove(req)  
-                self.old_request_leave = True
-                if self.current_time <= req.deadline:  
-                    goodput += 1  # Increment goodput if request finishes before deadline  
+        requests_to_remove = [req for req in processing_requests if req.tokens <= 0]
+        for req in requests_to_remove:
+            processing_requests.remove(req)  
+            self.old_request_leave = True
+            if self.current_time <= req.deadline:  
+                goodput += 1  # Increment goodput if request finishes before deadline  
         #delay = self.calculate_delay(batch_size) 
         delay = self.calculate_delay(16) 
         self.total_completion_time += delay  # Update total_completion_time 
@@ -522,8 +530,8 @@ class SchedulerSimulator:
         self.log_info(f"N={len(requests)}\n")
         self.log_info(f"---------------------------------\n")
 
-        while len(requests)>0 or len(processing_requests)>0:    
-            arrived_requests = [req for req in requests if req.arrival_time <= self.current_time]  
+        while len(requests)>0 or len(processing_requests)>0:   
+            arrived_requests = [req for req in requests if req.arrival_time < self.current_time]  
             if len(arrived_requests)>0:
                 processing_requests.extend(arrived_requests)  
                 self.new_request_arrive = True
@@ -629,8 +637,10 @@ class SchedulerSimulator:
                     arrival_iter = self.time2iter(req['arrival_time'])
                     if iteration >= arrival_iter:
                         # Calculate the objective for each selected request
-                        objective_metric += int(iteration - arrival_iter)
-                    switching_cost = req['switching_cost']
+                        #objective_metric += int(iteration - arrival_iter)
+                        if req['tokens'] == 1 and iteration <= self.time2iter(req['deadline']):
+                            objective_metric += 1
+                    switching_cost = 0 #req['switching_cost']
                     for pre in previous_selected_requests:
                         if pre['id'] == req['id']:
                             switching_cost = 0

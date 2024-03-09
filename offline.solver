@@ -1,5 +1,5 @@
 
-Gurobi 10.0.3 (mac64[arm]) logging started Thu Feb 22 22:32:59 2024
+Gurobi 10.0.3 (mac64[arm]) logging started Sat Mar  9 22:16:29 2024
 
 Set parameter LogFile to value "offline.solver"
 Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
@@ -7,24 +7,220 @@ Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
 CPU model: Apple M2
 Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
 
-Optimize a model with 3400 rows, 3990 columns and 3998 nonzeros
-Model fingerprint: 0x61c8f642
-Variable types: 0 continuous, 3990 integer (3990 binary)
+Optimize a model with 1015 rows, 9470 columns and 19268 nonzeros
+Model fingerprint: 0xd36b9f28
+Variable types: 0 continuous, 9470 integer (9470 binary)
 Coefficient statistics:
-  Matrix range     [1e+00, 4e+01]
-  Objective range  [1e+00, 1e+00]
+  Matrix range     [1e+00, 6e+01]
+  Objective range  [1e+00, 9e+02]
   Bounds range     [1e+00, 1e+00]
-  RHS range        [0e+00, 0e+00]
-Found heuristic solution: objective -0.0000000
-Found heuristic solution: objective 7.0000000
-Presolve removed 3400 rows and 3990 columns
-Presolve time: 0.00s
-Presolve: All rows and columns removed
+  RHS range        [2e+00, 6e+01]
+Found heuristic solution: objective -130066.0000
+Presolve removed 1014 rows and 8527 columns
+Presolve time: 0.03s
+Presolved: 1 rows, 943 columns, 943 nonzeros
+Found heuristic solution: objective -6235.000000
+Variable types: 0 continuous, 943 integer (943 binary)
 
-Explored 0 nodes (0 simplex iterations) in 0.00 seconds (0.00 work units)
-Thread count was 1 (of 8 available processors)
+Explored 1 nodes (0 simplex iterations) in 0.03 seconds (0.03 work units)
+Thread count was 8 (of 8 available processors)
 
-Solution count 2: 7 -0 
+Solution count 2: -6235 -130066 
+No other solutions better than -6235
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 7.000000000000e+00, best bound 7.000000000000e+00, gap 0.0000%
+Best objective -6.235000000000e+03, best bound -6.235000000000e+03, gap 0.0000%
+
+Gurobi 10.0.3 (mac64[arm]) logging started Sat Mar  9 22:16:30 2024
+
+Set parameter LogFile to value "offline.solver"
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
+
+CPU model: Apple M2
+Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 4577 rows, 158120 columns and 319980 nonzeros
+Model fingerprint: 0x6c318e08
+Variable types: 0 continuous, 158120 integer (158120 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 4e+03]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective -2543913.000
+Presolve removed 580 rows and 588 columns
+Presolve time: 0.20s
+Presolved: 3997 rows, 157532 columns, 317446 nonzeros
+Variable types: 0 continuous, 157532 integer (157532 binary)
+Found heuristic solution: objective -48685.00000
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.02s
+
+Solved with dual simplex
+
+Root relaxation: objective -4.614600e+04, 709 iterations, 0.16 seconds (0.30 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    -46146.00000 -46146.000  0.00%     -    0s
+
+Explored 1 nodes (709 simplex iterations) in 0.47 seconds (0.77 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 3: -46146 -48685 -2.54391e+06 
+No other solutions better than -46146
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -4.614600000000e+04, best bound -4.614600000000e+04, gap 0.0000%
+
+Gurobi 10.0.3 (mac64[arm]) logging started Sat Mar  9 22:16:33 2024
+
+Set parameter LogFile to value "offline.solver"
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
+
+CPU model: Apple M2
+Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 7786 rows, 436940 columns and 880796 nonzeros
+Model fingerprint: 0x973cd502
+Variable types: 0 continuous, 436940 integer (436940 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 6e+03]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective -6324536.000
+Presolve removed 1453 rows and 7682 columns
+Presolve time: 0.64s
+Presolved: 6333 rows, 429258 columns, 862297 nonzeros
+Found heuristic solution: objective -114266.0000
+Variable types: 0 continuous, 429258 integer (429258 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 4.206e+05
+ Factor NZ  : 5.093e+05 (roughly 170 MB of memory)
+ Factor Ops : 4.190e+07 (less than 1 second per iteration)
+ Threads    : 6
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0  -5.63966551e+10  2.42427584e+09  2.71e+05 3.05e+03  2.77e+05     1s
+   1  -5.05515861e+09  2.64317313e+09  2.48e+04 1.00e-11  2.77e+04     1s
+   2  -2.54654869e+08  1.71158243e+09  1.74e+03 7.28e-12  3.41e+03     1s
+   3  -3.20126907e+07  5.72888498e+08  2.54e+02 6.82e-12  8.41e+02     1s
+   4  -5.41835600e+06  5.01959801e+07  1.84e+01 7.28e-12  7.20e+01     1s
+   5  -2.14711849e+06  1.32870575e+07  1.86e-12 4.55e-12  1.84e+01     1s
+   6  -2.00798752e+06  5.39888872e+06  2.00e-12 6.37e-12  8.82e+00     1s
+   7  -7.05391769e+05  1.97556182e+06  2.73e-12 3.64e-12  3.19e+00     2s
+   8  -6.40256414e+05  1.20654417e+06  2.11e-12 3.64e-12  2.20e+00     2s
+   9  -5.88018332e+05  8.47973082e+05  1.95e-12 2.73e-12  1.71e+00     2s
+  10  -3.94555816e+05  2.85623534e+05  2.07e-12 2.73e-12  8.10e-01     2s
+  11  -3.60781558e+05  2.72001893e+05  2.59e-12 2.73e-12  7.53e-01     2s
+
+Barrier performed 11 iterations in 1.65 seconds (3.03 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.28s (can be avoided by choosing Method=3)
+
+Solved with primal simplex
+
+Root relaxation: objective -1.121000e+05, 7832 iterations, 0.88 seconds (1.34 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    -112100.0000 -112100.00  0.00%     -    1s
+
+Explored 1 nodes (7832 simplex iterations) in 1.85 seconds (3.06 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 3: -112100 -114266 -6.32454e+06 
+No other solutions better than -112100
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -1.121000000000e+05, best bound -1.121000000000e+05, gap 0.0000%
+
+Gurobi 10.0.3 (mac64[arm]) logging started Sat Mar  9 22:16:42 2024
+
+Set parameter LogFile to value "offline.solver"
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (mac64[arm])
+
+CPU model: Apple M2
+Thread count: 8 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 13890 rows, 1082900 columns and 2179010 nonzeros
+Model fingerprint: 0x79f00682
+Variable types: 0 continuous, 1082900 integer (1082900 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+02]
+  Objective range  [1e+00, 1e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+02]
+Found heuristic solution: objective -1.92742e+07
+Presolve removed 2928 rows and 24581 columns
+Presolve time: 1.71s
+Presolved: 10962 rows, 1058319 columns, 2123427 nonzeros
+Found heuristic solution: objective -332382.0000
+Variable types: 0 continuous, 1058319 integer (1058319 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.00s
+
+Barrier statistics:
+ AA' NZ     : 1.033e+06
+ Factor NZ  : 1.193e+06 (roughly 400 MB of memory)
+ Factor Ops : 1.322e+08 (less than 1 second per iteration)
+ Threads    : 6
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0  -2.64381241e+11  1.13648344e+10  5.17e+05 5.32e+03  5.56e+05     3s
+   1  -3.90520876e+10  1.19899533e+10  7.68e+04 1.64e-11  8.63e+04     3s
+   2  -1.59540712e+09  8.88577471e+09  3.93e+03 1.46e-11  7.81e+03     4s
+   3  -1.90725223e+08  4.03202276e+09  6.57e+02 1.27e-11  2.41e+03     4s
+   4  -1.63876633e+07  2.47331410e+08  2.31e+01 1.09e-11  1.36e+02     4s
+   5  -6.64802606e+06  4.88266678e+07  2.19e-12 9.09e-12  2.69e+01     4s
+   6  -5.97093948e+06  1.31540265e+07  1.20e-12 1.27e-11  9.27e+00     4s
+   7  -3.43808494e+06  4.59895664e+06  3.67e-12 9.09e-12  3.90e+00     4s
+   8  -3.29122253e+06  3.04069202e+06  3.79e-12 7.28e-12  3.07e+00     4s
+   9  -2.98109434e+06  2.44487875e+06  3.82e-12 5.46e-12  2.63e+00     4s
+  10  -1.93299746e+06  1.38827976e+06  3.79e-12 5.46e-12  1.61e+00     4s
+  11  -1.79370713e+06  9.98501114e+05  3.62e-12 5.46e-12  1.35e+00     4s
+  12  -1.72846148e+06  8.50143631e+05  4.00e-12 5.46e-12  1.25e+00     4s
+  13  -1.57336753e+06  7.62718686e+05  4.08e-12 5.46e-12  1.13e+00     5s
+  14  -1.29621407e+06  5.55082715e+05  4.72e-12 5.46e-12  8.98e-01     5s
+
+Barrier performed 14 iterations in 4.66 seconds (8.45 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.74s (can be avoided by choosing Method=3)
+
+Solved with primal simplex
+
+Root relaxation: objective -3.272020e+05, 21689 iterations, 2.60 seconds (3.86 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    -327202.0000 -327202.00  0.00%     -    4s
+
+Explored 1 nodes (21689 simplex iterations) in 4.84 seconds (8.53 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 3: -327202 -332382 -1.92742e+07 
+No other solutions better than -327202
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -3.272020000000e+05, best bound -3.272020000000e+05, gap 0.0000%
