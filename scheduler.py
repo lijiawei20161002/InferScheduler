@@ -169,12 +169,13 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = max(sum([req.tokens for req in processing_requests]), max([self.time2iter(req.deadline) for req in processing_requests])) + max([req.tokens for req in processing_requests])
+        T = 1000
 
         # Define decision variables for request selection, switching, and batch size
-        x = model.addVars(N, vtype=GRB.BINARY, name="x")
+        x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
         #x = model.addVars(N, vtype=GRB.BINARY, name="x")
-        s = model.addVars(N, vtype=GRB.BINARY, name="s")  # Switching variable
+        #s = model.addVars(N, vtype=GRB.BINARY, name="s")  # Switching variable
+        finished = model.addVars(N, vtype=GRB.BINARY, name="finished")  # Request finished before deadline
         #b = self.B
         b = model.addVar(vtype=GRB.INTEGER, lb=0, name="b")  # Batch size variable
         
@@ -183,34 +184,30 @@ class SchedulerSimulator:
             if len(self.previous_selected_requests)>0:
                 for i, req in enumerate(processing_requests):
                     if req in self.previous_selected_requests:
-                        x[i].start=1
-                        s[i].start=1
+                        x[i, 0].start=1
+                        #s[i].start=1
 
         # Set the objective
-        objective = gp.quicksum(
-        (s[i] * req.switching_cost + self.approximate_probability(req, x[i]))
-        for i, req in enumerate(processing_requests)) + b
-        #(
-        #    gp.quicksum((s[i] * req.switching_cost) for i, req in enumerate(processing_requests)) +
-        #    gp.quicksum(gp.quicksum(
-        #        (t - self.time2iter(processing_requests[i].arrival_time)) * x[i, t-self.iteration] 
-        #        for t in range(self.iteration, T + self.iteration)) 
-        #    for i in range(N))
-        #)
-        model.setObjective(objective, GRB.MINIMIZE)
+        objective = gp.quicksum(finished[i] for i in range(N)) + gp.quicksum(gp.quicksum(x[i, t] 
+                            for t in range(T)) for i in range(N))
+        model.setObjective(objective, GRB.MAXIMIZE)
 
-        # Completion constraint
-        #for i in range(N):
-            #model.addConstr(gp.quicksum(x[i, t] for t in range(T)) == processing_requests[i].tokens)
+        # Completion constraint: Request is considered finished if the tokens are processed before the deadline
+        for i in range(N):
+            model.addConstr(
+                gp.quicksum(x[i, t] for t in range(min(T, self.time2iter(processing_requests[i].deadline)))) >= processing_requests[i].tokens * finished[i],
+                f"Completion_{i}",
+            )
+
 
         # Batch size constraint
-        model.addConstr(gp.quicksum(x[i] for i in range(N)) <= b)
+        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= b)
         model.addConstr(b <= self.B)
 
         # Schedule constraint
-        for i in range(N):
-            model.addConstr(s[i] >= 0)
-            model.addConstr(s[i] >= x[i] - (1 if processing_requests[i] in self.previous_selected_requests else 0))
+        #for i in range(N):
+        #    model.addConstr(s[i] >= 0)
+        #    model.addConstr(s[i] >= x[i, 0] - (1 if processing_requests[i] in self.previous_selected_requests else 0))
 
         # Solve
         model.optimize()
@@ -229,7 +226,7 @@ class SchedulerSimulator:
         # Store the requests in the dictionary
         selected_requests = []
         for i in range(N):
-            if (hasattr(x[i], 'X') and x[i].X > 0.5) or (hasattr(x[i], 'Xn') and x[i].Xn > 0.5):
+            if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         
         return selected_requests, b
@@ -559,7 +556,7 @@ class SchedulerSimulator:
         # Parameters for burstiness and urgency
         burst_period = 10  # Defines how often the arrival rate changes
         urgent_request_period = 5  # Interval for injecting urgent requests
-        high_rate = 100  # High arrival rate
+        high_rate = 50  # High arrival rate
         low_rate = 20  # Low arrival rate
         current_rate = high_rate
 
