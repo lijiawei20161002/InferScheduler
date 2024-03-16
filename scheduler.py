@@ -634,7 +634,7 @@ class SchedulerSimulator:
                     arrival_iter = self.time2iter(req['arrival_time'])
                     if iteration >= arrival_iter:
                         # Calculate the objective for each selected request
-                        #objective_metric += int(iteration - arrival_iter)
+                        objective_metric -= int(iteration - arrival_iter)
                         if req['tokens'] == 1 and iteration <= self.time2iter(req['deadline']):
                             objective_metric += 1
                     switching_cost = 0 #req['switching_cost']

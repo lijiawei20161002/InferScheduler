@@ -40,7 +40,7 @@ if __name__ == "__main__":
     color_map = {  
         'offline solver': 'purple',  
         'online alg': 'pink',
-        'online solver': 'grey',
+        'online solver': 'gray',
         'random': 'blue',  
         'bidding': 'green',  
         'fcfs': 'red',  
@@ -77,19 +77,19 @@ if __name__ == "__main__":
                 #objective_metric = main(simulator, requests, cnt)
                 goodput, average_jct, objective_metric = main(simulator, requests, cnt)  
                 key = f'{scheduling_policy}'  
-                #goodput_values[key].append(goodput)  
-                #average_jct_values[key].append(average_jct)  
+                goodput_values[key].append(goodput) 
+                average_jct_values[key].append(average_jct)  
                 objective_metrics[key].append(objective_metric)
                 #os.system('python3 autoremove.py')
         cnt += 1
     
     # Plot the goodput results  
-    #plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
-                 #"Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  
+    plot_results(num_requests_values, goodput_values, "Number of Requests", "Goodput",  
+                 "Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  
   
     # Plot the average JCT results  
-    #plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  
-                 #"Scheduler Simulator Average JCT vs. Number of Requests", "average_jct.png")  
+    plot_results(num_requests_values, average_jct_values, "Number of Requests", "Average JCT",  
+                 "Scheduler Simulator Average JCT vs. Number of Requests", "average_jct.png")  
 
     # Plot the goodput results  
     plot_results(num_requests_values, objective_metrics, "Number of Requests", "Objective",  
