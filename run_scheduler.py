@@ -48,6 +48,7 @@ if __name__ == "__main__":
     }  
   
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
+    planning_windows = [500, 1000, 1500, 2000, 2500]
     batching_policies = [16]  
   
     goodput_values = {}  

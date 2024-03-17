@@ -32,7 +32,7 @@ class Request:
 
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=1000):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.current_time = 0  
@@ -47,6 +47,7 @@ class SchedulerSimulator:
         self.previous_selected_requests = []
         self.previous_batch_size = 16
         self.switching_cost = 4
+        self.planning_window_size = planning_window_size
         self.mode = 'incremental'
 
     def call_offline_solver(self):
@@ -169,7 +170,7 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(processing_requests)  # Number of requests
-        T = 1000
+        T = self.planning_window_size
 
         # Define decision variables for request selection, switching, and batch size
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")
