@@ -33,7 +33,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(10, 201, 50))  
+    num_requests_values = list(range(100, 1001, 100))  
     first_time_flag = True
   
     # Define colors for each scheduling policy  
@@ -48,7 +48,6 @@ if __name__ == "__main__":
     }  
   
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
-    planning_windows = [500, 1000, 1500, 2000, 2500]
     batching_policies = [16]  
   
     goodput_values = {}  

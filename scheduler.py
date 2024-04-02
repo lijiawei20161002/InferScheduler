@@ -32,7 +32,7 @@ class Request:
 
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=1000):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=20):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.current_time = 0  

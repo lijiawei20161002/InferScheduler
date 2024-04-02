@@ -11,8 +11,8 @@ def main(simulator, requests):
     return goodput
 
 if __name__ == "__main__":  
-    num_requests = 200  # Fixed number of requests for simplicity
-    planning_windows = [500, 1000, 1500, 2000, 2500]  # Different planning window sizes
+    num_requests = 1000  # Fixed number of requests for simplicity
+    planning_windows = [10,20,30,40,50,60,70,80,90,100]  # Different planning window sizes
     goodput_values = []  # Store goodput values for each planning window size
 
     # Generate a fixed set of requests
