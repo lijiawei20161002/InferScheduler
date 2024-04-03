@@ -8,6 +8,8 @@ import math, re, ast, os, glob
 from datetime import datetime, timedelta
 import copy
 from numpy import inf
+import json
+from datetime import datetime
 
 class Request:
     def __init__(self, id, tokens, arrival_time, deadline):
@@ -32,7 +34,7 @@ class Request:
 
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=20):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=100):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.current_time = 0  
@@ -49,6 +51,15 @@ class SchedulerSimulator:
         self.switching_cost = 4
         self.planning_window_size = planning_window_size
         self.mode = 'incremental'
+        options = {
+            "WLSACCESSID": "eafc1f5c-8281-47e0-beeb-9f05ca1d6344",
+            "WLSSECRET": "bef85e1a-fcab-4b34-b60a-687bbcb3a9df",
+            "LICENSEID": 2496914,
+        }
+        self.env = gp.Env(params=options)
+
+    def set_planning_window(self, size):
+        self.planning_window_size = size
 
     def call_offline_solver(self):
         self.requests_order = self.offline_solver()
@@ -160,7 +171,7 @@ class SchedulerSimulator:
         if len(processing_requests) == 0:
             return [], 16
         # Create a new model
-        model = gp.Model("Scheduler")
+        model = gp.Model("Scheduler", env=self.env)
         # Disable model output
         model.Params.LogToConsole = 0
         # Set time limit
@@ -234,7 +245,7 @@ class SchedulerSimulator:
 
     def offline_solver(self):  
         requests = list(self.requests.values())
-        model = gp.Model("Scheduler")  # Create a new model
+        model = gp.Model("Scheduler", env=self.env)  # Create a new model
         model.Params.LogToConsole = 0  # Disable model output
         model.Params.Presolve = -1  # Automatic presolve level
         model.params.Threads = 0  # Using 0 gurobi will determine the number of threads automatically
@@ -311,7 +322,7 @@ class SchedulerSimulator:
     
     def offline_solver_switching_cost(self):  
         requests = list(self.requests.values())
-        model = gp.Model("Scheduler")  # Create a new model
+        model = gp.Model("Scheduler", env=self.env)  # Create a new model
         model.Params.LogToConsole = 0  # Disable model output
         #model.setParam('TimeLimit', 0.1)  # Set time limit
         model.Params.Presolve = -1  # Automatic presolve level
@@ -546,7 +557,34 @@ class SchedulerSimulator:
             average_jct = 0
 
         #self.plot_pending_tokens(pending_tokens_over_time)
-        return goodput, average_jct  
+        return goodput, average_jct 
+
+    def log_requests_for_deepar(self, requests, filename):
+        """
+        Logs the requests data in JSON lines format for DeepAR training, using the arrival_time of each request
+        as the start date for its time series.
+
+        Args:
+            requests (list of Request objects): The requests to log.
+        """
+        # Prepare the data for each request
+        time_series_data = []
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        for req in requests:
+            req = requests[req]
+            adjusted_start_time = current_time + timedelta(seconds=req.arrival_time)
+            series = {
+                "start": adjusted_start_time.strftime('%Y-%m-%d %H:%M:%S'),
+                "tokens": req.tokens
+            }
+            time_series_data.append(series)
+        
+        with open(filename, 'w') as f:
+            for series in time_series_data:
+                json_line = json.dumps(series)
+                f.write(json_line + '\n')
+        
+        print(f"Logged {len(requests)} requests for DeepAR in {filename}")
 
     def generate_requests(self, num_requests, inference_delays):
         mu = 35.403855367569996

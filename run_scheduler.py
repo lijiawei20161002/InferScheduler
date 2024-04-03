@@ -33,7 +33,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.clf()  
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(100, 1001, 100))  
+    num_requests_values = list(range(1000, 1001, 100))  
     first_time_flag = True
   
     # Define colors for each scheduling policy  
@@ -66,8 +66,11 @@ if __name__ == "__main__":
     cnt = 0
     # Loop through num_requests from 100 to 2000 with a step of 100 for random policy  
     for num_requests in num_requests_values:  
-        # Generate the requests  
+        print(f'num requests: {num_requests}') 
         original_requests = simulator.generate_requests(num_requests, inference_delays)
+        if num_requests == 1000:
+            simulator.log_requests_for_deepar(original_requests, f'synthetic data/{num_requests}.json')
+        simulator.set_planning_window(int(num_requests/10))
         for scheduling_policy in scheduling_policies:  
             for batch_policy in batching_policies:  
                 print(scheduling_policy, batch_policy)  
