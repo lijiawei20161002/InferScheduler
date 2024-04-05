@@ -42,7 +42,6 @@ def compare_logs(file_path1, file_path2):
     else:
         print("No differences found in selected request IDs.")
 
-# Example usage
 file_path1 = 'online solver.log'
 file_path2 = 'offline solver.log'
 compare_logs(file_path1, file_path2)
