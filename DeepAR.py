@@ -77,6 +77,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
 epochs = 100
+'''
 for epoch in range(epochs):
     model.train()
     for batch_idx, (data, targets) in enumerate(train_loader):
@@ -93,6 +94,9 @@ for epoch in range(epochs):
         
     print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
+torch.save(model.state_dict(), 'model/DeepAR.pth')'''
+model = DeepARModel(input_size=1, hidden_size=50, num_layers=2, output_size=1).to(device)
+model.load_state_dict(torch.load('model/DeepAR.pth'))
 model.eval()
 predictions = []
 actual_values = []
@@ -110,8 +114,8 @@ num_points_to_plot = 100
 plt.figure(figsize=(10, 6))
 plt.plot(actual_values[:num_points_to_plot], 'b-', label='Actual')
 plt.plot(predictions[:num_points_to_plot], 'r--', label='Predicted')
-plt.xlabel('Time Step')
-plt.ylabel('Value')
+plt.xlabel('Request')
+plt.ylabel('Token Length')
 plt.legend()
 plt.grid()
 plt.title('Actual vs. Predicted Values')
