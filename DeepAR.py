@@ -49,12 +49,10 @@ class TimeSeriesDataset(Dataset):
             A tuple of (sequence, target), where sequence is a sequence of
             historical data and target is the value at the next time step.
         """
-        # Fetch the sequence from idx to idx+sequence_length
-        sequence = self.data.iloc[idx:idx+self.sequence_length]['ContextTokens'].values
-        # Target is the next value following the sequence
-        target = self.data.iloc[idx+self.sequence_length]['GeneratedTokens']
-        sequence = torch.tensor(sequence, dtype=torch.float).unsqueeze(-1)  
-        target = torch.tensor(target, dtype=torch.float)
+        sequence = self.data.iloc[idx:idx+self.sequence_length][['ContextTokens', 'GeneratedTokens']].values
+        target = self.data.iloc[idx+self.sequence_length][['ContextTokens', 'GeneratedTokens']].values
+        sequence = sequence.astype(np.float32)  
+        target = target.astype(np.float32)
         return torch.tensor(sequence, dtype=torch.float), torch.tensor(target, dtype=torch.float)
 
 # Load the dataset
@@ -71,13 +69,12 @@ train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = DeepARModel(input_size=1, hidden_size=50, num_layers=2, output_size=1).to(device)
+model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2).to(device)
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
 epochs = 100
-'''
 for epoch in range(epochs):
     model.train()
     for batch_idx, (data, targets) in enumerate(train_loader):
@@ -94,8 +91,8 @@ for epoch in range(epochs):
         
     print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
 
-torch.save(model.state_dict(), 'model/DeepAR.pth')'''
-model = DeepARModel(input_size=1, hidden_size=50, num_layers=2, output_size=1).to(device)
+torch.save(model.state_dict(), 'model/DeepAR.pth')
+model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2).to(device)
 model.load_state_dict(torch.load('model/DeepAR.pth'))
 model.eval()
 predictions = []
