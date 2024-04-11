@@ -34,7 +34,7 @@ class Request:
 
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=100):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=1000, reserve=6):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.current_time = 0  
@@ -57,6 +57,7 @@ class SchedulerSimulator:
             "LICENSEID": 2496914,
         }
         self.env = gp.Env(params=options)
+        self.reserve = reserve
 
     def set_planning_window(self, size):
         self.planning_window_size = size
@@ -92,6 +93,9 @@ class SchedulerSimulator:
     def log_info(self, info):
         with open(self.scheduling_policy + '.log', 'a') as log_file:
             log_file.write(info)
+            log_file.flush()
+            os.fsync(log_file.fileno())
+
 
     def log_scheduler_decision(self, iteration, current_requests, selected_requests, batch_size):
         """
@@ -109,8 +113,11 @@ class SchedulerSimulator:
         decision_text += f"Batch Size: {batch_size}\n"
         decision_text += "---------------------------------\n"
 
-        with open(self.scheduling_policy + '.log', 'a') as log_file:
+        with open(self.scheduling_policy + '.log', 'a+') as log_file:
             log_file.write(decision_text)
+            log_file.flush()
+            os.fsync(log_file.fileno())
+
 
     def approximate_probability(self, request, x_i):
         if self.time2iter(request.deadline) == 0:
@@ -214,7 +221,7 @@ class SchedulerSimulator:
         # Batch size constraint
         model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= self.B)
         for t in range(1, T):
-            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B-2)
+            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B-self.reserve)
 
         # Schedule constraint
         #for i in range(N):

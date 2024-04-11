@@ -3,8 +3,13 @@ from scheduler import SchedulerSimulator
 import copy
 import os
 import glob
+import random
+from datetime import datetime, timedelta
+import pandas as pd
+from scheduler import Request, SchedulerSimulator
   
-inference_delays = {1: 42.89945313, 2: 45.02945313, 4: 50.47695313, 8: 62.123125, 16: 84.1871875}  
+#inference_delays = {1: 0.04289945313, 2: 0.04502945313, 4: 0.05047695313, 8: 0.062123125, 16: 0.0841871875}
+inference_delays = {1: 42.89945313, 2: 45.02945313, 4: 50.47695313, 8: 62.123125, 16: 84.1871875}    
   
 def main(simulator, requests, start=0):    
     simulator.requests = requests  
@@ -31,10 +36,28 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     plt.grid()  
     plt.savefig(filename)  
     plt.clf()  
+
+def parse_trace_file(filename, num_requests):
+    """Parses the trace CSV file and generates a list of Request objects."""
+    df = pd.read_csv(filename)
+    df = df.iloc[:num_requests]
+    requests = {}
+    for i, row in df.iterrows():
+        id = f"{i+1}"
+        timestamp = datetime.strptime(row['TIMESTAMP'], '%Y-%m-%d %H:%M:%S.%f')
+        generated_tokens = int(row['GeneratedTokens'])
+        if random.random() > 0.5:
+            deadline = timestamp + timedelta(seconds=int(random.expovariate(2.0 / (inference_delays[16] * generated_tokens))))
+        else:
+            deadline = timestamp + timedelta(seconds=int(random.expovariate(0.5 / (inference_delays[16] * generated_tokens))))
+        request = Request(str(timestamp), generated_tokens, timestamp, deadline)
+        requests[id] = request
+    return requests
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(100, 1001, 100))  
+    num_requests_values = list(range(100, 301, 80))  
     first_time_flag = True
+    trace_file = "data/AzureLLMInferenceTrace_conv.csv"
   
     # Define colors for each scheduling policy  
     color_map = {  
@@ -68,7 +91,7 @@ if __name__ == "__main__":
     for num_requests in num_requests_values:  
         print(f'num requests: {num_requests}') 
         original_requests = simulator.generate_requests(num_requests, inference_delays)
-        simulator.set_planning_window(int(num_requests/10))
+        #original_requests = 
         for scheduling_policy in scheduling_policies:  
             for batch_policy in batching_policies:  
                 print(scheduling_policy, batch_policy)  
