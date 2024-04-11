@@ -211,10 +211,10 @@ class SchedulerSimulator:
                 f"Completion_{i}",
             )
 
-
         # Batch size constraint
-        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= b)
-        model.addConstr(b <= self.B)
+        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= self.B)
+        for t in range(1, T):
+            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B-2)
 
         # Schedule constraint
         #for i in range(N):
@@ -558,33 +558,6 @@ class SchedulerSimulator:
 
         #self.plot_pending_tokens(pending_tokens_over_time)
         return goodput, average_jct 
-
-    def log_requests_for_deepar(self, requests, filename):
-        """
-        Logs the requests data in JSON lines format for DeepAR training, using the arrival_time of each request
-        as the start date for its time series.
-
-        Args:
-            requests (list of Request objects): The requests to log.
-        """
-        # Prepare the data for each request
-        time_series_data = []
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        for req in requests:
-            req = requests[req]
-            adjusted_start_time = current_time + timedelta(seconds=req.arrival_time)
-            series = {
-                "start": adjusted_start_time.strftime('%Y-%m-%d %H:%M:%S'),
-                "tokens": req.tokens
-            }
-            time_series_data.append(series)
-        
-        with open(filename, 'w') as f:
-            for series in time_series_data:
-                json_line = json.dumps(series)
-                f.write(json_line + '\n')
-        
-        print(f"Logged {len(requests)} requests for DeepAR in {filename}")
 
     def generate_requests(self, num_requests, inference_delays):
         mu = 35.403855367569996
