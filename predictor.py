@@ -1,203 +1,98 @@
-import torch
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
+from keras.models import Sequential
+from keras.layers import LSTM, Dense, Dropout
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import mean_squared_error
+from keras.models import load_model
 
-class DeepARModel(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, output_size, dropout_rate=0.5):
-        super(DeepARModel, self).__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout_rate if num_layers > 1 else 0)
-        self.bn = nn.BatchNorm1d(hidden_size)
-        self.fc = nn.Linear(hidden_size, output_size)
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
+# Load and prepare data
+data_path = 'data/AzureLLMInferenceTrace_conv.csv'
+df = pd.read_csv(data_path)
+df['TIMESTAMP'] = pd.to_datetime(df['TIMESTAMP'])
+df.set_index('TIMESTAMP', inplace=True)
+df['RequestCount'] = 1  # Counting each request
 
-    def forward(self, x):
-        batch_size = x.size(0)
-        # Initialize hidden state and cell state
-        h0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(x.device)
-        c0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(x.device)
+# Resample data to second level
+df_seconds = df['RequestCount'].resample('S').sum()
 
-        # Forward propagate LSTM
-        out, _ = self.lstm(x, (h0, c0))  
-        out = self.bn(out[:, -1, :])
+# Function to create features and labels based on actual timestamps
+def create_features_labels(df, look_back=60):
+    X, Y = [], []
+    timestamps = df.index.to_series()
+    # Iterate over the timestamps
+    for i in range(len(timestamps) - look_back):
+        end_time = timestamps.iloc[i + look_back - 1]
+        start_time_next_minute = end_time + pd.Timedelta(seconds=1)
+        end_time_next_minute = end_time + pd.Timedelta(minutes=1)
 
-        # Decode the hidden state of the last time step
-        out = self.fc(out)
-        return out
+        # Ensure we do not go out of bounds
+        if end_time_next_minute > timestamps.iloc[-1]:
+            break
 
-class TimeSeriesDataset(Dataset):
-    def __init__(self, data, sequence_length):
-        """
-        Args:
-            data: A Pandas DataFrame containing the time series data.
-            sequence_length: The length of the input sequences (number of time steps).
-        """
-        self.data = data
-        self.sequence_length = sequence_length
+        # Get the indices for the next minute
+        next_minute_mask = (timestamps >= start_time_next_minute) & (timestamps <= end_time_next_minute)
+        next_minute_data = df[next_minute_mask].sum()
 
-    def __len__(self):
-        # Subtract sequence_length to avoid overflow
-        return len(self.data) - self.sequence_length
+        # Append data
+        X.append(df[i:i + look_back].values)
+        Y.append(next_minute_data)
 
-    def __getitem__(self, idx):
-        """
-        Args:
-            idx: The index of the item.
+    return np.array(X), np.array(Y)
 
-        Returns:
-            A tuple of (sequence, target), where sequence is a sequence of
-            historical data and target is the value at the next time step.
-        """
-        sequence = self.data.iloc[idx:idx+self.sequence_length][['ContextTokens', 'GeneratedTokens']].values
-        target = self.data.iloc[idx+self.sequence_length][['ContextTokens', 'GeneratedTokens']].values
-        sequence = sequence.astype(np.float32)  
-        target = target.astype(np.float32)
-        return torch.tensor(sequence, dtype=torch.float), torch.tensor(target, dtype=torch.float)
+# Normalize the dataset
+scaler = MinMaxScaler(feature_range=(0, 1))
+df_seconds_scaled = scaler.fit_transform(df_seconds.values.reshape(-1, 1))
 
-# Load the dataset
-csv_file_path = 'data/AzureLLMInferenceTrace_conv.csv'
-data = pd.read_csv(csv_file_path, parse_dates=['TIMESTAMP'])
-data['TIMESTAMP'] = data['TIMESTAMP'].dt.floor('s') 
-aggregated_data = data.groupby(['TIMESTAMP'], as_index=False)[['ContextTokens', 'GeneratedTokens']].sum()
-sequence_length = 60
-split_idx = int(len(aggregated_data) * 0.8)
-train_data = aggregated_data[:split_idx]
-test_data = aggregated_data[split_idx:]
-train_dataset = TimeSeriesDataset(train_data, sequence_length)
-test_dataset = TimeSeriesDataset(test_data, sequence_length)
+# Prepare data
+look_back = 60  
+dataX, dataY = create_features_labels(df_seconds, look_back)
 
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+# Split into train and test sets (simple split for demonstration)
+train_size = int(len(dataX) * 0.67)
+trainX, trainY = dataX[:train_size], dataY[:train_size]
+testX, testY = dataX[train_size:], dataY[train_size:]
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2, dropout_rate=0.3).to(device)
-criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.025)
+# Reshape input to be [samples, time steps, features]
+trainX = np.reshape(trainX, (trainX.shape[0], trainX.shape[1], 1))
+testX = np.reshape(testX, (testX.shape[0], testX.shape[1], 1))
 
-# Training loop
-epochs = 50
-for epoch in range(epochs):
-    model.train()
-    for batch_idx, (data, targets) in enumerate(train_loader):
-        data, targets = data.to(device), targets.to(device)
-        
-        # Forward pass
-        outputs = model(data)
-        loss = criterion(outputs, targets)
-        
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        
-    print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
+# Define and compile LSTM model
+model = Sequential()
+model.add(LSTM(100, return_sequences=True, input_shape=(look_back, 1)))
+model.add(Dropout(0.3))
+model.add(LSTM(100, return_sequences=False))  
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mean_squared_error')
+# Load pre-trained model or train a new one
+#model = load_model('model/lstm_model.keras')
+# Train and save
+model.fit(trainX, trainY, epochs=600, batch_size=128, verbose=2)
+model.save('model/lstm_model.keras')
 
-torch.save(model.state_dict(), 'model/predictor.pth')
-model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2).to(device)
-model.load_state_dict(torch.load('model/predictor.pth'))
-model.eval()
-predictions = []
-actual_values = []
-with torch.no_grad():
-    for data, labels in test_loader:
-        data, labels = data.to(device), labels.to(device)
-        
-        # Model predictions
-        outputs = model(data)
-        predictions.extend(outputs.view(-1).cpu().numpy())
-        actual_values.extend(labels.cpu().numpy())
+# Make predictions
+trainPredict = model.predict(trainX)
+testPredict = model.predict(testX)
 
-# For visualization, let's consider a subset of the test set for clarity
-num_points_to_plot = 1000  
-predictions = np.array(predictions).reshape(-1, 2)  
-print(predictions)
-actual_values = np.array(actual_values).reshape(-1, 2)  
-subset_size = min(num_points_to_plot, len(predictions))
-predictions_subset = predictions[:subset_size]
-actual_values_subset = actual_values[:subset_size]
-plt.figure(figsize=(10, 6))
-plt.plot(actual_values_subset[:, 0], 'b-', label='Actual ContextTokens')
-plt.plot(predictions_subset[:, 0], 'r--', label='Predicted ContextTokens')
-plt.plot(actual_values_subset[:, 1], 'g-', label='Actual GeneratedTokens')
-plt.plot(predictions_subset[:, 1], 'y--', label='Predicted GeneratedTokens')
-plt.xlabel('seconds')
-plt.ylabel('Token Length')
+# Calculate and print RMSE
+trainScore = np.sqrt(mean_squared_error(trainY, trainPredict))
+testScore = np.sqrt(mean_squared_error(testY, testPredict))
+print('Train Score: %.2f RMSE' % (trainScore))
+print('Test Score: %.2f RMSE' % (testScore))
+
+# Plotting actual vs predicted
+plt.figure(figsize=(20, 6))
+markerfrequency = 50
+plt.plot(np.arange(len(trainY)), trainY, label='Actual Minute-Level Data (train stage)', color='lightsalmon') # marker='o', markevery=markerfrequency)
+plt.plot(np.arange(len(trainPredict)), trainPredict, label='Predicted Minute-Level Data (train stage)', color='brown') # marker='x', markevery=markerfrequency)
+offset = len(trainY)
+plt.plot(offset+np.arange(len(testY)), testY, label='Actual Minute-Level Data (test stage)', color='pink') #marker='o', markevery=markerfrequency)
+plt.plot(offset+np.arange(len(testPredict)), testPredict, label='Predicted Minute-Level Data (test stage)', color='purple') # marker='x', markevery=markerfrequency)
+
+plt.title('Comparison of Actual vs. Predicted Requests Aggregated to Minute-Level')
+plt.xlabel('Timestamp')
+plt.ylabel('Number of Requests')
 plt.legend()
-plt.grid()
-plt.title('Actual vs. Predicted Values')
+plt.grid(True)
 plt.savefig('prediction.png')
-
-'''
-# Predict number of requests arrival
-data['TIMESTAMP'] = data['TIMESTAMP'].dt.floor('')  # Round down to the nearest day
-aggregated_data = data.groupby('TIMESTAMP').sum().reset_index()
-sequence_length = 5
-split_idx = int(len(data) * 0.8)
-train_data = data[:split_idx]
-test_data = data[split_idx:]
-train_dataset = TimeSeriesDataset(train_data, sequence_length)
-test_dataset = TimeSeriesDataset(test_data, sequence_length)
-
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2).to(device)
-criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-# Training loop
-epochs = 100
-for epoch in range(epochs):
-    model.train()
-    for batch_idx, (data, targets) in enumerate(train_loader):
-        data, targets = data.to(device), targets.to(device)
-        
-        # Forward pass
-        outputs = model(data)
-        loss = criterion(outputs, targets)
-        
-        # Backward and optimize
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        
-    print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
-
-torch.save(model.state_dict(), 'model/predictor.pth')
-model = DeepARModel(input_size=2, hidden_size=50, num_layers=2, output_size=2).to(device)
-model.load_state_dict(torch.load('model/predictor_day.pth'))
-model.eval()
-predictions = []
-actual_values = []
-with torch.no_grad():
-    for data, labels in test_loader:
-        data, labels = data.to(device), labels.to(device)
-        
-        # Model predictions
-        outputs = model(data)
-        predictions.extend(outputs.view(-1).cpu().numpy())
-        actual_values.extend(labels.cpu().numpy())
-
-# For visualization, let's consider a subset of the test set for clarity
-num_points_to_plot = 14*24  
-predictions = np.array(predictions).reshape(-1, 2)  
-actual_values = np.array(actual_values).reshape(-1, 2)  
-subset_size = min(num_points_to_plot, len(predictions))
-predictions_subset = predictions[:subset_size]
-actual_values_subset = actual_values[:subset_size]
-plt.figure(figsize=(10, 6))
-plt.plot(actual_values_subset[:, 0], 'b-', label='Actual ContextTokens')
-plt.plot(predictions_subset[:, 0], 'r--', label='Predicted ContextTokens')
-plt.plot(actual_values_subset[:, 1], 'g-', label='Actual GeneratedTokens')
-plt.plot(predictions_subset[:, 1], 'y--', label='Predicted GeneratedTokens')
-plt.xlabel('Hour')
-plt.ylabel('Token Length')
-plt.legend()
-plt.grid()
-plt.title('Actual vs. Predicted Values')
-plt.savefig('prediction.png')'''
-
