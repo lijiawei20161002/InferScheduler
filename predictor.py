@@ -1,103 +1,113 @@
 import pandas as pd
 import numpy as np
+from datetime import timedelta
 import matplotlib.pyplot as plt
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, LayerNormalization, MultiHeadAttention, Flatten, Dropout
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_squared_error
+import seaborn as sns
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.model_selection import GridSearchCV
 
-class CustomAttention(tf.keras.layers.Layer):
-    def __init__(self, num_heads, key_dim):
-        super(CustomAttention, self).__init__()
-        self.attention = MultiHeadAttention(num_heads=num_heads, key_dim=key_dim)
-        self.norm = LayerNormalization(axis=1)
+time_labels = ['0s', '10s', '20s', '30s', '60s', '180s', '1000s']
+token_labels = [0, 100, 200, 300, 500, 10000]
 
-    def call(self, inputs):
-        # Using inputs as query, key, and value
-        attn_output = self.attention(inputs, inputs, inputs)
-        # Apply normalization
-        return self.norm(attn_output + inputs)  # Residual connection
+def load_data(file_path):
+    df = pd.read_csv(file_path, parse_dates=['TIMESTAMP', 'Deadline'])
+    return df
 
-# Load and prepare data
-data_path = 'data/AzureLLMInferenceTrace_conv.csv'
-df = pd.read_csv(data_path)
-df['TIMESTAMP'] = pd.to_datetime(df['TIMESTAMP'])
-df.set_index('TIMESTAMP', inplace=True)
-df['RequestCount'] = 1  # Counting each request
+def create_features_labels(df, history_window=10, prediction_window=60):
+    features = []
+    labels = []
+    
+    # Iterate over the DataFrame at steps of the prediction_window
+    for start_time in pd.date_range(start=df['TIMESTAMP'].min().ceil(freq='s'), end=df['TIMESTAMP'].max().floor(freq='s') - timedelta(seconds=prediction_window), freq=f'{prediction_window}S'):
+        end_time = start_time + timedelta(seconds=prediction_window)
+        history_start_time = start_time - timedelta(seconds=history_window)
+        future_end_time = end_time + timedelta(seconds=prediction_window)
 
-# Resample data to second level
-df_seconds = df['RequestCount'].resample('S').sum()
+        history_data = df[(df['TIMESTAMP']>history_start_time) & (df['TIMESTAMP']<start_time)]
+        future_data = df[(df['TIMESTAMP']>end_time) &(df['TIMESTAMP']<future_end_time)]
 
-# Function to create features and labels
-def create_features_labels(df, look_back=60, window=1):
-    X, Y = [], []
-    timestamps = df.index.to_series()
-    for i in range(len(timestamps) - look_back):
-        end_time = timestamps.iloc[i + look_back - 1]
-        start_time_next_minute = end_time + pd.Timedelta(seconds=1)
-        end_time_next_minute = end_time + pd.Timedelta(minutes=window)
-        if end_time_next_minute > timestamps.iloc[-1]:
-            break
-        next_minute_mask = (timestamps >= start_time_next_minute) & (timestamps <= end_time_next_minute)
-        next_minute_data = df[next_minute_mask].sum()
-        X.append(df[i:i + look_back].values)
-        Y.append(next_minute_data)
-    return np.array(X), np.array(Y)
+        # Calculate features from history_data
+        feature_vector = [
+            history_data['GeneratedTokens'].mean() if not history_data.empty else 0,
+            history_data['GeneratedTokens'].std(ddof=0) if not history_data.empty else 0,
+            history_data['GeneratedTokens'].max() if not history_data.empty else 0,
+            history_data['GeneratedTokens'].min() if not history_data.empty else 0,
+            history_data['GeneratedTokens'].sum() if not history_data.empty else 0,
+            len(history_data)
+        ]
+        features.append(feature_vector)
 
-# Normalize the dataset
-scaler = MinMaxScaler(feature_range=(0, 1))
-df_seconds_scaled = scaler.fit_transform(df_seconds.values.reshape(-1, 1))
+        deadline_bins = end_time + pd.to_timedelta(time_labels)  
+        token_bins = token_labels
 
-# Prepare data
-look_back = 300  
-window = 5
-dataX, dataY = create_features_labels(df_seconds, look_back, window)
+        future_data['DeadlineBucket'] = pd.cut(df['Deadline'], bins=deadline_bins, labels=time_labels[1:])
+        future_data['TokenBucket'] = pd.cut(df['GeneratedTokens'], bins=token_bins, labels=token_labels[1:])
 
-# Split into train and test sets
-train_size = int(len(dataX) * 0.67)
-trainX, trainY = dataX[:train_size], dataY[:train_size]
-testX, testY = dataX[train_size:], dataY[train_size:]
+        # Calculate label from future_data
+        label = [
+            future_data.groupby(['DeadlineBucket', 'TokenBucket']).size().unstack(fill_value=0)
+        ]
+        labels.append(label)
 
-# Reshape input to be [samples, time steps, features]
-trainX = np.reshape(trainX, (trainX.shape[0], trainX.shape[1], 1))
-testX = np.reshape(testX, (testX.shape[0], testX.shape[1], 1))
+    return np.array(features), np.array(labels)
 
-# Define and compile the model with LSTM and attention
-model = Sequential([
-    LayerNormalization(axis=1),
-    LSTM(50, return_sequences=True),  # LSTM layer with return sequences
-    CustomAttention(num_heads=5, key_dim=50),  # Custom attention layer
-    Flatten(),
-    Dense(50, activation='relu'),
-    Dense(1)
-])
+def plot_heatmap(actual, predicted, filename):
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+    sns.heatmap(actual.reshape(-1, 5), xticklabels=token_labels, yticklabels=time_labels, ax=ax[0], cmap="viridis", annot=True, fmt=".0f")  
+    sns.heatmap(predicted.reshape(-1, 5), xticklabels=token_labels, yticklabels=time_labels, ax=ax[1], cmap="viridis", annot=True, fmt=".0f")
+    ax[0].set_title("Actual Values")
+    ax[0].set_xlabel("Token Buckets")
+    ax[0].set_ylabel("Deadline Buckets")
+    ax[1].set_title("Predicted Values")
+    ax[1].set_xlabel("Token Buckets")
+    ax[1].set_ylabel("Time Buckets")
+    plt.suptitle('Comparison of Actual vs. Predicted Request Distributions')
+    plt.savefig(filename+'.png')
 
-model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(trainX, trainY, epochs=100, batch_size=128, verbose=2)
-model.save('model/combined_lstm_attention_model.keras')
+df = load_data('data/AzureLLMInferenceTrace_conv.csv')
+X, y = create_features_labels(df, history_window=60, prediction_window=60)
 
-# Make predictions
-trainPredict = model.predict(trainX)
-testPredict = model.predict(testX)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Calculate and print RMSE
-trainScore = np.sqrt(mean_squared_error(trainY, trainPredict))
-testScore = np.sqrt(mean_squared_error(testY, testPredict))
-print(f'Train Score: {trainScore:.2f} RMSE')
-print(f'Test Score: {testScore:.2f} RMSE')
+model = RandomForestRegressor(random_state=42)
+param_grid = {
+    'n_estimators': [100],
+    'max_features': ['auto', 'sqrt', 'log2'],
+    'max_depth': [None, 10],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
 
-# Plotting actual vs predicted
-plt.figure(figsize=(20, 6))
-plt.plot(np.arange(len(trainY)), trainY, label='Actual Minute-Level Data (train stage)', color='lightsalmon')
-plt.plot(np.arange(len(trainPredict)), trainPredict, label='Predicted Minute-Level Data (train stage)', color='brown')
-offset = len(trainY)
-plt.plot(offset+np.arange(len(testY)), testY, label='Actual Minute-Level Data (test stage)', color='pink')
-plt.plot(offset+np.arange(len(testPredict)), testPredict, label='Predicted Minute-Level Data (test stage)', color='purple')
+# Setup the grid search
+grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=3, verbose=2, n_jobs=-1, scoring='neg_mean_squared_error')
+grid_search.fit(X_train, y_train.reshape(y_train.shape[0], -1))
+print(f"Best parameters: {grid_search.best_params_}")
+print(f"Best RMSE: {np.sqrt(-grid_search.best_score_)}")
 
-plt.title('Comparison of Actual vs. Predicted Requests Aggregated to Minute-Level')
-plt.xlabel('Timestamp')
-plt.ylabel('Number of Requests')
-plt.legend()
-plt.grid(True)
-plt.savefig('prediction.png')
+# Use the best estimator to make predictions
+best_model = grid_search.best_estimator_
+predictions = best_model.predict(X_test)
+
+if y_test.ndim > 2:
+    y_test = y_test.reshape(y_test.shape[0], -1)  # Flatten each sample into a 1D array
+
+if predictions.ndim > 2:
+    predictions = predictions.reshape(predictions.shape[0], -1)  # Flatten each sample into a 1D array
+    
+mse = mean_squared_error(y_test, predictions)
+rmse = np.sqrt(mse)
+mae = mean_absolute_error(y_test, predictions)
+r2 = r2_score(y_test, predictions)
+
+print(f"Mean Squared Error (MSE): {mse:.2f}")
+print(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
+print(f"Mean Absolute Error (MAE): {mae:.2f}")
+print(f"R-squared (Coefficient of Determination): {r2:.2f}")
+
+for i in range(len(y_test)):
+    actual = y_test[i]
+    predicted = predictions[i]
+    filename = str(i)+'.png'
+    plot_heatmap(actual, predicted, filename)
