@@ -10,6 +10,7 @@ import copy
 from numpy import inf
 import json
 from datetime import datetime
+from predictor import Predictor
 
 class Request:
     def __init__(self, id, tokens, arrival_time, deadline):
@@ -17,27 +18,35 @@ class Request:
         self.tokens = tokens
         self.deadline = deadline
         self.arrival_time = arrival_time
-        self.score = tokens / deadline if deadline >0 else inf
-        if deadline > arrival_time:
-            self.priority = 1 / (deadline - arrival_time)
-        else:
-            self.priority = 0
+        self.score = self.calculate_score()
+        self.priority = self.calculate_priority()
         self.switching_cost = self.tokens/2
+
+    def calculate_score(self):
+        time_to_deadline = (self.deadline - self.arrival_time).total_seconds()
+        return self.tokens / time_to_deadline if time_to_deadline > 0 else float('inf')
 
     def update_score(self, current_time):
         if current_time < self.deadline:
-            self.score = self.tokens / (self.deadline - current_time)
+            time_to_deadline = (self.deadline - current_time).total_seconds()
+            self.score = self.tokens / time_to_deadline
+
+    def calculate_priority(self):
+        time_to_deadline = (self.deadline - self.arrival_time).total_seconds()
+        if time_to_deadline > 0:
+            return 1 / time_to_deadline
+        else:
+            return 0
 
     def update_priority(self, current_time):
         if current_time < self.deadline:
-            self.priority = 1 / (self.deadline - current_time)
-
+            time_to_deadline = (self.deadline - current_time).total_seconds()
+            self.priority = 1 / time_to_deadline
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, planning_window_size=1000, reserve=6):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=1000, reserve=6):  
         self.requests = requests  
         self.inference_delays = inference_delays  
-        self.current_time = 0  
         self.total_completion_time = 0 
         self.scheduling_policy = scheduling_policy  
         self.batching_policy = batching_policy
@@ -58,6 +67,10 @@ class SchedulerSimulator:
         }
         self.env = gp.Env(params=options)
         self.reserve = reserve
+        self.time_labels=['0s', '10s', '20s', '30s', '60s', '180s', '1000s']
+        self.token_labels=[0, 100, 200, 300, 500, 10000]
+        self.start = start
+        self.current_time = start  
 
     def set_planning_window(self, size):
         self.planning_window_size = size
@@ -66,12 +79,11 @@ class SchedulerSimulator:
         self.requests_order = self.offline_solver()
 
     def time2iter(self, t):
-        return int(t//self.inference_delays[16])
+        return int((t-self.start).total_seconds()*1000//self.inference_delays[16])
     
     def reset(self, requests, inference_delays, scheduling_policy, batching_policy):
         self.requests = requests  
-        self.inference_delays = inference_delays  
-        self.current_time = 0  
+        self.inference_delays = inference_delays    
         self.total_completion_time = 0 
         self.scheduling_policy = scheduling_policy  
         self.batching_policy = batching_policy
@@ -83,6 +95,7 @@ class SchedulerSimulator:
         self.previous_selected_requests = []
         self.previous_batch_size = 16
         self.mode == 'incremental'
+        self.current_time = self.start
     
     def calculate_delay(self, batch_size):  
         if batch_size in self.inference_delays:  
@@ -91,11 +104,26 @@ class SchedulerSimulator:
             return float('inf')  # Assume infinite delay for batch sizes not in the list 
 
     def log_info(self, info):
-        with open(self.scheduling_policy + '.log', 'a') as log_file:
+        with open(f'{self.scheduling_policy}_{self.batching_policy}.log', 'a') as log_file:
             log_file.write(info)
             log_file.flush()
             os.fsync(log_file.fileno())
 
+    def format_requests_for_logging(self, requests):
+        formatted_requests = []
+        for req in requests:
+            # Convert each request into a dictionary with datetime fields serialized to strings
+            formatted_request = {
+                "id": req.id,
+                "tokens": req.tokens,
+                "arrival_time": req.arrival_time.isoformat() if isinstance(req.arrival_time, datetime) else req.arrival_time,
+                "deadline": req.deadline.isoformat() if isinstance(req.deadline, datetime) else req.deadline,
+                "score": req.score,
+                "priority": req.priority,
+                "switching_cost": req.switching_cost
+            }
+            formatted_requests.append(formatted_request)
+        return json.dumps(formatted_requests)
 
     def log_scheduler_decision(self, iteration, current_requests, selected_requests, batch_size):
         """
@@ -107,17 +135,18 @@ class SchedulerSimulator:
             selected_requests (list): List of selected requests in the current iteration.
             batch_size (int): The batch size used in the current iteration.
         """
-        decision_text = f"Iteration: {iteration}, Time: {(iteration-1)*self.inference_delays[16]} to {iteration*self.inference_delays[16]}\n"
-        decision_text += f"Current Requests: {[req.__dict__ for req in current_requests]}\n"
-        decision_text += f"Selected Requests: {[req.__dict__ for req in selected_requests]}\n"
-        decision_text += f"Batch Size: {batch_size}\n"
+        formatted_current_requests = self.format_requests_for_logging(current_requests)
+        formatted_selected_requests = self.format_requests_for_logging(selected_requests)
+        decision_text = f'{{"Iteration": {iteration}, "Time": "{self.start+timedelta(milliseconds=(iteration-1)*self.inference_delays[16])} to {self.start+timedelta(milliseconds=iteration*self.inference_delays[16])}", '
+        decision_text += f'"Current Requests": {formatted_current_requests}, '
+        decision_text += f'"Selected Requests": {formatted_selected_requests}, '
+        decision_text += f'"Batch Size": {batch_size}}}\n'
         decision_text += "---------------------------------\n"
 
-        with open(self.scheduling_policy + '.log', 'a+') as log_file:
+        with open(f'{self.scheduling_policy}_{self.batching_policy}.log', 'a+') as log_file:
             log_file.write(decision_text)
             log_file.flush()
             os.fsync(log_file.fileno())
-
 
     def approximate_probability(self, request, x_i):
         if self.time2iter(request.deadline) == 0:
@@ -503,7 +532,7 @@ class SchedulerSimulator:
         
                 # Calculate the number of requests that can be processed within their deadlines.  
                 num_requests_within_deadline = sum(  
-                    req.deadline >= self.current_time + self.calculate_delay(actual_batch_size)*req.tokens  
+                    req.deadline >= self.current_time + timedelta(milliseconds=self.calculate_delay(actual_batch_size)*req.tokens)  
                     for req in current_requests  
                 )  
         
@@ -533,7 +562,7 @@ class SchedulerSimulator:
         delay = self.calculate_delay(16) 
         self.total_completion_time += delay  # Update total_completion_time 
   
-        self.current_time += delay  # Update current_time by adding the total_delay_now 
+        self.current_time += timedelta(milliseconds=delay)  # Update current_time by adding the total_delay_now 
         self.iteration += 1 
         return delay, goodput  
   
@@ -541,19 +570,19 @@ class SchedulerSimulator:
         goodput = 0  
         processing_requests = []  
         pending_tokens_over_time = []  
-        requests = list(self.requests.values())
+        requests = self.requests
         self.log_info(f"---------------------------------\n")
         self.log_info(f"N={len(requests)}\n")
         self.log_info(f"---------------------------------\n")
 
         while len(requests)>0 or len(processing_requests)>0:   
-            arrived_requests = [req for req in requests if req.arrival_time < self.current_time]  
+            arrived_requests = [req for req in requests.values() if req.arrival_time < self.current_time]  
             if len(arrived_requests)>0:
                 processing_requests.extend(arrived_requests)  
                 self.new_request_arrive = True
-                requests = [req for req in requests if req not in arrived_requests]  
                 for req in arrived_requests:
-                    del self.requests[req.id]
+                    del requests[req.id]
+                    #del self.requests[req.id]
     
             _, goodput = self.run_one_iteration(processing_requests, goodput)  
             #pending_tokens_over_time.append(self.pending_tokens(processing_requests))  # Record pending tokens
@@ -619,52 +648,41 @@ class SchedulerSimulator:
         print(f"Plot saved as {filename}")
         plt.clf()
 
-    def calculate_objective_from_log(self, scheduling_policy, start=0):
-        objective_metric = 0
+    def datetime_parser(self, dct):
+        """Parse ISO datetime strings back into datetime objects."""
+        for key, value in dct.items():
+            if isinstance(value, str):
+                try:
+                    if re.match(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+", value):
+                        dct[key] = datetime.fromisoformat(value)
+                except ValueError:
+                    pass
+        return dct
 
-        with open(f'{scheduling_policy}.log', 'r') as log_file:
-            log_data = log_file.read()
+    def calculate_goodput_from_log(self, filename, start_iteration, end_iteration):
+        goodput = 0
+        # Open and read the log file for the given scheduling policy
+        with open(filename, 'r') as log_file:
+            for line in log_file:
+                try:
+                    entry = json.loads(line)
+                    iteration = entry.get("Iteration")
+                    time_range = entry.get("Time")
+                    selected_requests = entry.get("Selected Requests")
+                    if iteration is not None and start_iteration <= iteration <= end_iteration:
+                        # Time parsing to get the end time
+                        if time_range:
+                            start_time, end_time = time_range.split(" to ")
+                            end_time = datetime.fromisoformat(end_time.strip())
 
-        iterations_data = log_data.split('---------------------------------\n')
-
-        previous_selected_requests = []
-        startpoint = -1
-        for iteration_data in iterations_data:
-            if iteration_data.strip() == '':
-                continue
-
-            # Extract iteration number
-            iteration_match = re.search(r"Iteration: (\d+)", iteration_data)
-            iteration = int(iteration_match.group(1)) if iteration_match else None
-            if iteration == 0:
-                startpoint += 1
-            if startpoint < start:
-                continue
-            if startpoint > start:
-                return objective_metric
-
-            # Extract selected requests
-            selected_requests_match = re.search(r"Selected Requests: (.+?)\n", iteration_data)
-            if selected_requests_match:
-                selected_requests_str = selected_requests_match.group(1)
-                selected_requests = ast.literal_eval(selected_requests_str)  # Convert string to list of dicts
-
-                for req in selected_requests:
-                    arrival_iter = self.time2iter(req['arrival_time'])
-                    if iteration >= arrival_iter:
-                        # Calculate the objective for each selected request
-                        objective_metric -= int(iteration - arrival_iter)
-                        if req['tokens'] == 1 and iteration <= self.time2iter(req['deadline']):
-                            objective_metric += 1
-                    switching_cost = 0 #req['switching_cost']
-                    for pre in previous_selected_requests:
-                        if pre['id'] == req['id']:
-                            switching_cost = 0
-                            break
-                    objective_metric += switching_cost
-                previous_selected_requests = copy.deepcopy(selected_requests)
-
-        return objective_metric
+                        # Process selected requests
+                        if selected_requests is not None:
+                            for req in selected_requests:
+                                if req['tokens'] == 1 and datetime.fromisoformat(req['deadline']) >= end_time:
+                                    goodput += 1
+                except json.JSONDecodeError as e:
+                    print(f"Failed to parse JSON: {str(e)}")
+        return goodput
 
     def remove_files(self, pattern):
         files = glob.glob(pattern)

@@ -10,11 +10,11 @@ from sklearn.linear_model import LinearRegression
 import joblib
 
 class Predictor:
-    def __init__(self, model_path='models/model/random_forest.pkl'):
+    def __init__(self, model_path='models/model/random_forest.pkl', time_labels=['0s', '10s', '20s', '30s', '60s', '180s', '1000s'], token_labels=[0, 100, 200, 300, 500, 10000]):
         self.model_path = model_path
         self.model = None
-        self.time_labels = ['0s', '10s', '20s', '30s', '60s', '180s', '1000s']
-        self.token_labels = [0, 100, 200, 300, 500, 10000]
+        self.time_labels = time_labels
+        self.token_labels = token_labels
         try:
             self.load_model()
         except:
