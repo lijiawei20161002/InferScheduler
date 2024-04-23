@@ -49,7 +49,7 @@ def parse_trace_file(filename, num_requests=None):
     return requests
   
 if __name__ == "__main__":  
-    num_requests_values = list(range(1000, 10001, 1000))  
+    num_iteration_values = list(range(100, 1101, 100))  
     first_time_flag = True
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = [16]  
@@ -58,26 +58,26 @@ if __name__ == "__main__":
   
     # Initialize the scheduler simulator  
     trace_file = "data/AzureLLMInferenceTrace_conv.csv"
-    requests = parse_trace_file(trace_file, 1000)
+    requests = parse_trace_file(trace_file, 100)
     simulator = SchedulerSimulator([], inference_delays, 'offline solver', 16, start=requests['1'].arrival_time)
     for scheduling_policy in scheduling_policies:
         for batch_policy in batching_policies:
-            simulator.requests = copy.deepcopy(requests)
-            if scheduling_policy == 'offline solver':
-                simulator.call_offline_solver()
-            else:
-                simulator.reset(copy.deepcopy(requests), inference_delays, scheduling_policy, batch_policy)
-            _, delay = simulator.run_simulation()
+            #simulator.requests = copy.deepcopy(requests)
+            #if scheduling_policy == 'offline solver':
+            #    simulator.call_offline_solver()
+            #else:
+            #    simulator.reset(copy.deepcopy(requests), inference_delays, scheduling_policy, batch_policy)
+            #_, delay = simulator.run_simulation()
             key = f'{scheduling_policy}_{batch_policy}'
             goodput_values[key] = []
-            for i in range(len(num_requests_values)):
+            for i in range(len(num_iteration_values)):
                 filename = f'{scheduling_policy}_{batch_policy}.log'
-                start = num_requests_values[i-1] if i>0 else 0
-                end = num_requests_values[i]
-                goodput = simulator.calculate_goodput_from_log(filename, start, end)
+                end = num_iteration_values[i]
+                goodput = simulator.calculate_goodput_from_log(filename, 0, end)
+                print(f'{scheduling_policy}_{batch_policy}.log', goodput)
                 goodput_values[key].append(goodput)
     
     # Plot the goodput results  
-    plot_results(num_requests_values, goodput_values, "Number of Iterations", "Goodput",  
-                 "Scheduler Simulator Goodput vs. Number of Requests", "goodput.png")  
+    plot_results(num_iteration_values, goodput_values, "Number of Iterations", "Goodput",  
+                 "Scheduler Simulator Goodput vs. Iterations", "goodput.png")  
   

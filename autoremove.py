@@ -1,5 +1,6 @@
 import os
 import glob
+import shutil
 
 def remove_files(pattern):
     files = glob.glob(pattern)
@@ -24,3 +25,6 @@ remove_files('*.out')
 
 # Remove all .ilp files
 remove_files('*.ilp')
+
+# Remove cache
+shutil.rmtree('__pycache__')

@@ -44,7 +44,7 @@ class Request:
             self.priority = 1 / time_to_deadline
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=1000, reserve=6):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=6):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.total_completion_time = 0 
@@ -125,7 +125,7 @@ class SchedulerSimulator:
             formatted_requests.append(formatted_request)
         return json.dumps(formatted_requests)
 
-    def log_scheduler_decision(self, iteration, current_requests, selected_requests, batch_size):
+    def log_scheduler_decision(self, iteration, current_requests, selected_requests):
         """
         Logs the decision made by the scheduler at each iteration, including the current state of requests.
 
@@ -139,8 +139,8 @@ class SchedulerSimulator:
         formatted_selected_requests = self.format_requests_for_logging(selected_requests)
         decision_text = f'{{"Iteration": {iteration}, "Time": "{self.start+timedelta(milliseconds=(iteration-1)*self.inference_delays[16])} to {self.start+timedelta(milliseconds=iteration*self.inference_delays[16])}", '
         decision_text += f'"Current Requests": {formatted_current_requests}, '
-        decision_text += f'"Selected Requests": {formatted_selected_requests}, '
-        decision_text += f'"Batch Size": {batch_size}}}\n'
+        decision_text += f'"Selected Requests": {formatted_selected_requests}'
+        decision_text += '}\n'
         decision_text += "---------------------------------\n"
 
         with open(f'{self.scheduling_policy}_{self.batching_policy}.log', 'a+') as log_file:
@@ -549,7 +549,7 @@ class SchedulerSimulator:
   
     def run_one_iteration(self, processing_requests, goodput):  
         selected_requests, batch_size = self.scheduler(processing_requests)  
-        self.log_scheduler_decision(self.iteration, processing_requests, selected_requests, batch_size)
+        self.log_scheduler_decision(self.iteration, processing_requests, selected_requests)
         for req in selected_requests:  
             req.tokens -= 1  
         requests_to_remove = [req for req in processing_requests if req.tokens <= 0]
@@ -681,6 +681,7 @@ class SchedulerSimulator:
                                 if req['tokens'] == 1 and datetime.fromisoformat(req['deadline']) >= end_time:
                                     goodput += 1
                 except json.JSONDecodeError as e:
+                    print(line)
                     print(f"Failed to parse JSON: {str(e)}")
         return goodput
 
