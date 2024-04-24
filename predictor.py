@@ -9,8 +9,11 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, m
 from sklearn.linear_model import LinearRegression
 import joblib
 
+default_history_window = 10
+default_prediction_window = 10
+
 class Predictor:
-    def __init__(self, model_path='models/model/random_forest.pkl', time_labels=['0s', '10s', '20s', '30s', '60s', '180s', '1000s'], token_labels=[0, 100, 200, 300, 500, 10000]):
+    def __init__(self, model_path='models/model/random_forest.pkl', time_labels=[0, 10, 20, 30, 60, 180, 1000], token_labels=[0, 100, 200, 300, 500, 10000]):
         self.model_path = model_path
         self.model = None
         self.time_labels = time_labels
@@ -18,13 +21,45 @@ class Predictor:
         try:
             self.load_model()
         except:
-            print("No trained model found. Please train the model.")
+            print("No trained model found. Train the model...")
+            self.train('data/AzureLLMInferenceTrace_conv.csv')
 
     def load_data(self, file_path):
         df = pd.read_csv(file_path, parse_dates=['TIMESTAMP', 'Deadline'])
         return df
+    
+    def create_feature(self, df):
+        feature_vector = [0] * 9  # Initialize feature vector
+        if not df.empty:
+            mean_tokens = df['GeneratedTokens'].mean()
+            std_tokens = df['GeneratedTokens'].std(ddof=0)
+            max_tokens = df['GeneratedTokens'].max()
+            min_tokens = df['GeneratedTokens'].min()
+            sum_tokens = df['GeneratedTokens'].sum()
+            count_tokens = len(df)
+            coef_variation = std_tokens / mean_tokens if mean_tokens != 0 else 0
+            
+            # Linear Regression for trend calculation
+            lr = LinearRegression()
+            timestamps = (df['TIMESTAMP'] - df['TIMESTAMP'].min()).dt.total_seconds().values.reshape(-1, 1)
+            lr.fit(timestamps, df['GeneratedTokens'].values.reshape(-1, 1))
+            trend_slope = lr.coef_[0][0]
 
-    def create_features_labels(self, df, history_window=60, prediction_window=60):
+            # Calculate gradients
+            time_diffs = (df['TIMESTAMP'] - df['TIMESTAMP'].shift()).dt.seconds.fillna(0)
+            token_diffs = df['GeneratedTokens'].diff().fillna(0)
+            gradients = (token_diffs / time_diffs.replace(0, np.inf)).fillna(0)
+            mean_gradient = gradients.mean()
+
+            # Update the feature vector with calculated values
+            feature_vector = [
+                mean_tokens, std_tokens, max_tokens, min_tokens,
+                sum_tokens, count_tokens, coef_variation,
+                mean_gradient, trend_slope
+            ]
+        return feature_vector
+
+    def create_features_labels(self, df, history_window=default_history_window, prediction_window=default_prediction_window):
         features = []
         labels = []
         
@@ -83,7 +118,7 @@ class Predictor:
         
         return np.array(features), np.array(labels)
 
-    def train(self, file_path, history_window=60, prediction_window=60):
+    def train(self, file_path, history_window=default_history_window, prediction_window=default_prediction_window):
         df = self.load_data(file_path)
         X, y = self.create_features_labels(df, history_window, prediction_window)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

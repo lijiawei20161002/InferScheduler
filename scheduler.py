@@ -11,6 +11,7 @@ from numpy import inf
 import json
 from datetime import datetime
 from predictor import Predictor
+import pandas as pd
 
 class Request:
     def __init__(self, id, tokens, arrival_time, deadline):
@@ -44,7 +45,7 @@ class Request:
             self.priority = 1 / time_to_deadline
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=6):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=0, predictor=Predictor()):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.total_completion_time = 0 
@@ -58,7 +59,8 @@ class SchedulerSimulator:
         self.previous_selected_requests = []
         self.previous_batch_size = 16
         self.switching_cost = 4
-        self.planning_window_size = planning_window_size
+        #self.planning_window_size = planning_window_size
+        self.planning_window_size = int(float(10*1000)/inference_delays[16])
         self.mode = 'incremental'
         options = {
             "WLSACCESSID": "eafc1f5c-8281-47e0-beeb-9f05ca1d6344",
@@ -67,10 +69,11 @@ class SchedulerSimulator:
         }
         self.env = gp.Env(params=options)
         self.reserve = reserve
-        self.time_labels=['0s', '10s', '20s', '30s', '60s', '180s', '1000s']
+        self.time_labels=[0, 10, 20, 30, 60, 180, 1000]
         self.token_labels=[0, 100, 200, 300, 500, 10000]
         self.start = start
         self.current_time = start  
+        self.predictor = predictor
 
     def set_planning_window(self, size):
         self.planning_window_size = size
@@ -154,6 +157,30 @@ class SchedulerSimulator:
         else:
             return (request.tokens-x_i) / self.time2iter(request.deadline)
         
+    def create_dataframe_from_requests(self, current_requests):
+        data = {
+            'TIMESTAMP': [req.arrival_time for req in current_requests],
+            'GeneratedTokens': [req.tokens for req in current_requests],
+            'Deadline': [req.deadline for req in current_requests]
+        }
+        return pd.DataFrame(data)
+    
+    def predict_request_distribution(self, processing_requests):
+        df = self.create_dataframe_from_requests(processing_requests)
+        features = self.predictor.create_feature(df)
+        predictions = self.predictor.predict([features])[0].reshape(-1, 5)
+        return predictions
+    
+    def create_virtual_requests(self, predictions):
+        virtual_requests = []
+        for time_bucket, tokens_bucket in np.ndindex(predictions.shape):
+            count = round(predictions[time_bucket, tokens_bucket])
+            for _ in range(count):
+                tokens = self.token_labels[tokens_bucket]
+                deadline = self.current_time + timedelta(seconds=int(self.time_labels[time_bucket]))
+                virtual_requests.append(Request("virtual", tokens, self.current_time, deadline))
+        return virtual_requests
+        
     def online_alg(self, processing_requests):
         # Create a new model
         model = gp.Model("OnlineScheduler")
@@ -215,8 +242,13 @@ class SchedulerSimulator:
         model.setParam('LogFile', 'online.solver')  # Write a log file
         model.Params.Presolve = -1  # Automatic presolve level
 
+        # Predict future requests and create virtual requests based on predictions
+        predictions = self.predict_request_distribution(processing_requests)
+        virtual_requests = self.create_virtual_requests(predictions)
+        all_requests = processing_requests + virtual_requests
+
         # Define constants
-        N = len(processing_requests)  # Number of requests
+        N = len(all_requests)  
         T = self.planning_window_size
 
         # Define decision variables for request selection, switching, and batch size
@@ -243,7 +275,7 @@ class SchedulerSimulator:
         # Completion constraint: Request is considered finished if the tokens are processed before the deadline
         for i in range(N):
             model.addConstr(
-                gp.quicksum(x[i, t] for t in range(min(T, self.time2iter(processing_requests[i].deadline)))) >= processing_requests[i].tokens * finished[i],
+                gp.quicksum(x[i, t] for t in range(min(T, self.time2iter(all_requests[i].deadline)))) >= all_requests[i].tokens * finished[i],
                 f"Completion_{i}",
             )
 
@@ -251,6 +283,11 @@ class SchedulerSimulator:
         model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= self.B)
         for t in range(1, T):
             model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.B-self.reserve)
+
+        # Forbidding selection of virtual requests at step 0
+        num_real_requests = len(processing_requests)
+        for i in range(num_real_requests, N):  # Only apply to virtual requests
+            model.addConstr(x[i, 0] == 0, f"Forbid_virtual_{i}_at_step_0")
 
         # Schedule constraint
         #for i in range(N):
@@ -273,7 +310,7 @@ class SchedulerSimulator:
         
         # Store the requests in the dictionary
         selected_requests = []
-        for i in range(N):
+        for i in range(len(processing_requests)):
             if (hasattr(x[i, 0], 'X') and x[i, 0].X > 0.5) or (hasattr(x[i, 0], 'Xn') and x[i, 0].Xn > 0.5):
                 selected_requests.append(processing_requests[i])
         

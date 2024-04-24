@@ -27,4 +27,5 @@ remove_files('*.out')
 remove_files('*.ilp')
 
 # Remove cache
-shutil.rmtree('__pycache__')
+if os.path.exists('__pycache__'):
+    shutil.rmtree('__pycache__')

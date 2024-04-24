@@ -49,7 +49,7 @@ def parse_trace_file(filename, num_requests=None):
     return requests
   
 if __name__ == "__main__":  
-    num_iteration_values = list(range(100, 1101, 100))  
+    num_iteration_values = list(range(100, 1501, 100))  
     first_time_flag = True
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']  
     batching_policies = [16]  
@@ -62,12 +62,12 @@ if __name__ == "__main__":
     simulator = SchedulerSimulator([], inference_delays, 'offline solver', 16, start=requests['1'].arrival_time)
     for scheduling_policy in scheduling_policies:
         for batch_policy in batching_policies:
-            #simulator.requests = copy.deepcopy(requests)
-            #if scheduling_policy == 'offline solver':
-            #    simulator.call_offline_solver()
-            #else:
-            #    simulator.reset(copy.deepcopy(requests), inference_delays, scheduling_policy, batch_policy)
-            #_, delay = simulator.run_simulation()
+            simulator.requests = copy.deepcopy(requests)
+            if scheduling_policy == 'offline solver':
+                simulator.call_offline_solver()
+            else:
+                simulator.reset(copy.deepcopy(requests), inference_delays, scheduling_policy, batch_policy)
+            _, delay = simulator.run_simulation()
             key = f'{scheduling_policy}_{batch_policy}'
             goodput_values[key] = []
             for i in range(len(num_iteration_values)):
