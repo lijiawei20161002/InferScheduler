@@ -69,8 +69,8 @@ class SchedulerSimulator:
         }
         self.env = gp.Env(params=options)
         self.reserve = reserve
-        self.time_labels=[0, 10, 20, 30, 60, 180, 1000]
-        self.token_labels=[0, 100, 200, 300, 500, 10000]
+        self.time_labels=[0, 1, 10, 20, 30, 60, 1000]
+        self.token_labels=[0, 10, 100, 200, 500, 10000]
         self.start = start
         self.current_time = start  
         self.predictor = predictor

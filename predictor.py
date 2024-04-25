@@ -9,11 +9,11 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, m
 from sklearn.linear_model import LinearRegression
 import joblib
 
-default_history_window = 10
-default_prediction_window = 10
+default_history_window = 60
+default_prediction_window = 30
 
 class Predictor:
-    def __init__(self, model_path='models/model/random_forest.pkl', time_labels=[0, 10, 20, 30, 60, 180, 1000], token_labels=[0, 100, 200, 300, 500, 10000]):
+    def __init__(self, model_path='models/model/random_forest.pkl', time_labels=[0, 1, 10, 20, 30, 60, 1000], token_labels=[0, 10, 100, 200, 500, 10000]):
         self.model_path = model_path
         self.model = None
         self.time_labels = time_labels
@@ -105,7 +105,7 @@ class Predictor:
             features.append(feature_vector)
             
             # Prepare the label matrix based on time and token buckets
-            deadline_bins = end_time + pd.to_timedelta(self.time_labels)
+            deadline_bins = [end_time + pd.Timedelta(seconds=t) for t in self.time_labels]
             token_bins = self.token_labels
 
             # Assign buckets for deadline and tokens
@@ -124,7 +124,7 @@ class Predictor:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         param_grid = {
             'n_estimators': [100, 200],
-            'max_features': ['auto', 'sqrt', 'log2'],
+            'max_features': ['sqrt', 'log2'],
             'max_depth': [None, 10, 50],
             'min_samples_split': [2, 5, 10],
             'min_samples_leaf': [1, 2, 4]
@@ -156,14 +156,22 @@ class Predictor:
 
     def plot_heatmap(self, actual, predicted, filename):
         fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-        sns.heatmap(actual.reshape(-1, 5), xticklabels=self.token_labels, yticklabels=self.time_labels, ax=ax[0], cmap="viridis", annot=True, fmt=".0f")  
-        sns.heatmap(predicted.reshape(-1, 5), xticklabels=self.token_labels, yticklabels=self.time_labels, ax=ax[1], cmap="viridis", annot=True, fmt=".0f")
+        token_labels = self.token_labels[1:]  
+        time_labels = self.time_labels[1:] 
+        token_ticks = np.arange(len(token_labels)) + 0.5
+        time_ticks = np.arange(len(time_labels)) + 0.5
+        sns.heatmap(actual.reshape(-1, 5), xticklabels=token_labels, yticklabels=time_labels, ax=ax[0], cmap="viridis", annot=True, fmt=".0f")  
+        sns.heatmap(predicted.reshape(-1, 5), xticklabels=token_labels, yticklabels=time_labels, ax=ax[1], cmap="viridis", annot=True, fmt=".0f")
         ax[0].set_title("Actual Values")
         ax[0].set_xlabel("Token Buckets")
         ax[0].set_ylabel("Deadline Buckets")
+        ax[0].set_xticks(token_ticks)
+        ax[0].set_yticks(time_ticks)
         ax[1].set_title("Predicted Values")
         ax[1].set_xlabel("Token Buckets")
         ax[1].set_ylabel("Time Buckets")
+        ax[1].set_xticks(token_ticks)
+        ax[1].set_yticks(time_ticks)
         plt.suptitle('Comparison of Actual vs. Predicted Request Distributions')
         plt.savefig(filename+'.png')
 
@@ -173,11 +181,12 @@ class Predictor:
     def load_model(self):
         self.model = joblib.load(self.model_path)
 
-#data_file_path = 'data/AzureLLMInferenceTrace_conv.csv'
-#predictor = Predictor()
-#predictor.train(data_file_path)
-#df = predictor.load_data(data_file_path)
-#X, y = predictor.create_features_labels(df)
-#predictions = predictor.predict(X)
-#print(predictions)  
-#print(predictor.evaluate(predictions, y))
+'''
+data_file_path = 'data/AzureLLMInferenceTrace_conv.csv'
+predictor = Predictor()
+predictor.train(data_file_path)
+df = predictor.load_data(data_file_path)
+X, y = predictor.create_features_labels(df)
+predictions = predictor.predict(X)
+for i in range(len(y)-10, len(y)):
+    predictor.plot_heatmap(y[i], predictions[i], 'prediction'+str(i)+'.png')'''
