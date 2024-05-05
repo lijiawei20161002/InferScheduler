@@ -58,10 +58,11 @@ if __name__ == "__main__":
   
     # Initialize the scheduler simulator  
     trace_file = "data/AzureLLMInferenceTrace_conv.csv"
-    requests = parse_trace_file(trace_file, 100)
+    requests = parse_trace_file(trace_file, 500)
     simulator = SchedulerSimulator([], inference_delays, 'offline solver', 16, start=requests['1'].arrival_time)
     for scheduling_policy in scheduling_policies:
         for batch_policy in batching_policies:
+            print(scheduling_policy)
             simulator.requests = copy.deepcopy(requests)
             if scheduling_policy == 'offline solver':
                 simulator.call_offline_solver()

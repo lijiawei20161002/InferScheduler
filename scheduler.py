@@ -45,7 +45,7 @@ class Request:
             self.priority = 1 / time_to_deadline
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=0, predictor=Predictor()):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=0, predictor=Predictor(), timespan=inf):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.total_completion_time = 0 
@@ -74,6 +74,12 @@ class SchedulerSimulator:
         self.start = start
         self.current_time = start  
         self.predictor = predictor
+        self.timespan = timespan
+
+    def set_timespan(self, timespan):
+        self.timespan = timespan
+        new_requests = {key: req for key, req in self.requests.items() if req.arrival_time < self.start + timedelta(milliseconds=timespan * self.inference_delays[16])}
+        self.requests = new_requests
 
     def set_planning_window(self, size):
         self.planning_window_size = size
@@ -326,7 +332,7 @@ class SchedulerSimulator:
 
         # Define constants
         N = len(self.requests)  # Number of requests
-        T = max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + 2*sum([req.tokens for req in requests]) + 100  # Max iterations
+        T = min(self.timespan, max(sum([req.tokens for req in requests]), max([self.time2iter(req.deadline) for req in requests])) + 2*sum([req.tokens for req in requests])) + 100  # Max iterations
         
         # Add decision variables
         x = model.addVars(N, T, vtype=GRB.BINARY, name="x")  # Request processing at time t
@@ -341,16 +347,8 @@ class SchedulerSimulator:
         # Completion constraint: Request is considered finished if the tokens are processed before the deadline
         for i in range(N):
             model.addConstr(
-                gp.quicksum(x[i, t] for t in range(self.time2iter(requests[i].deadline))) >= requests[i].tokens * finished[i],
+                gp.quicksum(x[i, t] for t in range(min(T, self.time2iter(requests[i].deadline)))) >= requests[i].tokens * finished[i],
                 f"Completion_{i}",
-            )
-
-        # Global Allocation Constraint: Ensures that each request i gets allocated a total amount of tokens 
-        # across the entire timeline (T) that is at least equal to the required tokens, regardless of its deadline
-        for i in range(N):
-            model.addConstr(
-                gp.quicksum(x[i, t] for t in range(T)) == requests[i].tokens,
-                name=f"TotalAllocation_{i}"
             )
 
         # No scheduling before arrival constraint
@@ -612,7 +610,7 @@ class SchedulerSimulator:
         self.log_info(f"N={len(requests)}\n")
         self.log_info(f"---------------------------------\n")
 
-        while len(requests)>0 or len(processing_requests)>0:   
+        while (self.iteration < self.timespan) and (len(requests)>0 or len(processing_requests)>0):   
             arrived_requests = [req for req in requests.values() if req.arrival_time < self.current_time]  
             if len(arrived_requests)>0:
                 processing_requests.extend(arrived_requests)  
