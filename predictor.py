@@ -184,9 +184,10 @@ class Predictor:
 '''
 data_file_path = 'data/AzureLLMInferenceTrace_conv.csv'
 predictor = Predictor()
-predictor.train(data_file_path)
+#predictor.train(data_file_path)
 df = predictor.load_data(data_file_path)
 X, y = predictor.create_features_labels(df)
 predictions = predictor.predict(X)
-for i in range(len(y)-10, len(y)):
-    predictor.plot_heatmap(y[i], predictions[i], 'prediction'+str(i)+'.png')'''
+print(predictor.evaluate(predictions, y))
+#for i in range(len(y)-10, len(y)):
+    #predictor.plot_heatmap(y[i], predictions[i], 'prediction'+str(i)+'.png')'''
