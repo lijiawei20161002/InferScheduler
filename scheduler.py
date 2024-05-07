@@ -23,7 +23,7 @@ class Request:
         self.priority = self.calculate_priority()
         self.switching_cost = self.tokens/2
 
-    def calculate_score(self):
+    def calculate_score(self): 
         time_to_deadline = (self.deadline - self.arrival_time).total_seconds()
         return self.tokens / time_to_deadline if time_to_deadline > 0 else float('inf')
 
@@ -45,7 +45,7 @@ class Request:
             self.priority = 1 / time_to_deadline
 
 class SchedulerSimulator:
-    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=0, planning_window_size=2000, reserve=0, predictor=Predictor(), timespan=inf):  
+    def __init__(self, requests, inference_delays, scheduling_policy, batching_policy, start=datetime.now(), planning_window_size=2000, reserve=0, predictor=Predictor(), timespan=inf):  
         self.requests = requests  
         self.inference_delays = inference_delays  
         self.total_completion_time = 0 
@@ -89,7 +89,7 @@ class SchedulerSimulator:
 
     def time2iter(self, t):
         return int((t-self.start).total_seconds()*1000//self.inference_delays[16])
-    
+        
     def reset(self, requests, inference_delays, scheduling_policy, batching_policy):
         self.requests = requests  
         self.inference_delays = inference_delays    
@@ -350,6 +350,11 @@ class SchedulerSimulator:
                 gp.quicksum(x[i, t] for t in range(min(T, self.time2iter(requests[i].deadline)))) >= requests[i].tokens * finished[i],
                 f"Completion_{i}",
             )
+        for i in range(N):
+            model.addConstr(
+                gp.quicksum(x[i, t] for t in range(T)) == requests[i].tokens,
+                f"Completion_{i}",
+            )
 
         # No scheduling before arrival constraint
         for i in range(N):
@@ -388,7 +393,7 @@ class SchedulerSimulator:
                 if solution[i, iteration] > 0.5:
                     selected_requests.append(requests[i])
             requests_order.append(selected_requests)
-
+        
         return requests_order
     
     def offline_solver_switching_cost(self):  
@@ -469,7 +474,7 @@ class SchedulerSimulator:
                     solution[i, t] = x[i, t].X
                 elif hasattr(x[i,t], 'Xn'):
                     solution[i, t] = x[i, t].Xn
-        
+
         # Store the requests in the dictionary
         requests_order = []
         for iteration in range(T):
@@ -633,14 +638,14 @@ class SchedulerSimulator:
     def generate_requests(self, num_requests, inference_delays):
         mu = 35.403855367569996
         sigma = 31.604314122710903
-        last_arrival = 0
+        last_arrival = datetime.now()
         requests = {}
 
         # Parameters for burstiness and urgency
         burst_period = 10  # Defines how often the arrival rate changes
         urgent_request_period = 5  # Interval for injecting urgent requests
-        high_rate = 50  # High arrival rate
-        low_rate = 20  # Low arrival rate
+        high_rate = 70  # High arrival rate
+        low_rate = 15  # Low arrival rate
         current_rate = high_rate
 
         for i in range(num_requests):
@@ -658,9 +663,9 @@ class SchedulerSimulator:
             if i % burst_period < 2:
                 current_rate = high_rate if current_rate == low_rate else low_rate
 
-            arrival_time = last_arrival + int(random.expovariate(current_rate / (inference_delays[16] * mu)))
+            arrival_time = last_arrival + timedelta(milliseconds=int(random.expovariate(current_rate / (inference_delays[16] * mu))))
             last_arrival = arrival_time
-            deadline = arrival_time + int(random.expovariate(deadline_factor / (inference_delays[16] * tokens)))
+            deadline = arrival_time + timedelta(milliseconds=int(random.expovariate(deadline_factor / (inference_delays[16] * (tokens)))+1000))
             request = Request(id, tokens, arrival_time, deadline)
             requests[id] = request
 
