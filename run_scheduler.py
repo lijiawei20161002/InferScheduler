@@ -20,14 +20,15 @@ color_map = {
 }  
   
 def plot_results(x_values, y_values, xlabel, ylabel, title, filename):  
+    plt.figure(figsize=(10, 8))
     for policy, values in y_values.items():  
         if 'wo' in policy:
-            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], linestyle='--', label=f'{policy}')  
+            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], linestyle='--', linewidth=3, label=f"{policy.split('_')[0]}")  
         else:
-            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], marker='*', label=f'{policy}')
-    plt.xlabel(xlabel)  
-    plt.ylabel(ylabel)  
-    plt.title(title)  
+            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], marker='*', linewidth=3, label=f"{policy.split('_')[0]}")
+    plt.xlabel(xlabel, fontsize=20)  
+    plt.ylabel(ylabel, fontsize=20)  
+    plt.title(title, fontsize=20)  
     plt.legend()  
     plt.grid()  
     plt.savefig(filename)  
@@ -80,5 +81,5 @@ if __name__ == "__main__":
     
     # Plot the goodput results  
     plot_results(num_iteration_values, goodput_values, "Number of Iterations", "Goodput",  
-                 "Scheduler Simulator Goodput vs. Iterations", "goodput.png")  
+                 "Scheduler Simulator Goodput vs. Iterations", "goodput_trace.png")  
   

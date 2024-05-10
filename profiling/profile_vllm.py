@@ -13,22 +13,20 @@ from vllm import LLM, SamplingParams
 
 prompts = [
     f"{i+1}. {prompt}" for i, prompt in enumerate([
-        "Hello, my name is",
-        "The president of the United States is",
-        "The capital of France is",
-        "The future of AI is"
-    ] * 25)
+        "Output 10 tokens Output 10 tokens Output 10 tokens Output 10 tokens",
+    ] * 100)
 ]
 
-deadlines = {}
-for prompt in prompts:
-    deadlines[prompt] = 2
-sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
-llm = LLM(model="facebook/opt-125m")
+sampling_params = SamplingParams(temperature=0, top_p=0.95, max_tokens=10, min_tokens=10)
+llm = LLM(model="gpt2")
 
 outputs = llm.generate(prompts, sampling_params)
+goodput = 0
 for output in outputs:
     prompt = output.prompt
     generated_text = output.outputs[0].text
-    print(output.metrics.finished_time)
-    #print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+    #print(generated_text)
+    print(output.metrics.finished_time <= output.metrics.deadline, output.metrics.arrival_time, output.metrics.finished_time, output.metrics.deadline)
+    if output.metrics.finished_time <= output.metrics.deadline:
+        goodput += 1
+print(f"Goodput: {goodput}")

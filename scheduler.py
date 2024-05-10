@@ -76,6 +76,12 @@ class SchedulerSimulator:
         self.predictor = predictor
         self.timespan = timespan
 
+    def set_predictor(self, predictor):
+        self.predictor = predictor
+
+    def set_requests(self, requests):
+        self.requests = requests
+
     def set_timespan(self, timespan):
         self.timespan = timespan
         new_requests = {key: req for key, req in self.requests.items() if req.arrival_time < self.start + timedelta(milliseconds=timespan * self.inference_delays[16])}
@@ -182,8 +188,9 @@ class SchedulerSimulator:
         for time_bucket, tokens_bucket in np.ndindex(predictions.shape):
             count = round(predictions[time_bucket, tokens_bucket])
             for _ in range(count):
-                tokens = self.token_labels[tokens_bucket]
-                deadline = self.current_time + timedelta(seconds=int(self.time_labels[time_bucket]))
+                if tokens_bucket < len(self.token_labels) -1:
+                    tokens = (self.token_labels[tokens_bucket]+self.token_labels[tokens_bucket+1])/2
+                    deadline = self.current_time + timedelta(seconds=int(self.time_labels[time_bucket]))
                 virtual_requests.append(Request("virtual", tokens, self.current_time, deadline))
         return virtual_requests
         
@@ -249,9 +256,9 @@ class SchedulerSimulator:
         model.Params.Presolve = -1  # Automatic presolve level
 
         # Predict future requests and create virtual requests based on predictions
-        predictions = self.predict_request_distribution(processing_requests)
-        virtual_requests = self.create_virtual_requests(predictions)
-        all_requests = processing_requests + virtual_requests
+        #predictions = self.predict_request_distribution(processing_requests)
+        #virtual_requests = self.create_virtual_requests(predictions)
+        all_requests = processing_requests #+ virtual_requests
 
         # Define constants
         N = len(all_requests)  
@@ -636,8 +643,8 @@ class SchedulerSimulator:
         return goodput, average_jct 
 
     def generate_requests(self, num_requests, inference_delays):
-        mu = 35.403855367569996
-        sigma = 31.604314122710903
+        mu = 100
+        sigma = 10
         last_arrival = datetime.now()
         requests = {}
 
@@ -764,4 +771,23 @@ class SchedulerSimulator:
                     differences.append((parsed_line1, parsed_line2))
 
         return differences
+
+    def log_requests_to_csv(self, filename='requests_log.csv'):
+        # Prepare data for the CSV file
+        data = []
+        for req in self.requests.values():
+            data.append({
+                'ID': req.id,
+                'GeneratedTokens': req.tokens,
+                'TIMESTAMP': req.arrival_time.isoformat() if isinstance(req.arrival_time, datetime) else req.arrival_time,
+                'Deadline': req.deadline.isoformat() if isinstance(req.deadline, datetime) else req.deadline,
+                'Score': req.score,
+                'Priority': req.priority,
+                'Switching Cost': req.switching_cost
+            })
+        
+        # Convert to a DataFrame and save to CSV
+        df = pd.DataFrame(data)
+        df.to_csv(filename, index=False)
+        print(f"Requests logged to {filename}")
 

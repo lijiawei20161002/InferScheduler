@@ -6,6 +6,7 @@ import random
 from datetime import datetime, timedelta
 import pandas as pd
 from scheduler import Request, SchedulerSimulator
+from predictor import Predictor
 
 # Delay values for different batch sizes
 inference_delays = {
@@ -29,12 +30,13 @@ color_map = {
 
 def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
     """Function to plot and save the results."""
+    print(x_values, y_values)
     plt.figure(figsize=(10,8))
     for policy, values in y_values.items():
         if 'wo' in policy:
-            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], linestyle='--', linewidth=2, label=f"{policy.split('_')[0]}")
+            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], linestyle='--', label=f"{policy.split('_')[0]}")
         else:
-            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], linewidth=2, label=f"{policy.split('_')[0]}")
+            plt.plot(x_values, values, color=color_map[policy.split('_')[0]], label=f"{policy.split('_')[0]}")
     plt.xlabel(xlabel, fontsize=20)
     plt.ylabel(ylabel, fontsize=20)
     plt.title(title, fontsize=20)
@@ -45,7 +47,7 @@ def plot_results(x_values, y_values, xlabel, ylabel, title, filename):
 
 if __name__ == "__main__":
     # Range of request sizes to test
-    request_sizes = [10, 20, 50, 100, 200, 500]
+    request_sizes = [100, 150, 200, 250, 300]
     scheduling_policies = ['offline solver', 'online solver', 'random', 'bidding', 'fcfs', 'deadline']
     batching_policies = [16]
 
@@ -54,6 +56,11 @@ if __name__ == "__main__":
 
     # Initialize the scheduler simulator
     simulator = SchedulerSimulator({}, inference_delays, 'offline solver', 16)
+    requests = simulator.generate_requests(10000, inference_delays)
+    simulator.set_requests(requests)
+    #simulator.log_requests_to_csv()
+    #predictor = Predictor()
+    #predictor.train('requests_log.csv')
 
     for num_requests in request_sizes:
         # Generate synthetic requests
