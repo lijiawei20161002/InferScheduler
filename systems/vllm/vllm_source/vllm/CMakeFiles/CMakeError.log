@@ -1,0 +1,12 @@
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /data/jiawei_li/miniconda3/envs/vllm/bin/x86_64-conda-linux-gnu-c++ 
+Build flags: -lrt
+Id flags:  
+
+The output was:
+1
+/data/jiawei_li/miniconda3/envs/vllm/bin/../lib/gcc/x86_64-conda-linux-gnu/7.5.0/../../../../x86_64-conda-linux-gnu/bin/ld: /data/jiawei_li/miniconda3/envs/vllm/bin/../lib/gcc/x86_64-conda-linux-gnu/7.5.0/../../../../x86_64-conda-linux-gnu/lib/../lib/libstdc++.so: undefined reference to `clock_gettime@GLIBC_2.17'
+/data/jiawei_li/miniconda3/envs/vllm/bin/../lib/gcc/x86_64-conda-linux-gnu/7.5.0/../../../../x86_64-conda-linux-gnu/bin/ld: /data/jiawei_li/miniconda3/envs/vllm/bin/../lib/gcc/x86_64-conda-linux-gnu/7.5.0/../../../../x86_64-conda-linux-gnu/lib/../lib/libstdc++.so: undefined reference to `aligned_alloc@GLIBC_2.16'
+collect2: error: ld returned 1 exit status
+
+
