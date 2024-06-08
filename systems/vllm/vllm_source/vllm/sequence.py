@@ -98,7 +98,9 @@ class RequestMetrics:
     first_token_time: Optional[float]
     time_in_queue: Optional[float]
     finished_time: Optional[float] = None
-    deadline: float = field(init=False)
+    deadline: Optional[float] = field(init=False)
+    tokens: int = 100
+    # 1. search 2. chatbox 3. batch analysis
     def __post_init__(self):
         global standard
         if standard == 0:

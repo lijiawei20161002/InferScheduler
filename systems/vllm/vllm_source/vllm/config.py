@@ -594,6 +594,9 @@ class SchedulerConfig:
         delay_factor: float = 0.0,
         enable_chunked_prefill: bool = False,
     ) -> None:
+        print('===========================')
+        print("Batch Size", max_num_seqs)
+        print('===========================')
         if max_num_batched_tokens is not None:
             self.max_num_batched_tokens = max_num_batched_tokens
         else:

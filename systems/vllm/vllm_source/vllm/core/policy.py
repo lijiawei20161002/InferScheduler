@@ -1,9 +1,13 @@
 from collections import deque
-from typing import Deque
+from typing import Deque, Dict, List
 import gurobipy as gp
-
+import time
+import sys
+import numpy as np
+import pandas as pd
+sys.path.append('/data/jiawei_li/InferScheduler')
+from predictor import Predictor
 from vllm.sequence import SequenceGroup
-
 
 class Policy:
 
@@ -38,45 +42,103 @@ class FCFS(Policy):
         #return now - seq_group.metrics.deadline
         return now - seq_group.metrics.arrival_time
 
-
 class OnlineSolverPolicy(Policy):
-    def __init__(self, planning_window_size: int = 15, max_batch_size: int = 16, reserve: int = 0):
+    def __init__(self, predictor: Predictor, planning_window_size: int = 15, max_batch_size: int = 16, reserve: int = 0):
+        self.predictor = predictor
         self.planning_window_size = planning_window_size
         self.max_batch_size = max_batch_size
         self.reserve = reserve
         self.solved_priorities: Dict[int, float] = {}
 
+    def create_dataframe_from_requests(self, current_requests: Deque[SequenceGroup]) -> pd.DataFrame:
+        data = {
+            'TIMESTAMP': [req.metrics.arrival_time for req in current_requests],
+            'GeneratedTokens': [req.metrics.tokens for req in current_requests],
+            'Deadline': [req.metrics.deadline for req in current_requests]
+        }
+        df = pd.DataFrame(data)
+        df['TIMESTAMP'] = pd.to_datetime(df['TIMESTAMP'], unit='s')
+        return df
+
+    def predict_request_distribution(self, processing_requests: Deque[SequenceGroup]) -> Dict[int, int]:
+        df = self.create_dataframe_from_requests(processing_requests)
+        features = self.predictor.create_feature(df)
+        predictions = self.predictor.predict([features])[0]
+        return predictions
+
+    def create_virtual_requests(self, prediction_matrix: np.ndarray, time_labels: List[int], token_labels: List[int]) -> Deque[Dict]:
+        virtual_requests = deque()
+        print('========================')
+        print(prediction_matrix)
+        print('========================')
+        for i in range(prediction_matrix.shape[0]):
+            for j in range(prediction_matrix.shape[1]):
+                num_requests = int(prediction_matrix[i, j])
+                for _ in range(num_requests):
+                    virtual_request = {
+                        'request_id': f'virtual_{i}_{j}_{_}',
+                        'tokens': token_labels[j],
+                        'deadline': time_labels[i]
+                    }
+                    virtual_requests.append(virtual_request)
+        return virtual_requests
+
+    def predict_tokens_needed(self, context_token_count: int) -> int:
+        return self.predictor.predict_generated_token(context_token_count)
+    
     def solve_and_assign_priorities(self, now: float, seq_groups: Deque[SequenceGroup]):
         """Solve the optimization problem and assign priorities based on the solution."""
-        N = len(seq_groups)
+        prediction_matrix = self.predict_request_distribution(seq_groups)
+        virtual_requests = self.create_virtual_requests(prediction_matrix, self.predictor.time_labels[1:], self.predictor.token_labels[1:])
+        all_requests = list(seq_groups) + list(virtual_requests)
+
+        N = len(all_requests)
         if N == 0:
             return
+        T = self.planning_window_size
 
         # Create a new Gurobi model
         model = gp.Model("OnlineScheduler")
         model.Params.LogToConsole = 0
+        model.setParam('LogFile', 'online.solver')
+        model.Params.Presolve = -1
 
         # Decision variables
-        x = model.addVars(N, self.planning_window_size, vtype=gp.GRB.BINARY, name="x")
+        x = model.addVars(N, T, vtype=gp.GRB.BINARY, name="x")
         finished = model.addVars(N, vtype=gp.GRB.BINARY, name="finished")
-        b = model.addVar(vtype=gp.GRB.INTEGER, lb=0, name="b")  # Batch size variable
+        b = self.max_batch_size
+        if len(self.previous_selected_requests) > 0:
+                for i, req in enumerate(seq_groups):
+                    if req in self.previous_selected_requests:
+                        x[i, 0].start = 1
 
         # Objective: maximize the number of completed sequences plus sum of request processing
         objective = gp.quicksum(finished[i] for i in range(N)) + gp.quicksum(
-            gp.quicksum(x[i, t] for t in range(self.planning_window_size)) for i in range(N))
+            gp.quicksum(x[i, t] for t in range(T)) for i in range(N))
         model.setObjective(objective, gp.GRB.MAXIMIZE)
 
         # Constraints
-        for i, seq_group in enumerate(seq_groups):
-            time_to_deadline = seq_group.metrics.deadline - now
-            T = min(self.planning_window_size, int(time_to_deadline))
-            #model.addConstr(gp.quicksum(x[i, t] for t in range(T)) >= seq_group.tokens * finished[i], f"Completion_{i}")
-            model.addConstr(gp.quicksum(x[i, t] for t in range(T)) >= (10-seq_group.metrics.processed_token) * finished[i], f"Completion_{i}")
+        inference_time = 0.02
+        now = time.time()
+        for i, req in enumerate(all_requests):
+            if isinstance(req, SequenceGroup):
+                time_to_deadline = (req.metrics.deadline - now)//inference_time
+                T_req = min(T, int(time_to_deadline))
+                model.addConstr(
+                    gp.quicksum(x[i, t] for t in range(T_req)) >= (self.predict_tokens_needed(req.prompt_len) - req.metrics.processed_token) * finished[i],
+                    f"Completion_{i}",
+                )
+            else:
+                deadline_iter = (req['deadline'] - now)//inference_time
+                model.addConstr(
+                    gp.quicksum(x[i, t] for t in range(deadline_iter)) >= req['tokens'] * finished[i],
+                    f"Completion_{i}",
+                )
 
         # Batch size constraints
-        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= self.max_batch_size)
+        model.addConstr(gp.quicksum(x[i, 0] for i in range(N)) <= b)
         for t in range(1, self.planning_window_size):
-            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= self.max_batch_size - self.reserve)
+            model.addConstr(gp.quicksum(x[i, t] for i in range(N)) <= b - self.reserve)
 
         # Solve the model
         model.optimize()
@@ -114,4 +176,8 @@ class PolicyFactory:
 
     @classmethod
     def get_policy(cls, policy_name: str, **kwargs) -> Policy:
-        return cls._POLICY_REGISTRY[policy_name](**kwargs)
+        if policy_name == 'online_solver':
+            predictor = Predictor(model_path='/data/jiawei_li/InferScheduler/models/model/random_forest.pkl')
+            return cls._POLICY_REGISTRY[policy_name](predictor=predictor, **kwargs)
+        else:
+            return cls._POLICY_REGISTRY[policy_name](**kwargs)
