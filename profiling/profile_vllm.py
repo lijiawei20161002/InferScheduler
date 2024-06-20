@@ -36,24 +36,6 @@ def generate_meaningful_prompt(token_length):
     sentence = " ".join(brown_words[:token_length])
     return sentence
 
-# Simulate bursty arrival patterns
-def simulate_bursty_arrivals(df, burst_size, burst_interval, regular_interval):
-    prompts = []
-    current_time = time.time()
-
-    for i in range(0, len(df), burst_size):
-        burst_end = min(i + burst_size, len(df))
-        for j in range(i, burst_end):
-            token_length = df['ContextTokens'].iloc[j]
-            prompt = generate_meaningful_prompt(token_length)
-            arrival_time = current_time
-            prompts.append((prompt, arrival_time))
-            current_time += regular_interval
-
-        current_time += burst_interval
-
-    return prompts
-
 # Parameters
 burst_size = 10
 burst_interval = 5  # seconds between bursts
@@ -73,7 +55,12 @@ max_iterations = 1000
 goodput = 0
 
 current_time = time.time()
-llm.generate(prompts, sampling_params)
+outputs = llm.generate(prompts, sampling_params)
+for output in output:
+    print("arrival time:", output.arrival_time)
+    print("context text:", output.prompt)
+    print("generated text:", output.output_text)
+    print("finish time:", output.finished_time)
 
 # Profile Inference Time
 '''        
