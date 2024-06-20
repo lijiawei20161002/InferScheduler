@@ -6,14 +6,14 @@ from datetime import timedelta
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score, classification_report, make_scorer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression
 import joblib
 
 default_history_window = 60
 default_prediction_window = 30
 
 class Predictor:
-    def __init__(self, model_path='/data/jiawei_li/InferScheduler/models/model/random_forest.pkl', token_model_path='/data/jiawei_li/InferScheduler/models/model/token_logit.pkl', time_labels=[0, 1, 10, 20, 30, 60, 1000], token_labels=[0, 10, 100, 200, 500, 10000]):
+    def __init__(self, model_path='/data/jiawei_li/InferScheduler/models/model/random_forest.pkl', token_model_path='/data/jiawei_li/InferScheduler/models/model/token_logit.pkl', time_labels=[0, 100, 200, 500, 1000, 2000, 5000], token_labels=[0, 10, 100, 200, 500, 10000]):
         self.model_path = model_path
         self.token_model_path = token_model_path
         self.model = None
@@ -173,7 +173,7 @@ class Predictor:
         y = df['GeneratedTokens'].values
         y = pd.cut(y, bins=self.token_labels, labels=self.token_labels[1:])
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        token_model = LogisticRegression(max_iter=200)
+        token_model = LogisticRegression(max_iter=500)
         token_model.fit(X_train, y_train)
         self.token_model = token_model
         y_pred = token_model.predict(X_test)

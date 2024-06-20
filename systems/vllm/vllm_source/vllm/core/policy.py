@@ -42,6 +42,37 @@ class FCFS(Policy):
         #return now - seq_group.metrics.deadline
         return now - seq_group.metrics.arrival_time
 
+class RandomPolicy(Policy):
+
+    def sort_by_priority(
+        self,
+        now: float,
+        seq_groups: Deque[SequenceGroup],
+    ) -> Deque[SequenceGroup]:
+        seq_groups = list(seq_groups)
+        random.shuffle(seq_groups)
+        return deque(seq_groups)
+
+class DeadlinePrioritizePolicy(Policy):
+
+    def get_priority(
+        self,
+        now: float,
+        seq_group: SequenceGroup,
+    ) -> float:
+        return seq_group.metrics.deadline
+
+class BiddingPolicy(Policy):
+
+    def get_priority(
+        self,
+        now: float,
+        seq_group: SequenceGroup,
+    ) -> float:
+        remaining_tokens = seq_group.metrics.tokens - seq_group.metrics.processed_token
+        remaining_iterations = (seq_group.metrics.deadline - now) / 0.02  
+        return remaining_tokens / max(remaining_iterations, 1)
+
 class OnlineSolverPolicy(Policy):
     def __init__(self, predictor: Predictor, planning_window_size: int = 15, max_batch_size: int = 16, reserve: int = 0):
         self.predictor = predictor
@@ -49,6 +80,7 @@ class OnlineSolverPolicy(Policy):
         self.max_batch_size = max_batch_size
         self.reserve = reserve
         self.solved_priorities: Dict[int, float] = {}
+        self.now = time.time()
 
     def create_dataframe_from_requests(self, current_requests: Deque[SequenceGroup]) -> pd.DataFrame:
         data = {
@@ -66,11 +98,12 @@ class OnlineSolverPolicy(Policy):
         predictions = self.predictor.predict([features])[0]
         return predictions
 
-    def create_virtual_requests(self, prediction_matrix: np.ndarray, time_labels: List[int], token_labels: List[int]) -> Deque[Dict]:
+    def create_virtual_requests(self, now, prediction_matrix: np.ndarray, time_labels: List[int], token_labels: List[int]) -> Deque[Dict]:
         virtual_requests = deque()
         print('========================')
-        print(prediction_matrix)
+        prediction_matrix = prediction_matrix.reshape(-1, 5)
         print('========================')
+        print(prediction_matrix)
         for i in range(prediction_matrix.shape[0]):
             for j in range(prediction_matrix.shape[1]):
                 num_requests = int(prediction_matrix[i, j])
@@ -78,19 +111,17 @@ class OnlineSolverPolicy(Policy):
                     virtual_request = {
                         'request_id': f'virtual_{i}_{j}_{_}',
                         'tokens': token_labels[j],
-                        'deadline': time_labels[i]
+                        'deadline': now +time_labels[i] * 0.001
                     }
                     virtual_requests.append(virtual_request)
         return virtual_requests
-
-    def predict_tokens_needed(self, context_token_count: int) -> int:
-        return self.predictor.predict_generated_token(context_token_count)
     
     def solve_and_assign_priorities(self, now: float, seq_groups: Deque[SequenceGroup]):
         """Solve the optimization problem and assign priorities based on the solution."""
-        prediction_matrix = self.predict_request_distribution(seq_groups)
-        virtual_requests = self.create_virtual_requests(prediction_matrix, self.predictor.time_labels[1:], self.predictor.token_labels[1:])
-        all_requests = list(seq_groups) + list(virtual_requests)
+        #prediction_matrix = self.predict_request_distribution(seq_groups)
+        #virtual_requests = self.create_virtual_requests(now, prediction_matrix, self.predictor.time_labels[1:], self.predictor.token_labels[1:])
+        #all_requests = list(seq_groups) + list(virtual_requests)
+        all_reqeusts = list(seq_groups)
 
         N = len(all_requests)
         if N == 0:
@@ -107,10 +138,6 @@ class OnlineSolverPolicy(Policy):
         x = model.addVars(N, T, vtype=gp.GRB.BINARY, name="x")
         finished = model.addVars(N, vtype=gp.GRB.BINARY, name="finished")
         b = self.max_batch_size
-        if len(self.previous_selected_requests) > 0:
-                for i, req in enumerate(seq_groups):
-                    if req in self.previous_selected_requests:
-                        x[i, 0].start = 1
 
         # Objective: maximize the number of completed sequences plus sum of request processing
         objective = gp.quicksum(finished[i] for i in range(N)) + gp.quicksum(
@@ -119,17 +146,17 @@ class OnlineSolverPolicy(Policy):
 
         # Constraints
         inference_time = 0.02
-        now = time.time()
         for i, req in enumerate(all_requests):
             if isinstance(req, SequenceGroup):
-                time_to_deadline = (req.metrics.deadline - now)//inference_time
+                time_to_deadline = int((req.metrics.deadline - now)//inference_time)
                 T_req = min(T, int(time_to_deadline))
                 model.addConstr(
-                    gp.quicksum(x[i, t] for t in range(T_req)) >= (self.predict_tokens_needed(req.prompt_len) - req.metrics.processed_token) * finished[i],
+                    gp.quicksum(x[i, t] for t in range(T_req)) >= (req.metrics.tokens - req.metrics.processed_token) * finished[i],
                     f"Completion_{i}",
                 )
             else:
-                deadline_iter = (req['deadline'] - now)//inference_time
+                deadline_iter = int((req['deadline'] - now)//inference_time)
+                print(req['deadline'], now, inference_time, deadline_iter)
                 model.addConstr(
                     gp.quicksum(x[i, t] for t in range(deadline_iter)) >= req['tokens'] * finished[i],
                     f"Completion_{i}",

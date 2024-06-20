@@ -726,7 +726,7 @@ class Scheduler:
             remaining_waiting, prefills = self._schedule_prefills(
                 self.waiting, budget, curr_loras, enable_chunking=False)
 
-        fcfs_policy = PolicyFactory.get_policy(policy_name="online_solver", max_batch_size=self.scheduler_config.max_num_seqs)
+        fcfs_policy = PolicyFactory.get_policy(policy_name="online_solver")
         #fcfs_policy = PolicyFactory.get_policy(policy_name="fcfs")
         # Don't schedule decodes if prefills are scheduled.
         # NOTE: If `_schedule_prefills` doesn't enable chunking, self.running

@@ -80,6 +80,10 @@ class SequenceStage(enum.Enum):
 
 standard = 0
 
+from dataclasses import dataclass, field
+import random
+from typing import Optional
+
 @dataclass
 class RequestMetrics:
     """Metrics associated with a request.
@@ -98,31 +102,17 @@ class RequestMetrics:
     first_token_time: Optional[float]
     time_in_queue: Optional[float]
     finished_time: Optional[float] = None
-    deadline: Optional[float] = field(init=False)
     tokens: int = 100
-    # 1. search 2. chatbox 3. batch analysis
+    workload_type: str = "search"  # Can be 'search', 'chatbox', or 'batch_analysis'
+    deadline: Optional[float] = field(init=False)
+
     def __post_init__(self):
-        global standard
-        if standard == 0:
-            standard = self.arrival_time
-        p = random.random()
-        # Create staggered deadlines with later-arriving requests having stricter deadlines
-        time_diff = self.arrival_time - standard
-        if time_diff < 0.01:
-            # Early-arriving requests have lenient deadlines
-            self.deadline = self.arrival_time + random.uniform(1, 20)
-        elif 0.1 <= time_diff < 0.012:
-            # Mid-arriving requests have strict deadlines
-            self.deadline = self.arrival_time + 0.3
-        elif 0.12 <= time_diff < 0.015:
-            # Mid-arriving requests have strict deadlines
-            self.deadline = self.arrival_time + 0.02
-        elif 0.15 <= time_diff < 0.018:
-            # Mid-arriving requests have strict deadlines
-            self.deadline = self.arrival_time + 0.008
-        else:
-            # Mid-arriving requests have strict deadlines
-            self.deadline = self.arrival_time + 0.03
+        if self.workload_type == "search":
+            self.deadline = self.arrival_time + random.uniform(0.1, 0.5)
+        elif self.workload_type == "chatbox":
+            self.deadline = self.arrival_time + (self.tokens * 0.05)
+        elif self.workload_type == "batch_analysis":
+            self.deadline = self.arrival_time + random.uniform(300, 3600)  # 5 minutes to 1 hour
 
 class SequenceData:
     """Data associated with a sequence.

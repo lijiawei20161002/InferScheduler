@@ -1,4 +1,6 @@
 from modelscope.hub.api import HubApi
+from huggingface_hub import HfApi, HfFolder, login
+from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 import os
 import datetime
 import pandas as pd
@@ -12,6 +14,16 @@ if access_token is None:
 
 api = HubApi()
 api.login(access_token)
+
+hf_token = os.getenv('hf_token')
+if hf_token is None:
+    raise ValueError("hf_token environment variable not set.")
+login(token=hf_token)
+print("Successfully logged in to Hugging Face")
+
+
+model_name = 'PartAI/Dorna-Llama3-8B-Instruct'
+
 from vllm import LLM, SamplingParams
 
 csv_file_path = '../data/AzureLLMInferenceTrace_conv.csv'  
@@ -24,32 +36,51 @@ def generate_meaningful_prompt(token_length):
     sentence = " ".join(brown_words[:token_length])
     return sentence
 
+# Simulate bursty arrival patterns
+def simulate_bursty_arrivals(df, burst_size, burst_interval, regular_interval):
+    prompts = []
+    current_time = time.time()
+
+    for i in range(0, len(df), burst_size):
+        burst_end = min(i + burst_size, len(df))
+        for j in range(i, burst_end):
+            token_length = df['ContextTokens'].iloc[j]
+            prompt = generate_meaningful_prompt(token_length)
+            arrival_time = current_time
+            prompts.append((prompt, arrival_time))
+            current_time += regular_interval
+
+        current_time += burst_interval
+
+    return prompts
+
+# Parameters
+burst_size = 10
+burst_interval = 5  # seconds between bursts
+regular_interval = 0.1  # seconds between prompts within a burst
+
+# Generate prompts with bursty arrival patterns
+#prompts_with_arrivals = simulate_bursty_arrivals(df, burst_size, burst_interval, regular_interval)
+
 prompts = [
-    f"{i+1}.{generate_meaningful_prompt(100)}"
-    for i in range(256*5)
-]
+    "Output 100 tokens and end with '.'"
+] * 100
 
-sampling_params = SamplingParams(temperature=0, top_p=0.95, max_tokens=10, min_tokens=10)
-llm = LLM(model="gpt2")
+sampling_params = SamplingParams(temperature=0, top_p=0.95, max_tokens=1, min_tokens=1)
+llm = LLM(model=model_name, trust_remote_code=True)
 
-start_time = time.time()
-outputs = llm.generate(prompts, sampling_params)
-end_time = time.time()
+max_iterations = 1000
 goodput = 0
-total_inference_time = end_time - start_time
-for output in outputs:
-    prompt = output.prompt
-    generated_text = output.outputs[0].text
-    #print('\n======================\n')
-    #print(prompt, generated_text)
-    #print(output.metrics.finished_time <= output.metrics.deadline,"arrival:", output.metrics.arrival_time, "finished_time:", output.metrics.finished_time, "deadline:", output.metrics.deadline)
-    #print('\n======================\n')
-    if output.metrics.finished_time <= output.metrics.deadline:
-        goodput += 1
+
+current_time = time.time()
+llm.generate(prompts, sampling_params)
+
+# Profile Inference Time
+'''        
 total_tokens_generated = sum(len(output.outputs[0].text.split()) for output in outputs)
 average_time_per_token = total_inference_time / total_tokens_generated
 batch_size = 256
 print(f"Inference time for batch size {batch_size}: {total_inference_time:.2f} seconds")
 print(f"Total tokens generated: {total_tokens_generated}")
 print(f"Average time per token: {average_time_per_token:.4f} seconds")
-print(f"Goodput: {goodput}")
+print(f"Goodput: {goodput}")'''
